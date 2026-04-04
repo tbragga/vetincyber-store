@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VETIN CYBER™</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <style>
+    /* RESET & BASE */
+    * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
+    body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
+
+    /* BACKGROUND LAYERS */
+    .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
+    .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; }
+    .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+    /* HEADER */
+    .header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 3rem; border-bottom: 1px solid rgba(192,192,192,0.3); padding-bottom: 1.5rem; min-height: 100px; gap: 1rem; }
+
+    /* LOGO ESQUERDA (GLOBO + TEXTO) */
+    .logo-unified { position: relative; width: 200px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .logo-globe-img { position: absolute; width: 70px; height: 70px; z-index: 1; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 26, 26, 0.3)); transition: all 0.3s ease; object-fit: contain; }
+    .logo-text-img { position: absolute; z-index: 2; width: 140px; height: auto; filter: brightness(1.1) contrast(1.2); transition: all 0.3s ease; object-fit: contain; }
+    .logo-unified:hover .logo-globe-img { filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4)); transform: scale(1.05); }
+    .logo-unified:hover .logo-text-img { filter: brightness(1.4) contrast(1.3); }
+
+    /* LOGO 3D CENTRALIZADA */
+    .logo-3d-container { flex-shrink: 0; width: 80px; height: 80px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
+    model-viewer { width: 100%; height: 100%; background-color: transparent; }
+
+    /* NAVEGAÇÃO */
+    .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; font-family: monospace; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.7); padding: 0.6rem 1rem; border: 1px solid #444; border-left: 2px solid #ff3b3b; }
+    .nav-item { cursor: pointer; color: #cdcdcd; transition: all 0.2s; position: relative; padding: 0.2rem 0; }
+    .nav-item:hover { color: #ff4d4d; text-shadow: 0 0 8px rgba(255,77,77,0.6); }
+
+    /* FILTROS E BUSCA */
+    .filters-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; transition: all 0.3s ease; }
+    .filters-bar.hidden { display: none; }
+    .filter-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .filter-btn { background: #111; border: 1px solid #888; color: #ccc; font-family: monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 0.4rem 0.8rem; cursor: pointer; transition: 0.2s; }
+    .filter-btn:hover, .filter-btn.active { border-color: #ff3b3b; color: #ff3b3b; }
+    .search-box { display: flex; gap: 0.5rem; align-items: center; background: #111; border: 1px solid #888; padding: 0.2rem 0.5rem; }
+    .search-box input { background: transparent; border: none; color: #eee; font-family: monospace; font-size: 0.75rem; outline: none; width: 180px; }
+    .search-box button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.8rem; }
+
+    /* PRODUCT GRID */
+    .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 1rem; }
+    .product-cell { background: rgba(10,10,10,0.85); border: 1px solid #888; padding: 1rem; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; overflow: hidden; cursor: pointer; }
+    .product-cell::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #ff3b3b, transparent); opacity: 0; transition: opacity 0.3s; }
+    .product-cell:hover { border-color: #ff5e5e; box-shadow: 0 0 15px rgba(255,60,60,0.2), 0 4px 20px rgba(0,0,0,0.9); transform: translateY(-2px); }
+    .product-cell:hover::before { opacity: 1; }
+    
+    /* IMAGEM DO PRODUTO (sem zoom extra no hover, sem badge) */
+    .product-img { 
+      width: 100%; 
+      aspect-ratio: 4 / 3;
+      object-fit: contain; 
+      background: transparent; 
+      border: 1px solid #333; 
+      filter: grayscale(30%) contrast(1.1); 
+      transition: all 0.3s; 
+    }
+    .product-cell:hover .product-img { filter: grayscale(0%) contrast(1.2); border-color: #555; }
+    
+    .product-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #f0f0f0; border-left: 3px solid #ff3b3b; padding-left: 0.75rem; line-height: 1.3; }
+    .product-price { font-size: 1.3rem; font-weight: 700; background: linear-gradient(145deg, #ff4d4d, #ff0000, #b30000); background-clip: text; -webkit-background-clip: text; color: transparent; letter-spacing: 1px; font-family: monospace; text-shadow: 0 0 20px rgba(255,0,0,0.3); }
+    .product-price::before { content: '>'; color: #ff3b3b; margin-right: 0.5rem; font-size: 1rem; }
+    .acquire-btn { background: #0a0a0a; border: 1px solid #666; color: #e0e0e0; font-family: monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; padding: 0.8rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; text-align: center; margin-top: auto; }
+    .acquire-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
+    .acquire-btn:hover::before { left: 100%; }
+    .acquire-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
+
+    /* MODAL DE VISUALIZAÇÃO (mantido) */
+    .specs-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
+    .specs-modal-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 1.8rem; max-width: 900px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); position: relative; }
+    .specs-modal-content h3 { color: #ff3b3b; margin-bottom: 1.2rem; font-size: 1.3rem; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+    .specs-grid { display: flex; flex-direction: row; gap: 2rem; flex-wrap: wrap; }
+    .specs-details { flex: 1; min-width: 200px; font-size: 0.9rem; line-height: 1.5; border-right: 1px solid #333; padding-right: 1rem; }
+    .specs-gallery { flex: 1; min-width: 240px; text-align: center; }
+    .slide-img { width: 100%; max-height: 280px; object-fit: contain; border: 1px solid #555; margin-bottom: 0.5rem; background: #000; }
+    .slide-controls { display: flex; justify-content: center; gap: 1rem; align-items: center; margin-top: 0.3rem; }
+    .slide-btn { background: #222; border: 1px solid #888; color: white; padding: 0.2rem 0.6rem; cursor: pointer; font-family: monospace; font-size: 0.8rem; transition: 0.2s; }
+    .slide-btn:hover { border-color: #ff3b3b; color: #ff3b3b; }
+    .slide-counter { font-size: 0.7rem; color: #aaa; }
+    .related-products { margin-top: 1.5rem; border-top: 1px solid #333; padding-top: 1rem; }
+    .related-title { color: #ff3b3b; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 0.8rem; text-transform: uppercase; }
+    .related-grid { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+    .related-card { background: #111; border: 1px solid #555; padding: 0.4rem; width: calc(50% - 0.4rem); min-width: 140px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 0.6rem; }
+    .related-card:hover { border-color: #ff3b3b; background: #1a1a1a; }
+    .related-card img { width: 45px; height: 45px; object-fit: contain; border: 1px solid #444; background: transparent; }
+    .related-card div { font-size: 0.7rem; line-height: 1.3; }
+    .related-card div strong { display: block; color: #ff3b3b; }
+    .modal-buttons { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.8rem; }
+    .modal-btn { flex: 1; background: #0a0a0a; border: 1px solid #666; color: #e0e0e0; font-family: monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; padding: 0.7rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; text-align: center; }
+    .modal-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
+    .modal-btn:hover::before { left: 100%; }
+    .modal-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
+    .buy-btn { border-color: #00ff41; color: #00ff41; }
+
+    /* MODAL DE EDIÇÃO (ADMIN) */
+    .edit-modal .specs-details textarea { width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; font-family: monospace; padding: 0.5rem; font-size: 0.9rem; resize: vertical; }
+    .gallery-controls { display: flex; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .gallery-btn { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
+    .gallery-btn:hover { border-color: #ff3b3b; color: #ff3b3b; }
+    .image-list { display: flex; flex-direction: column; gap: 0.3rem; max-height: 200px; overflow-y: auto; margin-top: 0.5rem; }
+    .image-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 0.2rem 0.5rem; border: 1px solid #444; }
+    .image-item span { font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .image-item button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.8rem; }
+
+    /* CARRINHO MODAL */
+    .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
+    .cart-modal-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 2rem; max-width: 600px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); }
+    .cart-modal-content h3 { color: #ff3b3b; margin-bottom: 1.5rem; font-size: 1.4rem; text-align: center; }
+    .cart-items { max-height: 400px; overflow-y: auto; margin-bottom: 1rem; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 0.8rem 0; }
+    .cart-item-info { flex: 2; }
+    .cart-item-title { font-size: 0.9rem; }
+    .cart-item-price { color: #ff3b3b; font-size: 0.8rem; }
+    .cart-item-qty { display: flex; gap: 0.5rem; align-items: center; }
+    .cart-item-qty button { background: #222; border: 1px solid #888; color: white; width: 24px; cursor: pointer; }
+    .cart-item-remove { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 1.2rem; margin-left: 1rem; }
+    .cart-total { text-align: right; font-size: 1.2rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ff3b3b; }
+    .cart-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+    .cart-buttons button { flex: 1; background: #222; border: 1px solid #888; color: white; padding: 0.5rem; cursor: pointer; }
+
+    /* MODO EDITOR - PAINEL FLUTUANTE */
+    .editor-panel { position: fixed; bottom: 20px; right: 20px; background: #111; border: 2px solid #ff3b3b; padding: 0.8rem 1rem; z-index: 2000; display: none; flex-direction: column; gap: 0.5rem; font-family: monospace; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+    .editor-panel button { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; }
+    
+    /* EDIÇÃO INLINE: título e preço com outline e cursor pointer */
+    .product-cell.editor-mode .product-title,
+    .product-cell.editor-mode .product-price {
+      cursor: pointer;
+      outline: 1px dashed #ff3b3b;
+      transition: outline 0.1s;
+    }
+    .product-cell.editor-mode .product-title:hover,
+    .product-cell.editor-mode .product-price:hover {
+      outline: 2px solid #ff3b3b;
+    }
+    .delete-card-btn { position: absolute; top: 5px; right: 5px; background: #000; border: 1px solid #ff3b3b; color: #ff3b3b; font-size: 0.6rem; padding: 2px 5px; cursor: pointer; z-index: 10; display: none; }
+    .product-cell.editor-mode .delete-card-btn { display: block; }
+    .add-card-btn { margin: 20px auto 0; display: none; background: #222; border: 1px solid #ff3b3b; color: #ff3b3b; padding: 0.5rem 1rem; cursor: pointer; width: fit-content; }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #111; border: 1px solid #ff3b3b; color: #ff3b3b; padding: 0.5rem 1rem; font-family: monospace; font-size: 0.8rem; z-index: 3000; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
+
+    /* FOOTER */
+    .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
+    .blink { animation: blink 2s infinite; }
+    @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } .logo-3d-container { width: 60px; height: 60px; } }
+    @media (max-width: 640px) { .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .header-row { flex-direction: column; align-items: flex-start; } .nav-links { width: 100%; justify-content: space-between; } .logo-unified { width: 160px; height: 50px; } .logo-globe-img { width: 50px; height: 50px; } .logo-text-img { width: 110px; } .logo-3d-container { width: 55px; height: 55px; order: 2; margin: 0 auto; } .header-row { flex-direction: row; flex-wrap: wrap; } .logo-unified { order: 1; } .logo-3d-container { order: 2; } .nav-links { order: 3; width: 100%; justify-content: center; } .filters-bar { flex-direction: column; align-items: stretch; } .search-box input { width: 100%; } .specs-grid { flex-direction: column; } .related-card { width: 100%; } }
+  </style>
+</head>
+<body>
+
+  <div class="urban-bg"></div>
+  <div class="scanlines"></div>
+
+  <main class="main-content">
+    <div class="header-row">
+      <div class="logo-unified" id="mainLogo">
+        <img src="images/globo.png" alt="Globo" class="logo-globe-img">
+        <img src="images/vetin cyber.png" alt="VETIN CYBER" class="logo-text-img">
+      </div>
+      <div class="logo-3d-container">
+        <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate auto-rotate-delay="0" rotation-per-second="30deg" camera-controls disable-zoom camera-orbit="0deg 90deg auto" interaction-prompt="none" style="width:100%; height:100%;"></model-viewer>
+      </div>
+      <div class="nav-links">
+        <div class="nav-item" onclick="toggleCartModal()">CARRINHO (<span id="cartCount">0</span>)</div>
+        <div class="nav-item" onclick="finalizarCompra()">FINALIZAR</div>
+        <div class="nav-item" id="buscarBtn">BUSCAR</div>
+      </div>
+    </div>
+
+    <div class="filters-bar" id="filtersBar">
+      <div class="filter-buttons" id="filterButtons">
+        <button class="filter-btn active" data-cat="todos">TODOS</button>
+        <button class="filter-btn" data-cat="camera">CÂMERAS</button>
+        <button class="filter-btn" data-cat="acessorio">ACESSÓRIOS</button>
+      </div>
+      <div class="search-box" id="searchBox">
+        <input type="text" id="searchInput" placeholder="BUSCAR PRODUTO...">
+        <button id="searchBtn">🔍</button>
+      </div>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+    <button id="addCardBtn" class="add-card-btn">+ ADICIONAR CARD</button>
+
+    <!-- MODAL DE VISUALIZAÇÃO -->
+    <div id="viewModal" class="specs-modal">
+      <div class="specs-modal-content">
+        <h3 id="viewTitle">Especificações</h3>
+        <div class="specs-grid">
+          <div class="specs-details" id="viewSpecs"></div>
+          <div class="specs-gallery">
+            <img id="viewSlideImg" class="slide-img" src="">
+            <div class="slide-controls">
+              <button id="viewPrevBtn" class="slide-btn">◀</button>
+              <span id="viewCounter" class="slide-counter">1 / 1</span>
+              <button id="viewNextBtn" class="slide-btn">▶</button>
+            </div>
+          </div>
+        </div>
+        <div id="relatedProductsContainer" class="related-products" style="display:none;">
+          <div class="related-title">⟡ QUEM VIU ESTE TAMBÉM VIU ⟡</div>
+          <div class="related-grid" id="relatedGrid"></div>
+        </div>
+        <div class="modal-buttons">
+          <button id="viewBuyBtn" class="modal-btn buy-btn">🛒 COMPRAR</button>
+          <button id="viewCloseBtn" class="modal-btn">FECHAR</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE EDIÇÃO (ADMIN) -->
+    <div id="editModal" class="specs-modal edit-modal">
+      <div class="specs-modal-content">
+        <h3 id="editTitle">Editar Produto</h3>
+        <div class="specs-grid">
+          <div class="specs-details">
+            <label style="color:#ff3b3b;">Categoria:</label>
+            <select id="editCategoria" style="background:#111; border:1px solid #ff3b3b; color:#eee; margin-bottom:1rem; width:100%;">
+              <option value="camera">Câmera</option>
+              <option value="acessorio">Acessório</option>
+            </select>
+            <label style="color:#ff3b3b;">Especificações (HTML):</label>
+            <textarea id="editSpecsText" rows="6"></textarea>
+          </div>
+          <div class="specs-gallery">
+            <img id="editMainImage" class="slide-img" src="" style="cursor:pointer;">
+            <div class="gallery-controls">
+              <button id="uploadMainImageBtn" class="gallery-btn">📷 TROCAR FOTO PRINCIPAL</button>
+            </div>
+            <div style="margin-top:1rem;">
+              <label style="color:#ff3b3b;">Galeria de imagens:</label>
+              <div id="imageListContainer" class="image-list"></div>
+              <div class="gallery-controls"><button id="addImageBtn" class="gallery-btn">+ ADICIONAR IMAGEM</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button id="editSaveBtn" class="modal-btn">💾 SALVAR</button>
+          <button id="editCloseBtn" class="modal-btn">FECHAR</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DO CARRINHO -->
+    <div id="cartModal" class="cart-modal">
+      <div class="cart-modal-content">
+        <h3>🛒 SEU CARRINHO</h3>
+        <div id="cartItemsList" class="cart-items"></div>
+        <div id="cartTotal" class="cart-total">TOTAL: R$0,00</div>
+        <div class="cart-buttons">
+          <button id="closeCartBtn">FECHAR</button>
+          <button id="checkoutBtn">FINALIZAR PEDIDO</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="industrial-footer">
+      <span class="blink">●</span> VETIN CYBER™<span class="blink">●</span>
+    </div>
+  </main>
+
+  <div id="editorPanel" class="editor-panel">
+    <button id="exitEditorBtn">SAIR DO MODO EDITOR</button>
+    <button id="toggleFiltersBtn">🔘 OCULTAR FILTROS</button>
+    <button id="exportProductsBtn">📁 EXPORTAR PRODUTOS</button>
+    <button id="importProductsBtn">📂 IMPORTAR PRODUTOS</button>
+    <input type="file" id="importFile" accept=".json" style="display:none;">
+    <span style="font-size:0.7rem;">Clique no título/preço para editar</span>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ======================== DADOS INICIAIS ========================
+    let productsData = [
+      { title: "SONY CYBER-SHOT 16.1MP", price: "R$450,00", imgMain: "https://i.imgur.com/placeholder.png", specs: "<strong>Marca:</strong> Sony<br><strong>Modelo:</strong> Cyber-shot DSC-WX500<br><strong>Megapixels:</strong> 16.1 MP<br><strong>Zoom óptico:</strong> 5x<br><strong>Tela:</strong> 2.7\"", images: [], categoria: "camera" },
+      { title: "CANON POWERSHOT SD1000", price: "R$380,00", imgMain: "https://i.imgur.com/placeholder.png", specs: "<strong>Resolução:</strong> 7.1MP<br><strong>Zoom:</strong> 3x", images: [], categoria: "camera" },
+      { title: "CRTZ D-SRT JACKET [GREEN]", price: "R$120,00", imgMain: "http://static.photos/technology/640x360/101", specs: "<strong>Material:</strong> Poliéster reciclado", images: [], categoria: "acessorio" }
+    ];
+
+    if (localStorage.getItem('vetin_products')) productsData = JSON.parse(localStorage.getItem('vetin_products'));
+
+    // ======================== VARIÁVEIS GLOBAIS ========================
+    const productGrid = document.getElementById('productGrid');
+    let editorMode = false;
+    let currentEditIndex = null;
+    let currentFilter = "todos";
+    let currentSearch = "";
+    let cart = JSON.parse(localStorage.getItem('vetin_cart')) || [];
+
+    // ======================== FUNÇÕES AUXILIARES ========================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+    }
+
+    function addToCart(product, quantidade = 1) {
+      const existing = cart.find(item => item.title === product.title);
+      if (existing) {
+        existing.quantidade += quantidade;
+      } else {
+        cart.push({ ...product, quantidade, id: Date.now() });
+      }
+      localStorage.setItem('vetin_cart', JSON.stringify(cart));
+      updateCartCount();
+      showToast(`📷 ${product.title} adicionado ao carrinho`);
+    }
+
+    function updateCartCount() {
+      const totalItems = cart.reduce((sum, item) => sum + item.quantidade, 0);
+      document.getElementById('cartCount').innerText = totalItems;
+    }
+
+    function renderCartModal() {
+      const container = document.getElementById('cartItemsList');
+      const totalSpan = document.getElementById('cartTotal');
+      if (!container) return;
+      if (cart.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:2rem;">CARRINHO VAZIO</div>';
+        totalSpan.innerHTML = 'TOTAL: R$0,00';
+        return;
+      }
+      let total = 0;
+      container.innerHTML = '';
+      cart.forEach((item, idx) => {
+        const priceNum = parseFloat(item.price.replace('R$', '').replace(',', '.'));
+        const subtotal = priceNum * item.quantidade;
+        total += subtotal;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.title}</div>
+            <div class="cart-item-price">${item.price}</div>
+          </div>
+          <div class="cart-item-qty">
+            <button data-idx="${idx}" data-delta="-1">-</button>
+            <span>${item.quantidade}</span>
+            <button data-idx="${idx}" data-delta="1">+</button>
+          </div>
+          <button class="cart-item-remove" data-idx="${idx}">🗑</button>
+        `;
+        container.appendChild(div);
+      });
+      totalSpan.innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.', ',')}`;
+      document.querySelectorAll('.cart-item-qty button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(btn.getAttribute('data-idx'));
+          const delta = parseInt(btn.getAttribute('data-delta'));
+          if (!isNaN(idx) && !isNaN(delta)) {
+            cart[idx].quantidade += delta;
+            if (cart[idx].quantidade <= 0) cart.splice(idx, 1);
+            localStorage.setItem('vetin_cart', JSON.stringify(cart));
+            renderCartModal();
+            updateCartCount();
+          }
+        });
+      });
+      document.querySelectorAll('.cart-item-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(btn.getAttribute('data-idx'));
+          cart.splice(idx, 1);
+          localStorage.setItem('vetin_cart', JSON.stringify(cart));
+          renderCartModal();
+          updateCartCount();
+        });
+      });
+    }
+
+    function toggleCartModal() {
+      renderCartModal();
+      document.getElementById('cartModal').style.display = 'flex';
+    }
+    document.getElementById('closeCartBtn').addEventListener('click', () => document.getElementById('cartModal').style.display = 'none');
+    document.getElementById('checkoutBtn').addEventListener('click', finalizarCompra);
+
+    function finalizarCompra() {
+      if (cart.length === 0) { showToast("Carrinho vazio"); return; }
+      const itens = cart.map(i => `${i.title} x${i.quantidade} (${i.price})`).join('\n');
+      const total = cart.reduce((sum, i) => sum + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0).toFixed(2);
+      const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nTOTAL: R$ ${total}\n\nObrigado!`;
+      window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // ======================== FILTROS E BUSCA ========================
+    const filtersBar = document.getElementById('filtersBar');
+    let filtersVisible = true;
+    const savedFiltersVisible = localStorage.getItem('vetin_filters_visible');
+    if (savedFiltersVisible !== null) filtersVisible = savedFiltersVisible === 'true';
+    function setFiltersVisibility(visible) {
+      filtersVisible = visible;
+      if (visible) {
+        filtersBar.classList.remove('hidden');
+        if (document.getElementById('toggleFiltersBtn')) document.getElementById('toggleFiltersBtn').innerHTML = '🔘 OCULTAR FILTROS';
+      } else {
+        filtersBar.classList.add('hidden');
+        if (document.getElementById('toggleFiltersBtn')) document.getElementById('toggleFiltersBtn').innerHTML = '🔘 MOSTRAR FILTROS';
+      }
+      localStorage.setItem('vetin_filters_visible', filtersVisible);
+    }
+    function toggleFiltersVisibility() { setFiltersVisibility(!filtersVisible); }
+    setFiltersVisibility(filtersVisible);
+
+    function applyFilters() {
+      const filtered = productsData.filter(prod => {
+        if (currentFilter !== "todos" && prod.categoria !== currentFilter) return false;
+        if (currentSearch) {
+          const searchLower = currentSearch.toLowerCase();
+          return prod.title.toLowerCase().includes(searchLower) || prod.specs.toLowerCase().includes(searchLower);
+        }
+        return true;
+      });
+      renderProducts(filtered);
+    }
+
+    function renderProducts(productsArray) {
+      productGrid.innerHTML = '';
+      productsArray.forEach((prod, idx) => {
+        const cell = document.createElement('div');
+        cell.className = 'product-cell';
+        if (editorMode) cell.classList.add('editor-mode');
+        if (prod.categoria === 'camera') cell.classList.add('camera-hover'); // apenas para referência, sem efeito extra
+        cell.setAttribute('data-idx', idx);
+        cell.innerHTML = `
+          <div class="delete-card-btn" data-idx="${idx}">🗑</div>
+          <img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${idx}">
+          <div class="product-title" data-field="title" data-idx="${idx}">${prod.title}</div>
+          <div class="product-price" data-field="price" data-idx="${idx}">${prod.price}</div>
+          <button class="acquire-btn">[ADQUIRIR ITEM]</button>
+        `;
+        productGrid.appendChild(cell);
+      });
+      attachEventsToCards(productsArray);
+    }
+
+    function attachEventsToCards(productsArray) {
+      document.querySelectorAll('.product-cell').forEach((cell, i) => {
+        const idx = parseInt(cell.getAttribute('data-idx'));
+        const prod = productsArray[idx];
+        
+        // Clique no card: abre modal de especificações (apenas se NÃO for editorMode ou se o alvo não for título/preço)
+        cell.addEventListener('click', (e) => {
+          // Se clicou no botão adquirir ou deletar, não faz nada
+          if (e.target.classList.contains('acquire-btn') || e.target.classList.contains('delete-card-btn')) return;
+          // No modo editor: se clicou em título, preço ou imagem, não abre modal (pois eles têm seus próprios handlers)
+          if (editorMode) {
+            if (e.target.classList.contains('product-title') || 
+                e.target.classList.contains('product-price') || 
+                e.target.classList.contains('product-img')) return;
+          }
+          // Abre modal de visualização/edição
+          if (editorMode) {
+            e.stopPropagation();
+            abrirModalEdicao(idx, productsArray);
+          } else {
+            abrirModalVisualizacao(prod, productsArray);
+          }
+        });
+        
+        // Botão adquirir
+        const btn = cell.querySelector('.acquire-btn');
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          addToCart(prod);
+        });
+        
+        // Botão deletar (modo editor)
+        const delBtn = cell.querySelector('.delete-card-btn');
+        if (delBtn) delBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deletarCard(idx, productsArray);
+        });
+      });
+      
+      // Eventos de edição inline (apenas no modo editor)
+      if (editorMode) {
+        document.querySelectorAll('.product-title[data-field="title"]').forEach(el => {
+          el.removeEventListener('click', handleTitleClick);
+          el.addEventListener('click', handleTitleClick);
+        });
+        document.querySelectorAll('.product-price[data-field="price"]').forEach(el => {
+          el.removeEventListener('click', handlePriceClick);
+          el.addEventListener('click', handlePriceClick);
+        });
+        document.querySelectorAll('.product-img[data-field="imgMain"]').forEach(el => {
+          el.removeEventListener('click', handleImageClick);
+          el.addEventListener('click', handleImageClick);
+        });
+      }
+    }
+
+    // Handlers de edição inline
+    function handleTitleClick(e) {
+      e.stopPropagation();
+      const idx = parseInt(e.target.getAttribute('data-idx'));
+      const novo = prompt("Editar título:", productsData[idx].title);
+      if (novo !== null) productsData[idx].title = novo;
+      salvarERender();
+    }
+    function handlePriceClick(e) {
+      e.stopPropagation();
+      const idx = parseInt(e.target.getAttribute('data-idx'));
+      const novo = prompt("Editar preço (ex: R$120,00):", productsData[idx].price);
+      if (novo !== null) productsData[idx].price = novo;
+      salvarERender();
+    }
+    function handleImageClick(e) {
+      e.stopPropagation();
+      const idx = parseInt(e.target.getAttribute('data-idx'));
+      uploadImageFromDevice((base64) => {
+        productsData[idx].imgMain = base64;
+        if (productsData[idx].images && productsData[idx].images.length > 0) productsData[idx].images[0] = base64;
+        else productsData[idx].images = [base64];
+        salvarERender();
+      });
+    }
+
+    // ======================== MODAL DE VISUALIZAÇÃO ========================
+    let currentViewImages = [], currentViewIndex = 0;
+    const viewModal = document.getElementById('viewModal');
+    const viewTitle = document.getElementById('viewTitle');
+    const viewSpecs = document.getElementById('viewSpecs');
+    const viewSlideImg = document.getElementById('viewSlideImg');
+    const viewCounter = document.getElementById('viewCounter');
+    const viewPrevBtn = document.getElementById('viewPrevBtn');
+    const viewNextBtn = document.getElementById('viewNextBtn');
+    const viewBuyBtn = document.getElementById('viewBuyBtn');
+    const viewCloseBtn = document.getElementById('viewCloseBtn');
+    const relatedGrid = document.getElementById('relatedGrid');
+    const relatedContainer = document.getElementById('relatedProductsContainer');
+
+    function updateViewSlide() {
+      if (currentViewImages.length) {
+        viewSlideImg.src = currentViewImages[currentViewIndex];
+        viewCounter.innerText = `${currentViewIndex+1} / ${currentViewImages.length}`;
+      } else { viewSlideImg.src = ''; viewCounter.innerText = '0 / 0'; }
+    }
+    viewPrevBtn.onclick = () => { if (currentViewImages.length) { currentViewIndex = (currentViewIndex-1+currentViewImages.length)%currentViewImages.length; updateViewSlide(); } };
+    viewNextBtn.onclick = () => { if (currentViewImages.length) { currentViewIndex = (currentViewIndex+1)%currentViewImages.length; updateViewSlide(); } };
+    viewCloseBtn.onclick = () => viewModal.style.display = 'none';
+    viewModal.addEventListener('click', (e) => { if (e.target === viewModal) viewModal.style.display = 'none'; });
+
+    function abrirModalVisualizacao(prod, allProds) {
+      viewTitle.innerText = prod.title;
+      viewSpecs.innerHTML = prod.specs;
+      currentViewImages = prod.images || [prod.imgMain];
+      currentViewIndex = 0;
+      updateViewSlide();
+      const relacionados = allProds.filter(p => p.categoria === prod.categoria && p.title !== prod.title).slice(0, 2);
+      if (relacionados.length) {
+        relatedContainer.style.display = 'block';
+        relatedGrid.innerHTML = '';
+        relacionados.forEach(rel => {
+          const card = document.createElement('div');
+          card.className = 'related-card';
+          card.innerHTML = `<img src="${rel.imgMain}"><div><strong>${rel.title}</strong><span style="color:#ff3b3b;"> ${rel.price}</span></div>`;
+          card.onclick = () => abrirModalVisualizacao(rel, allProds);
+          relatedGrid.appendChild(card);
+        });
+      } else {
+        relatedContainer.style.display = 'none';
+      }
+      viewBuyBtn.onclick = () => { addToCart(prod); viewModal.style.display = 'none'; };
+      viewModal.style.display = 'flex';
+    }
+
+    // ======================== MODAL DE EDIÇÃO (ADMIN) ========================
+    function abrirModalEdicao(idx, allProds) {
+      currentEditIndex = idx;
+      const prod = allProds[idx];
+      document.getElementById('editTitle').innerText = `Editar: ${prod.title}`;
+      document.getElementById('editCategoria').value = prod.categoria || 'acessorio';
+      document.getElementById('editSpecsText').value = prod.specs;
+      document.getElementById('editMainImage').src = prod.imgMain;
+      window.editImagesList = [...(prod.images || [])];
+      renderImageList();
+      document.getElementById('editModal').style.display = 'flex';
+    }
+    function renderImageList() {
+      const container = document.getElementById('imageListContainer');
+      container.innerHTML = '';
+      window.editImagesList.forEach((img, i) => {
+        const div = document.createElement('div'); div.className = 'image-item';
+        div.innerHTML = `<span>${img.length>40?img.substring(0,40)+'...':img}</span><button class="remove-img-btn" data-idx="${i}">🗑</button>`;
+        container.appendChild(div);
+      });
+      document.querySelectorAll('.remove-img-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(btn.getAttribute('data-idx'));
+          window.editImagesList.splice(idx, 1);
+          renderImageList();
+        });
+      });
+    }
+    document.getElementById('uploadMainImageBtn').onclick = () => {
+      uploadImageFromDevice((base64) => {
+        document.getElementById('editMainImage').src = base64;
+        if (window.editImagesList.length) window.editImagesList[0] = base64;
+        else window.editImagesList.push(base64);
+        renderImageList();
+      });
+    };
+    document.getElementById('addImageBtn').onclick = () => {
+      uploadImageFromDevice((base64) => { window.editImagesList.push(base64); renderImageList(); });
+    };
+    document.getElementById('editSaveBtn').onclick = () => {
+      if (currentEditIndex !== null) {
+        productsData[currentEditIndex].categoria = document.getElementById('editCategoria').value;
+        productsData[currentEditIndex].specs = document.getElementById('editSpecsText').value;
+        productsData[currentEditIndex].imgMain = document.getElementById('editMainImage').src;
+        productsData[currentEditIndex].images = [...window.editImagesList];
+        localStorage.setItem('vetin_products', JSON.stringify(productsData));
+        applyFilters();
+        document.getElementById('editModal').style.display = 'none';
+      }
+    };
+    document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
+    document.getElementById('editModal').addEventListener('click', (e) => { if (e.target === document.getElementById('editModal')) document.getElementById('editModal').style.display = 'none'; });
+
+    function deletarCard(idx, allProds) {
+      if (confirm("Remover?")) {
+        const realIndex = productsData.findIndex(p => p.title === allProds[idx].title);
+        if (realIndex !== -1) productsData.splice(realIndex, 1);
+        localStorage.setItem('vetin_products', JSON.stringify(productsData));
+        applyFilters();
+      }
+    }
+    function adicionarCard() {
+      productsData.push({ title: "NOVO PRODUTO", price: "R$99,00", imgMain: "http://static.photos/placeholder.jpg", specs: "Especificações...", images: [], categoria: "acessorio" });
+      localStorage.setItem('vetin_products', JSON.stringify(productsData));
+      applyFilters();
+      setTimeout(() => { abrirModalEdicao(productsData.length-1, productsData); }, 100);
+    }
+    function uploadImageFromDevice(cb) {
+      const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+      input.onchange = (e) => { const file = e.target.files[0]; if(file){ const fr = new FileReader(); fr.onload = (ev) => cb(ev.target.result); fr.readAsDataURL(file); } };
+      input.click();
+    }
+    function exportProducts() {
+      const dataStr = JSON.stringify(productsData, null, 2);
+      const blob = new Blob([dataStr], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = "vetin_products_backup.json"; a.click(); URL.revokeObjectURL(url);
+    }
+    function importProducts(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) { productsData = imported; localStorage.setItem('vetin_products', JSON.stringify(productsData)); applyFilters(); showToast("Produtos importados com sucesso!"); }
+          else showToast("Arquivo inválido");
+        } catch(err) { showToast("Erro ao importar"); }
+      };
+      reader.readAsText(file);
+    }
+    document.getElementById('exportProductsBtn').onclick = exportProducts;
+    document.getElementById('importProductsBtn').onclick = () => document.getElementById('importFile').click();
+    document.getElementById('importFile').onchange = (e) => { if(e.target.files[0]) importProducts(e.target.files[0]); };
+
+    // ======================== MODO EDITOR (SENHA) ========================
+    let clickCount=0, clickTimeout;
+    const mainLogo = document.getElementById('mainLogo');
+    const editorPanel = document.getElementById('editorPanel');
+    const addCardBtn = document.getElementById('addCardBtn');
+    const toggleFiltersBtn = document.getElementById('toggleFiltersBtn');
+    
+    function entrarModoEditor() { 
+      const senha = prompt("Senha admin:"); 
+      if(senha==="admin123"){ 
+        editorMode=true; 
+        editorPanel.style.display='flex'; 
+        addCardBtn.style.display='block'; 
+        applyFilters(); 
+        toggleFiltersBtn.addEventListener('click', toggleFiltersVisibility);
+      } else alert("Senha incorreta!"); 
+    }
+    function sairModoEditor(){ 
+      editorMode=false; 
+      editorPanel.style.display='none'; 
+      addCardBtn.style.display='none'; 
+      applyFilters();
+      toggleFiltersBtn.removeEventListener('click', toggleFiltersVisibility);
+    }
+    mainLogo.addEventListener('click', () => { 
+      clickCount++; 
+      clearTimeout(clickTimeout); 
+      clickTimeout = setTimeout(()=>clickCount=0,800); 
+      if(clickCount===5){ entrarModoEditor(); clickCount=0; } 
+    });
+    document.getElementById('exitEditorBtn').addEventListener('click', sairModoEditor);
+    addCardBtn.addEventListener('click', adicionarCard);
+
+    // ======================== BUSCA ========================
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    function performSearch() { currentSearch = searchInput.value; applyFilters(); }
+    searchBtn.onclick = performSearch;
+    searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') performSearch(); });
+    document.getElementById('buscarBtn').addEventListener('click', () => { searchInput.focus(); });
+
+    // ======================== FILTROS ========================
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-cat');
+        applyFilters();
+      });
+    });
+
+    // ======================== INICIALIZAÇÃO ========================
+    applyFilters();
+    updateCartCount();
+    const logo3d = document.getElementById('logo3d');
+    logo3d.addEventListener('camera-change', () => { setTimeout(() => { logo3d.cameraOrbit = '0deg 90deg auto'; }, 10); });
+    console.log('%c VETIN CYBER™ ', 'background:#000; color:#ff3b3b; font-size:20px;');
+  </script>
+</body>
+</html>
