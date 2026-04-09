@@ -6,6 +6,8 @@
   <title>VETIN CYBER™</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     /* RESET & BASE */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
@@ -52,16 +54,7 @@
     .product-cell:hover { border-color: #ff5e5e; box-shadow: 0 0 15px rgba(255,60,60,0.2), 0 4px 20px rgba(0,0,0,0.9); transform: translateY(-2px); }
     .product-cell:hover::before { opacity: 1; }
     
-    /* IMAGEM DO PRODUTO (sem zoom extra no hover, sem badge) */
-    .product-img { 
-      width: 100%; 
-      aspect-ratio: 4 / 3;
-      object-fit: contain; 
-      background: transparent; 
-      border: 1px solid #333; 
-      filter: grayscale(30%) contrast(1.1); 
-      transition: all 0.3s; 
-    }
+    .product-img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: transparent; border: 1px solid #333; filter: grayscale(30%) contrast(1.1); transition: all 0.3s; }
     .product-cell:hover .product-img { filter: grayscale(0%) contrast(1.2); border-color: #555; }
     
     .product-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #f0f0f0; border-left: 3px solid #ff3b3b; padding-left: 0.75rem; line-height: 1.3; }
@@ -72,7 +65,7 @@
     .acquire-btn:hover::before { left: 100%; }
     .acquire-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
 
-    /* MODAL DE VISUALIZAÇÃO (mantido) */
+    /* MODAIS */
     .specs-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
     .specs-modal-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 1.8rem; max-width: 900px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); position: relative; }
     .specs-modal-content h3 { color: #ff3b3b; margin-bottom: 1.2rem; font-size: 1.3rem; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
@@ -99,7 +92,7 @@
     .modal-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
     .buy-btn { border-color: #00ff41; color: #00ff41; }
 
-    /* MODAL DE EDIÇÃO (ADMIN) */
+    /* EDIÇÃO */
     .edit-modal .specs-details textarea { width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; font-family: monospace; padding: 0.5rem; font-size: 0.9rem; resize: vertical; }
     .gallery-controls { display: flex; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
     .gallery-btn { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
@@ -109,7 +102,7 @@
     .image-item span { font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
     .image-item button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.8rem; }
 
-    /* CARRINHO MODAL */
+    /* CARRINHO */
     .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
     .cart-modal-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 2rem; max-width: 600px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); }
     .cart-modal-content h3 { color: #ff3b3b; margin-bottom: 1.5rem; font-size: 1.4rem; text-align: center; }
@@ -125,34 +118,24 @@
     .cart-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
     .cart-buttons button { flex: 1; background: #222; border: 1px solid #888; color: white; padding: 0.5rem; cursor: pointer; }
 
-    /* MODO EDITOR - PAINEL FLUTUANTE */
+    /* PAINEL EDITOR */
     .editor-panel { position: fixed; bottom: 20px; right: 20px; background: #111; border: 2px solid #ff3b3b; padding: 0.8rem 1rem; z-index: 2000; display: none; flex-direction: column; gap: 0.5rem; font-family: monospace; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
     .editor-panel button { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; }
     
-    /* EDIÇÃO INLINE: título e preço com outline e cursor pointer */
     .product-cell.editor-mode .product-title,
-    .product-cell.editor-mode .product-price {
-      cursor: pointer;
-      outline: 1px dashed #ff3b3b;
-      transition: outline 0.1s;
-    }
+    .product-cell.editor-mode .product-price { cursor: pointer; outline: 1px dashed #ff3b3b; transition: outline 0.1s; }
     .product-cell.editor-mode .product-title:hover,
-    .product-cell.editor-mode .product-price:hover {
-      outline: 2px solid #ff3b3b;
-    }
+    .product-cell.editor-mode .product-price:hover { outline: 2px solid #ff3b3b; }
     .delete-card-btn { position: absolute; top: 5px; right: 5px; background: #000; border: 1px solid #ff3b3b; color: #ff3b3b; font-size: 0.6rem; padding: 2px 5px; cursor: pointer; z-index: 10; display: none; }
     .product-cell.editor-mode .delete-card-btn { display: block; }
     .add-card-btn { margin: 20px auto 0; display: none; background: #222; border: 1px solid #ff3b3b; color: #ff3b3b; padding: 0.5rem 1rem; cursor: pointer; width: fit-content; }
 
-    /* TOAST */
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #111; border: 1px solid #ff3b3b; color: #ff3b3b; padding: 0.5rem 1rem; font-family: monospace; font-size: 0.8rem; z-index: 3000; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
 
-    /* FOOTER */
     .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
 
-    /* RESPONSIVIDADE */
     @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } .logo-3d-container { width: 60px; height: 60px; } }
     @media (max-width: 640px) { .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .header-row { flex-direction: column; align-items: flex-start; } .nav-links { width: 100%; justify-content: space-between; } .logo-unified { width: 160px; height: 50px; } .logo-globe-img { width: 50px; height: 50px; } .logo-text-img { width: 110px; } .logo-3d-container { width: 55px; height: 55px; order: 2; margin: 0 auto; } .header-row { flex-direction: row; flex-wrap: wrap; } .logo-unified { order: 1; } .logo-3d-container { order: 2; } .nav-links { order: 3; width: 100%; justify-content: center; } .filters-bar { flex-direction: column; align-items: stretch; } .search-box input { width: 100%; } .specs-grid { flex-direction: column; } .related-card { width: 100%; } }
   </style>
@@ -282,22 +265,69 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    // ======================== DADOS INICIAIS ========================
-    let productsData = [
-      { title: "SONY CYBER-SHOT 16.1MP", price: "R$450,00", imgMain: "https://i.imgur.com/placeholder.png", specs: "<strong>Marca:</strong> Sony<br><strong>Modelo:</strong> Cyber-shot DSC-WX500<br><strong>Megapixels:</strong> 16.1 MP<br><strong>Zoom óptico:</strong> 5x<br><strong>Tela:</strong> 2.7\"", images: [], categoria: "camera" },
-      { title: "CANON POWERSHOT SD1000", price: "R$380,00", imgMain: "https://i.imgur.com/placeholder.png", specs: "<strong>Resolução:</strong> 7.1MP<br><strong>Zoom:</strong> 3x", images: [], categoria: "camera" },
-      { title: "CRTZ D-SRT JACKET [GREEN]", price: "R$120,00", imgMain: "http://static.photos/technology/640x360/101", specs: "<strong>Material:</strong> Poliéster reciclado", images: [], categoria: "acessorio" }
-    ];
-
-    if (localStorage.getItem('vetin_products')) productsData = JSON.parse(localStorage.getItem('vetin_products'));
+    // ======================== CONFIGURAÇÃO SUPABASE ========================
+    const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZW1nZGl6b3FmcmVneWlhbGlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTkzNjgsImV4cCI6MjA5MTI3NTM2OH0.zN11NTeroxNsd-SzEGJBsASa-tZ_DkDcmjmCNcIJTiY';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // ======================== VARIÁVEIS GLOBAIS ========================
+    let productsData = [];
     const productGrid = document.getElementById('productGrid');
     let editorMode = false;
     let currentEditIndex = null;
     let currentFilter = "todos";
     let currentSearch = "";
     let cart = JSON.parse(localStorage.getItem('vetin_cart')) || [];
+
+    // ======================== FUNÇÕES DE DADOS (SUPABASE) ========================
+    async function loadProducts() {
+      showToast("Carregando produtos...");
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('id', { ascending: true });
+      
+      if (error) {
+        console.error('Erro ao carregar:', error);
+        showToast("Erro ao carregar produtos.");
+        productsData = [];
+      } else {
+        productsData = data || [];
+        // Garantir que images seja array
+        productsData.forEach(p => { if (!p.images) p.images = []; });
+        showToast(`${productsData.length} produtos carregados.`);
+      }
+      applyFilters();
+    }
+
+    async function saveProduct(product) {
+      // Prepara objeto para upsert (se tiver id, atualiza; senão insere)
+      const { data, error } = await supabase
+        .from('products')
+        .upsert(product, { onConflict: 'id' })
+        .select();
+      
+      if (error) {
+        console.error('Erro ao salvar:', error);
+        showToast("Erro ao salvar.");
+        return null;
+      }
+      return data ? data[0] : null;
+    }
+
+    async function deleteProductById(id) {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error('Erro ao deletar:', error);
+        showToast("Erro ao deletar.");
+        return false;
+      }
+      return true;
+    }
 
     // ======================== FUNÇÕES AUXILIARES ========================
     function showToast(msg) {
@@ -327,7 +357,6 @@
     function renderCartModal() {
       const container = document.getElementById('cartItemsList');
       const totalSpan = document.getElementById('cartTotal');
-      if (!container) return;
       if (cart.length === 0) {
         container.innerHTML = '<div style="text-align:center; padding:2rem;">CARRINHO VAZIO</div>';
         totalSpan.innerHTML = 'TOTAL: R$0,00';
@@ -404,10 +433,10 @@
       filtersVisible = visible;
       if (visible) {
         filtersBar.classList.remove('hidden');
-        if (document.getElementById('toggleFiltersBtn')) document.getElementById('toggleFiltersBtn').innerHTML = '🔘 OCULTAR FILTROS';
+        document.getElementById('toggleFiltersBtn').innerHTML = '🔘 OCULTAR FILTROS';
       } else {
         filtersBar.classList.add('hidden');
-        if (document.getElementById('toggleFiltersBtn')) document.getElementById('toggleFiltersBtn').innerHTML = '🔘 MOSTRAR FILTROS';
+        document.getElementById('toggleFiltersBtn').innerHTML = '🔘 MOSTRAR FILTROS';
       }
       localStorage.setItem('vetin_filters_visible', filtersVisible);
     }
@@ -419,7 +448,7 @@
         if (currentFilter !== "todos" && prod.categoria !== currentFilter) return false;
         if (currentSearch) {
           const searchLower = currentSearch.toLowerCase();
-          return prod.title.toLowerCase().includes(searchLower) || prod.specs.toLowerCase().includes(searchLower);
+          return prod.title.toLowerCase().includes(searchLower) || (prod.specs && prod.specs.toLowerCase().includes(searchLower));
         }
         return true;
       });
@@ -429,16 +458,17 @@
     function renderProducts(productsArray) {
       productGrid.innerHTML = '';
       productsArray.forEach((prod, idx) => {
+        // Encontrar índice real no array global productsData para edição
+        const realIdx = productsData.findIndex(p => p.id === prod.id);
         const cell = document.createElement('div');
         cell.className = 'product-cell';
         if (editorMode) cell.classList.add('editor-mode');
-        if (prod.categoria === 'camera') cell.classList.add('camera-hover'); // apenas para referência, sem efeito extra
-        cell.setAttribute('data-idx', idx);
+        cell.setAttribute('data-idx', realIdx);
         cell.innerHTML = `
-          <div class="delete-card-btn" data-idx="${idx}">🗑</div>
-          <img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${idx}">
-          <div class="product-title" data-field="title" data-idx="${idx}">${prod.title}</div>
-          <div class="product-price" data-field="price" data-idx="${idx}">${prod.price}</div>
+          <div class="delete-card-btn" data-idx="${realIdx}">🗑</div>
+          <img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${realIdx}">
+          <div class="product-title" data-field="title" data-idx="${realIdx}">${prod.title}</div>
+          <div class="product-price" data-field="price" data-idx="${realIdx}">${prod.price}</div>
           <button class="acquire-btn">[ADQUIRIR ITEM]</button>
         `;
         productGrid.appendChild(cell);
@@ -447,45 +477,38 @@
     }
 
     function attachEventsToCards(productsArray) {
-      document.querySelectorAll('.product-cell').forEach((cell, i) => {
+      document.querySelectorAll('.product-cell').forEach((cell) => {
         const idx = parseInt(cell.getAttribute('data-idx'));
-        const prod = productsArray[idx];
+        const prod = productsData[idx]; // Usar productsData global
         
-        // Clique no card: abre modal de especificações (apenas se NÃO for editorMode ou se o alvo não for título/preço)
         cell.addEventListener('click', (e) => {
-          // Se clicou no botão adquirir ou deletar, não faz nada
           if (e.target.classList.contains('acquire-btn') || e.target.classList.contains('delete-card-btn')) return;
-          // No modo editor: se clicou em título, preço ou imagem, não abre modal (pois eles têm seus próprios handlers)
           if (editorMode) {
             if (e.target.classList.contains('product-title') || 
                 e.target.classList.contains('product-price') || 
                 e.target.classList.contains('product-img')) return;
           }
-          // Abre modal de visualização/edição
           if (editorMode) {
             e.stopPropagation();
-            abrirModalEdicao(idx, productsArray);
+            abrirModalEdicao(idx, productsData);
           } else {
-            abrirModalVisualizacao(prod, productsArray);
+            abrirModalVisualizacao(prod, productsData);
           }
         });
         
-        // Botão adquirir
         const btn = cell.querySelector('.acquire-btn');
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           addToCart(prod);
         });
         
-        // Botão deletar (modo editor)
         const delBtn = cell.querySelector('.delete-card-btn');
         if (delBtn) delBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          deletarCard(idx, productsArray);
+          deletarCard(idx, productsData);
         });
       });
       
-      // Eventos de edição inline (apenas no modo editor)
       if (editorMode) {
         document.querySelectorAll('.product-title[data-field="title"]').forEach(el => {
           el.removeEventListener('click', handleTitleClick);
@@ -502,29 +525,40 @@
       }
     }
 
-    // Handlers de edição inline
-    function handleTitleClick(e) {
+    // Handlers de edição inline (agora assíncronos)
+    async function handleTitleClick(e) {
       e.stopPropagation();
       const idx = parseInt(e.target.getAttribute('data-idx'));
-      const novo = prompt("Editar título:", productsData[idx].title);
-      if (novo !== null) productsData[idx].title = novo;
-      salvarERender();
+      const prod = productsData[idx];
+      const novo = prompt("Editar título:", prod.title);
+      if (novo !== null) {
+        prod.title = novo;
+        await saveProduct(prod);
+        await loadProducts();
+      }
     }
-    function handlePriceClick(e) {
+    async function handlePriceClick(e) {
       e.stopPropagation();
       const idx = parseInt(e.target.getAttribute('data-idx'));
-      const novo = prompt("Editar preço (ex: R$120,00):", productsData[idx].price);
-      if (novo !== null) productsData[idx].price = novo;
-      salvarERender();
+      const prod = productsData[idx];
+      const novo = prompt("Editar preço (ex: R$120,00):", prod.price);
+      if (novo !== null) {
+        prod.price = novo;
+        await saveProduct(prod);
+        await loadProducts();
+      }
     }
-    function handleImageClick(e) {
+    async function handleImageClick(e) {
       e.stopPropagation();
       const idx = parseInt(e.target.getAttribute('data-idx'));
-      uploadImageFromDevice((base64) => {
-        productsData[idx].imgMain = base64;
-        if (productsData[idx].images && productsData[idx].images.length > 0) productsData[idx].images[0] = base64;
-        else productsData[idx].images = [base64];
-        salvarERender();
+      const prod = productsData[idx];
+      uploadImageFromDevice(async (base64) => {
+        prod.imgMain = base64;
+        if (!prod.images) prod.images = [];
+        if (prod.images.length > 0) prod.images[0] = base64;
+        else prod.images.push(base64);
+        await saveProduct(prod);
+        await loadProducts();
       });
     }
 
@@ -555,11 +589,11 @@
 
     function abrirModalVisualizacao(prod, allProds) {
       viewTitle.innerText = prod.title;
-      viewSpecs.innerHTML = prod.specs;
-      currentViewImages = prod.images || [prod.imgMain];
+      viewSpecs.innerHTML = prod.specs || '';
+      currentViewImages = (prod.images && prod.images.length) ? prod.images : [prod.imgMain];
       currentViewIndex = 0;
       updateViewSlide();
-      const relacionados = allProds.filter(p => p.categoria === prod.categoria && p.title !== prod.title).slice(0, 2);
+      const relacionados = allProds.filter(p => p.categoria === prod.categoria && p.id !== prod.id).slice(0, 2);
       if (relacionados.length) {
         relatedContainer.style.display = 'block';
         relatedGrid.innerHTML = '';
@@ -583,7 +617,7 @@
       const prod = allProds[idx];
       document.getElementById('editTitle').innerText = `Editar: ${prod.title}`;
       document.getElementById('editCategoria').value = prod.categoria || 'acessorio';
-      document.getElementById('editSpecsText').value = prod.specs;
+      document.getElementById('editSpecsText').value = prod.specs || '';
       document.getElementById('editMainImage').src = prod.imgMain;
       window.editImagesList = [...(prod.images || [])];
       renderImageList();
@@ -616,61 +650,79 @@
     document.getElementById('addImageBtn').onclick = () => {
       uploadImageFromDevice((base64) => { window.editImagesList.push(base64); renderImageList(); });
     };
-    document.getElementById('editSaveBtn').onclick = () => {
+    document.getElementById('editSaveBtn').onclick = async () => {
       if (currentEditIndex !== null) {
-        productsData[currentEditIndex].categoria = document.getElementById('editCategoria').value;
-        productsData[currentEditIndex].specs = document.getElementById('editSpecsText').value;
-        productsData[currentEditIndex].imgMain = document.getElementById('editMainImage').src;
-        productsData[currentEditIndex].images = [...window.editImagesList];
-        localStorage.setItem('vetin_products', JSON.stringify(productsData));
-        applyFilters();
+        const prod = productsData[currentEditIndex];
+        prod.categoria = document.getElementById('editCategoria').value;
+        prod.specs = document.getElementById('editSpecsText').value;
+        prod.imgMain = document.getElementById('editMainImage').src;
+        prod.images = [...window.editImagesList];
+        await saveProduct(prod);
+        await loadProducts();
         document.getElementById('editModal').style.display = 'none';
+        showToast("Produto salvo!");
       }
     };
     document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
     document.getElementById('editModal').addEventListener('click', (e) => { if (e.target === document.getElementById('editModal')) document.getElementById('editModal').style.display = 'none'; });
 
-    function deletarCard(idx, allProds) {
+    async function deletarCard(idx, allProds) {
       if (confirm("Remover?")) {
-        const realIndex = productsData.findIndex(p => p.title === allProds[idx].title);
-        if (realIndex !== -1) productsData.splice(realIndex, 1);
-        localStorage.setItem('vetin_products', JSON.stringify(productsData));
-        applyFilters();
+        const prod = allProds[idx];
+        await deleteProductById(prod.id);
+        await loadProducts();
       }
     }
-    function adicionarCard() {
-      productsData.push({ title: "NOVO PRODUTO", price: "R$99,00", imgMain: "http://static.photos/placeholder.jpg", specs: "Especificações...", images: [], categoria: "acessorio" });
-      localStorage.setItem('vetin_products', JSON.stringify(productsData));
-      applyFilters();
-      setTimeout(() => { abrirModalEdicao(productsData.length-1, productsData); }, 100);
+    async function adicionarCard() {
+      const newProduct = {
+        title: "NOVO PRODUTO",
+        price: "R$99,00",
+        imgMain: "https://i.imgur.com/placeholder.png",
+        specs: "Especificações...",
+        images: [],
+        categoria: "acessorio"
+      };
+      const saved = await saveProduct(newProduct);
+      if (saved) {
+        await loadProducts();
+        // Encontrar o índice do novo produto
+        const newIdx = productsData.findIndex(p => p.id === saved.id);
+        if (newIdx !== -1) abrirModalEdicao(newIdx, productsData);
+      }
     }
     function uploadImageFromDevice(cb) {
       const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
       input.onchange = (e) => { const file = e.target.files[0]; if(file){ const fr = new FileReader(); fr.onload = (ev) => cb(ev.target.result); fr.readAsDataURL(file); } };
       input.click();
     }
+    
+    // Exportar/Importar (ainda usa localStorage para backup, mas pode ser adaptado)
     function exportProducts() {
       const dataStr = JSON.stringify(productsData, null, 2);
       const blob = new Blob([dataStr], {type: "application/json"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = "vetin_products_backup.json"; a.click(); URL.revokeObjectURL(url);
     }
-    function importProducts(file) {
+    async function importProductsFromFile(file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) { productsData = imported; localStorage.setItem('vetin_products', JSON.stringify(productsData)); applyFilters(); showToast("Produtos importados com sucesso!"); }
-          else showToast("Arquivo inválido");
+          if (Array.isArray(imported)) {
+            // Remove ids para evitar conflitos, insere um por um
+            for (let prod of imported) {
+              const { id, ...rest } = prod; // remove id antigo
+              await saveProduct(rest);
+            }
+            await loadProducts();
+            showToast("Produtos importados!");
+          } else showToast("Arquivo inválido");
         } catch(err) { showToast("Erro ao importar"); }
       };
       reader.readAsText(file);
     }
-    document.getElementById('exportProductsBtn').onclick = exportProducts;
-    document.getElementById('importProductsBtn').onclick = () => document.getElementById('importFile').click();
-    document.getElementById('importFile').onchange = (e) => { if(e.target.files[0]) importProducts(e.target.files[0]); };
 
-    // ======================== MODO EDITOR (SENHA) ========================
+    // ======================== MODO EDITOR ========================
     let clickCount=0, clickTimeout;
     const mainLogo = document.getElementById('mainLogo');
     const editorPanel = document.getElementById('editorPanel');
@@ -702,6 +754,9 @@
     });
     document.getElementById('exitEditorBtn').addEventListener('click', sairModoEditor);
     addCardBtn.addEventListener('click', adicionarCard);
+    document.getElementById('exportProductsBtn').onclick = exportProducts;
+    document.getElementById('importProductsBtn').onclick = () => document.getElementById('importFile').click();
+    document.getElementById('importFile').onchange = (e) => { if(e.target.files[0]) importProductsFromFile(e.target.files[0]); };
 
     // ======================== BUSCA ========================
     const searchInput = document.getElementById('searchInput');
@@ -722,11 +777,13 @@
     });
 
     // ======================== INICIALIZAÇÃO ========================
-    applyFilters();
-    updateCartCount();
-    const logo3d = document.getElementById('logo3d');
-    logo3d.addEventListener('camera-change', () => { setTimeout(() => { logo3d.cameraOrbit = '0deg 90deg auto'; }, 10); });
-    console.log('%c VETIN CYBER™ ', 'background:#000; color:#ff3b3b; font-size:20px;');
+    (async () => {
+      await loadProducts();
+      updateCartCount();
+      const logo3d = document.getElementById('logo3d');
+      logo3d.addEventListener('camera-change', () => { setTimeout(() => { logo3d.cameraOrbit = '0deg 90deg auto'; }, 10); });
+      console.log('%c VETIN CYBER™ ', 'background:#000; color:#ff3b3b; font-size:20px;');
+    })();
   </script>
 </body>
 </html>
