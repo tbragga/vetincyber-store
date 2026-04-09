@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VETIN CYBER™</title>
+  <!-- Tailwind (apenas para desenvolvimento - ok) -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Model Viewer -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -293,7 +295,6 @@
         productsData = [];
       } else {
         productsData = data || [];
-        // Garantir que images seja array
         productsData.forEach(p => { if (!p.images) p.images = []; });
         showToast(`${productsData.length} produtos carregados.`);
       }
@@ -301,7 +302,6 @@
     }
 
     async function saveProduct(product) {
-      // Prepara objeto para upsert (se tiver id, atualiza; senão insere)
       const { data, error } = await supabase
         .from('products')
         .upsert(product, { onConflict: 'id' })
@@ -458,7 +458,6 @@
     function renderProducts(productsArray) {
       productGrid.innerHTML = '';
       productsArray.forEach((prod, idx) => {
-        // Encontrar índice real no array global productsData para edição
         const realIdx = productsData.findIndex(p => p.id === prod.id);
         const cell = document.createElement('div');
         cell.className = 'product-cell';
@@ -479,7 +478,7 @@
     function attachEventsToCards(productsArray) {
       document.querySelectorAll('.product-cell').forEach((cell) => {
         const idx = parseInt(cell.getAttribute('data-idx'));
-        const prod = productsData[idx]; // Usar productsData global
+        const prod = productsData[idx];
         
         cell.addEventListener('click', (e) => {
           if (e.target.classList.contains('acquire-btn') || e.target.classList.contains('delete-card-btn')) return;
@@ -525,7 +524,6 @@
       }
     }
 
-    // Handlers de edição inline (agora assíncronos)
     async function handleTitleClick(e) {
       e.stopPropagation();
       const idx = parseInt(e.target.getAttribute('data-idx'));
@@ -685,7 +683,6 @@
       const saved = await saveProduct(newProduct);
       if (saved) {
         await loadProducts();
-        // Encontrar o índice do novo produto
         const newIdx = productsData.findIndex(p => p.id === saved.id);
         if (newIdx !== -1) abrirModalEdicao(newIdx, productsData);
       }
@@ -696,7 +693,6 @@
       input.click();
     }
     
-    // Exportar/Importar (ainda usa localStorage para backup, mas pode ser adaptado)
     function exportProducts() {
       const dataStr = JSON.stringify(productsData, null, 2);
       const blob = new Blob([dataStr], {type: "application/json"});
@@ -709,9 +705,8 @@
         try {
           const imported = JSON.parse(e.target.result);
           if (Array.isArray(imported)) {
-            // Remove ids para evitar conflitos, insere um por um
             for (let prod of imported) {
-              const { id, ...rest } = prod; // remove id antigo
+              const { id, ...rest } = prod;
               await saveProduct(rest);
             }
             await loadProducts();
@@ -781,7 +776,12 @@
       await loadProducts();
       updateCartCount();
       const logo3d = document.getElementById('logo3d');
-      logo3d.addEventListener('camera-change', () => { setTimeout(() => { logo3d.cameraOrbit = '0deg 90deg auto'; }, 10); });
+      // Trava a rotação apenas horizontal
+      logo3d.addEventListener('camera-change', () => { 
+        setTimeout(() => { 
+          logo3d.cameraOrbit = '0deg 90deg auto'; 
+        }, 10); 
+      });
       console.log('%c VETIN CYBER™ ', 'background:#000; color:#ff3b3b; font-size:20px;');
     })();
   </script>
