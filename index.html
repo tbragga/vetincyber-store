@@ -132,9 +132,9 @@
         rotation-per-second="30deg" 
         camera-controls 
         disable-zoom 
-        min-camera-orbit="auto auto 0deg" 
-        max-camera-orbit="auto auto 0deg" 
-        camera-orbit="0deg 90deg auto" 
+        touch-action="pan-y" 
+        min-camera-orbit="auto 90deg auto" 
+        max-camera-orbit="auto 90deg auto" 
         interaction-prompt="none" 
         style="width:100%; height:100%;">
       </model-viewer>
@@ -159,13 +159,12 @@
   </div>
 
   <div class="product-grid" id="productGrid"></div>
-  <button id="addCardBtn" class="add-card-btn">+ ADICIONAR CARD</button>
+  <button id="addCardBtn" class="add-card-btn">+ DUPLICAR ÚLTIMO CARD</button>
 
   <div id="emergencyBtnContainer" style="text-align:center; margin-top:20px; display:none;">
     <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
   </div>
 
-  <!-- MODAL VISUALIZAÇÃO -->
   <div id="viewModal" class="specs-modal">
     <div class="specs-modal-content">
       <h3 id="viewTitle">Especificações</h3>
@@ -191,7 +190,6 @@
     </div>
   </div>
 
-  <!-- MODAL EDIÇÃO -->
   <div id="editModal" class="specs-modal edit-modal">
     <div class="specs-modal-content">
       <h3 id="editTitle">Editar Produto</h3>
@@ -224,7 +222,6 @@
     </div>
   </div>
 
-  <!-- MODAL CARRINHO -->
   <div id="cartModal" class="cart-modal">
     <div class="cart-modal-content">
       <h3>🛒 SEU CARRINHO</h3>
@@ -395,7 +392,7 @@
       cell.setAttribute('data-idx', realIdx);
       cell.innerHTML = `
         <div class="delete-card-btn" data-idx="${realIdx}">🗑</div>
-        <img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${realIdx}">
+        <img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${realIdx}" onerror="this.src='https://placehold.co/400x300/111/ff3b3b?text=ERRO+DE+IMAGEM'">
         <div class="product-title" data-field="title" data-idx="${realIdx}">${prod.title}</div>
         <div class="product-price" data-field="price" data-idx="${realIdx}">${prod.price}</div>
         <button class="acquire-btn">[ADQUIRIR ITEM]</button>
@@ -564,10 +561,27 @@
     document.getElementById('addCardBtn').style.display = 'none';
     applyFilters();
   };
+  
+  // ======================== REGALIA: DUPLICAR CARD ========================
   document.getElementById('addCardBtn').onclick = async () => {
-    const novo = { title:"NOVO PRODUTO", price:"R$99,00", imgMain:"https://i.imgur.com/placeholder.png", specs:"Especificações...", images:[], categoria:"acessorio" };
-    const saved = await saveProduct(novo);
-    if (saved) { await loadProducts(); abrirModalEdicao(productsData.findIndex(p => p.id === saved.id)); }
+    let novo;
+    if (productsData.length > 0) {
+      const last = productsData[productsData.length - 1];
+      const { id, ...rest } = last; 
+      novo = { ...rest, title: rest.title + " (CÓPIA)" };
+    } else {
+      novo = { title:"NOVO PRODUTO", price:"R$99,00", imgMain:"https://i.imgur.com/placeholder.png", specs:"Especificações...", images:[], categoria:"acessorio" };
+    }
+    
+    const { data, error } = await supabaseClient.from('products').insert([novo]).select();
+    
+    if (error) { 
+      console.error(error); 
+      showToast("Erro ao duplicar card."); 
+    } else if (data && data.length > 0) { 
+      await loadProducts(); 
+      abrirModalEdicao(productsData.findIndex(p => p.id === data[0].id)); 
+    }
   };
 
   // Filtros visibilidade
@@ -630,7 +644,6 @@
   // Trava total da logo 3D (zoom e vertical)
   const logo3d = document.getElementById('logo3d');
   logo3d.addEventListener('camera-change', () => {
-    logo3d.cameraOrbit = '0deg 90deg auto';
     logo3d.zoom = '1';
   });
   // Previne zoom por duplo clique (remove listener padrão)
