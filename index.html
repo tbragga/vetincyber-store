@@ -635,22 +635,26 @@
   };
   document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
 
-  // ======================== MODO EDITOR SEGURO (hash no Supabase) ========================
+  // ======================== MODO EDITOR SEGURO (via função RPC) ========================
   let logoClicks = 0;
   document.getElementById('mainLogo').onclick = async () => {
     logoClicks++;
     if (logoClicks >= 5) {
       const senha = prompt("Senha admin:");
       if (senha) {
+        // Calcula o hash SHA-256 da senha digitada
         const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        const { data, error } = await supabaseClient.from('settings').select('value').eq('key', 'admin_hash').single();
-        if (!error && data && data.value === hashHex) {
+        
+        // Chama a função RPC que retorna o hash armazenado no banco
+        const { data, error } = await supabaseClient.rpc('get_admin_hash');
+        if (!error && data === hashHex) {
           editorMode = true;
           document.getElementById('editorPanel').style.display = 'flex';
           document.getElementById('addCardBtn').style.display = 'block';
           applyFilters();
+          showToast("Modo editor ativado");
         } else {
           alert("Senha incorreta!");
         }
@@ -664,6 +668,7 @@
     document.getElementById('editorPanel').style.display = 'none';
     document.getElementById('addCardBtn').style.display = 'none';
     applyFilters();
+    showToast("Modo editor desativado");
   };
   document.getElementById('addCardBtn').onclick = async () => {
     const last = productsData[productsData.length-1];
