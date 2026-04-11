@@ -8,7 +8,7 @@
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* (MANTENHA TODO O CSS ANTERIOR AQUI, NÃO ALTEREI NADA) */
+    /* (TODO O CSS ORIGINAL FOI MANTIDO - NENHUMA ALTERAÇÃO) */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
     .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
@@ -18,17 +18,14 @@
     .logo-unified { position: relative; width: 200px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .logo-globe-img { position: absolute; width: 70px; height: 70px; z-index: 1; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 26, 26, 0.3)); transition: all 0.3s ease; object-fit: contain; }
     .logo-text-img { position: absolute; z-index: 2; width: 140px; height: auto; filter: brightness(1.1) contrast(1.2); transition: all 0.3s ease; object-fit: contain; }
-    /* EFEITO DE GLOW INTENSIFICADO NO HOVER (adicionado) */
+    /* EFEITO DE GLOW NO HOVER */
     .logo-unified:hover .logo-globe-img {
-      filter: drop-shadow(0 0 12px #ff1a1a)
-              drop-shadow(0 0 25px #ff0000)
-              drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
+      filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
       transform: scale(1.05);
     }
     .logo-unified:hover .logo-text-img {
       filter: brightness(1.4) contrast(1.3);
     }
-    /* Fim do efeito de glow */
     .logo-3d-container { flex-shrink: 0; width: 80px; height: 80px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
     model-viewer { width: 100%; height: 100%; background-color: transparent; }
     .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; font-family: monospace; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.7); padding: 0.6rem 1rem; border: 1px solid #444; border-left: 2px solid #ff3b3b; }
@@ -147,6 +144,8 @@
         min-camera-orbit="auto 90deg auto" 
         max-camera-orbit="auto 90deg auto" 
         interaction-prompt="none" 
+        loading="lazy"
+        reveal="auto"
         style="width:100%; height:100%;">
       </model-viewer>
     </div>
@@ -165,7 +164,7 @@
     </div>
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="BUSCAR PRODUTO...">
-      <button id="searchBtn">🔍</button>
+      <button id="searchBtn" aria-label="Buscar">🔍</button>
     </div>
   </div>
 
@@ -173,7 +172,7 @@
   <button id="addCardBtn" class="add-card-btn">+ DUPLICAR ÚLTIMO CARD</button>
 
   <div id="emergencyBtnContainer" style="text-align:center; margin-top:20px; display:none;">
-    <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
+    <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;" aria-label="Criar 3 produtos iniciais">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
   </div>
 
   <div id="viewModal" class="specs-modal">
@@ -182,11 +181,11 @@
       <div class="specs-grid">
         <div class="specs-details" id="viewSpecs"></div>
         <div class="specs-gallery">
-          <img id="viewSlideImg" class="slide-img" src="">
+          <img id="viewSlideImg" class="slide-img" alt="">
           <div class="slide-controls">
-            <button id="viewPrevBtn" class="slide-btn">◀</button>
+            <button id="viewPrevBtn" class="slide-btn" aria-label="Imagem anterior">◀</button>
             <span id="viewCounter" class="slide-counter">1 / 1</span>
-            <button id="viewNextBtn" class="slide-btn">▶</button>
+            <button id="viewNextBtn" class="slide-btn" aria-label="Próxima imagem">▶</button>
           </div>
         </div>
       </div>
@@ -195,8 +194,8 @@
         <div class="related-grid" id="relatedGrid"></div>
       </div>
       <div class="modal-buttons">
-        <button id="viewBuyBtn" class="modal-btn buy-btn">🛒 COMPRAR</button>
-        <button id="viewCloseBtn" class="modal-btn">FECHAR</button>
+        <button id="viewBuyBtn" class="modal-btn buy-btn" aria-label="Comprar">🛒 COMPRAR</button>
+        <button id="viewCloseBtn" class="modal-btn" aria-label="Fechar">FECHAR</button>
       </div>
     </div>
   </div>
@@ -215,20 +214,20 @@
           <textarea id="editSpecsText" rows="6"></textarea>
         </div>
         <div class="specs-gallery">
-          <img id="editMainImage" class="slide-img" src="" style="cursor:pointer;">
+          <img id="editMainImage" class="slide-img" src="" style="cursor:pointer;" alt="Imagem principal">
           <div class="gallery-controls">
-            <button id="uploadMainImageBtn" class="gallery-btn">📷 TROCAR FOTO PRINCIPAL</button>
+            <button id="uploadMainImageBtn" class="gallery-btn" aria-label="Trocar foto principal">📷 TROCAR FOTO PRINCIPAL</button>
           </div>
           <div style="margin-top:1rem;">
             <label style="color:#ff3b3b;">Galeria de imagens:</label>
             <div id="imageListContainer" class="image-list"></div>
-            <div class="gallery-controls"><button id="addImageBtn" class="gallery-btn">+ ADICIONAR IMAGEM</button></div>
+            <div class="gallery-controls"><button id="addImageBtn" class="gallery-btn" aria-label="Adicionar imagem">+ ADICIONAR IMAGEM</button></div>
           </div>
         </div>
       </div>
       <div class="modal-buttons">
-        <button id="editSaveBtn" class="modal-btn">💾 SALVAR</button>
-        <button id="editCloseBtn" class="modal-btn">FECHAR</button>
+        <button id="editSaveBtn" class="modal-btn" aria-label="Salvar">💾 SALVAR</button>
+        <button id="editCloseBtn" class="modal-btn" aria-label="Fechar">FECHAR</button>
       </div>
     </div>
   </div>
@@ -239,8 +238,8 @@
       <div id="cartItemsList" class="cart-items"></div>
       <div id="cartTotal" class="cart-total">TOTAL: R$0,00</div>
       <div class="cart-buttons">
-        <button id="closeCartBtn">FECHAR</button>
-        <button id="checkoutBtn">FINALIZAR PEDIDO</button>
+        <button id="closeCartBtn" aria-label="Fechar">FECHAR</button>
+        <button id="checkoutBtn" aria-label="Finalizar pedido">FINALIZAR PEDIDO</button>
       </div>
     </div>
   </div>
@@ -251,10 +250,10 @@
 </main>
 
 <div id="editorPanel" class="editor-panel">
-  <button id="exitEditorBtn">SAIR DO MODO EDITOR</button>
-  <button id="toggleFiltersBtn">🔘 OCULTAR FILTROS</button>
-  <button id="exportProductsBtn">📁 EXPORTAR PRODUTOS</button>
-  <button id="importProductsBtn">📂 IMPORTAR PRODUTOS</button>
+  <button id="exitEditorBtn" aria-label="Sair do modo editor">SAIR DO MODO EDITOR</button>
+  <button id="toggleFiltersBtn" aria-label="Ocultar/mostrar filtros">🔘 OCULTAR FILTROS</button>
+  <button id="exportProductsBtn" aria-label="Exportar produtos">📁 EXPORTAR PRODUTOS</button>
+  <button id="importProductsBtn" aria-label="Importar produtos">📂 IMPORTAR PRODUTOS</button>
   <input type="file" id="importFile" accept=".json" style="display:none;">
   <span style="font-size:0.7rem;">Clique no título/preço para editar</span>
 </div>
@@ -275,31 +274,98 @@
   let currentSearch = "";
   let cart = JSON.parse(localStorage.getItem('vetin_cart')) || [];
 
-  // ======================== FUNÇÕES SUPABASE ========================
+  // ======================== FUNÇÕES AUXILIARES ========================
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    setTimeout(() => toast.style.opacity = '0', 2000);
+  }
+
+  async function logError(message, context) {
+    try {
+      await supabaseClient.from('error_logs').insert({ message, context });
+    } catch(e) { console.error("Erro ao logar:", e); }
+  }
+
+  async function fetchWithRetry(fn, retries = 3, delay = 1000) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (error) {
+        if (i === retries - 1) throw error;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        showToast(`Tentativa ${i+2}...`);
+      }
+    }
+  }
+
+  function validateProduct(product) {
+    if (!product.title || product.title.trim() === '') {
+      showToast("Título não pode ficar vazio!");
+      return false;
+    }
+    if (!product.price || !/^R\$\s?\d{1,3}(\.\d{3})*,\d{2}$/.test(product.price)) {
+      showToast("Preço deve estar no formato R$99,99 ou R$1.299,00");
+      return false;
+    }
+    if (!product.imgMain || product.imgMain === '') {
+      showToast("Imagem principal obrigatória.");
+      return false;
+    }
+    return true;
+  }
+
+  // ======================== FUNÇÕES SUPABASE COM RETRY ========================
   async function loadProducts() {
     showToast("Carregando banco...");
-    const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: true });
-    if (error) { 
-        console.error(error); 
-        showToast("Erro ao carregar."); 
-    } else { 
-        productsData = data || []; 
-        productsData.forEach(p => { if (!p.images) p.images = []; });
+    try {
+      const { data, error } = await fetchWithRetry(() => supabaseClient.from('products').select('*').order('id', { ascending: true }));
+      if (error) throw error;
+      productsData = data || [];
+      productsData.forEach(p => { if (!p.images) p.images = []; });
+      showToast(`${productsData.length} produtos carregados.`);
+    } catch (error) {
+      console.error(error);
+      logError(error.message, "loadProducts");
+      showToast("Erro ao carregar. Verifique a internet.");
+      productsData = [];
     }
-    
-    // Sincroniza estado dos filtros se existir no banco (ou usa localStorage como fallback)
-    const filterState = localStorage.getItem('vetin_filters_hidden');
-    if(filterState === 'true') {
-        document.getElementById('filtersBar').classList.add('hidden');
-        document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS';
-    }
-
     applyFilters();
     document.getElementById('emergencyBtnContainer').style.display = (productsData.length === 0 && !editorMode) ? 'block' : 'none';
   }
 
-  // Função de compressão para garantir que o Supabase aceite a imagem (Base64 menor)
-  async function compressImage(base64, maxWidth = 800) {
+  async function saveProduct(product) {
+    if (!validateProduct(product)) return null;
+    showToast("Salvando...");
+    try {
+      const { data, error } = await fetchWithRetry(() => supabaseClient.from('products').upsert(product, { onConflict: 'id' }).select());
+      if (error) throw error;
+      showToast("Sincronizado!");
+      return data[0];
+    } catch (error) {
+      console.error(error);
+      logError(error.message, "saveProduct");
+      showToast("Erro ao salvar! Imagem muito grande?");
+      return null;
+    }
+  }
+
+  async function deleteProductById(id) {
+    try {
+      const { error } = await fetchWithRetry(() => supabaseClient.from('products').delete().eq('id', id));
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error(error);
+      logError(error.message, "deleteProductById");
+      showToast("Erro ao deletar.");
+      return false;
+    }
+  }
+
+  // ======================== FUNÇÕES DE INTERFACE ========================
+  async function compressImage(base64, maxWidth = 1200, quality = 0.8) {
     return new Promise((resolve) => {
       const img = new Image();
       img.src = base64;
@@ -315,35 +381,9 @@
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.6)); // Salva em JPEG comprimido
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
     });
-  }
-
-  async function saveProduct(product) {
-    showToast("Salvando...");
-    const { data, error } = await supabaseClient.from('products').upsert(product, { onConflict: 'id' }).select();
-    if (error) { 
-        console.error(error); 
-        showToast("Erro ao salvar! Imagem muito grande?"); 
-        return null; 
-    }
-    showToast("Sincronizado!");
-    return data[0];
-  }
-
-  async function deleteProductById(id) {
-    const { error } = await supabaseClient.from('products').delete().eq('id', id);
-    if (error) { showToast("Erro ao deletar."); return false; }
-    return true;
-  }
-
-  // ======================== FUNÇÕES DE INTERFACE ========================
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.style.opacity = '1';
-    setTimeout(() => toast.style.opacity = '0', 2000);
   }
 
   function uploadImageFromDevice(cb) {
@@ -368,13 +408,18 @@
     document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantidade, 0);
   }
 
-  function addToCart(product, qtd = 1) {
+  function addToCart(product, qtd = 1, btnElement = null) {
     const existing = cart.find(i => i.title === product.title);
     if (existing) existing.quantidade += qtd;
     else cart.push({ ...product, quantidade: qtd });
     localStorage.setItem('vetin_cart', JSON.stringify(cart));
     updateCartCount();
-    showToast(`📷 Adicionado`);
+    showToast(`📷 ${product.title} adicionado`);
+    if (btnElement) {
+      const original = btnElement.innerText;
+      btnElement.innerText = "✔️ ADICIONADO!";
+      setTimeout(() => btnElement.innerText = original, 1000);
+    }
   }
 
   function toggleCartModal() {
@@ -403,17 +448,16 @@
           <div class="cart-item-price">${item.price}</div>
         </div>
         <div class="cart-item-qty">
-          <button data-idx="${idx}" data-delta="-1">-</button>
+          <button data-idx="${idx}" data-delta="-1" aria-label="Diminuir quantidade">-</button>
           <span>${item.quantidade}</span>
-          <button data-idx="${idx}" data-delta="1">+</button>
+          <button data-idx="${idx}" data-delta="1" aria-label="Aumentar quantidade">+</button>
         </div>
-        <button class="cart-item-remove" data-idx="${idx}">🗑</button>
+        <button class="cart-item-remove" data-idx="${idx}" aria-label="Remover item">🗑</button>
       `;
       container.appendChild(div);
     });
     totalSpan.innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.', ',')}`;
     
-    // Listeners do carrinho
     document.querySelectorAll('.cart-item-qty button').forEach(btn => {
       btn.addEventListener('click', e => {
         const idx = btn.dataset.idx;
@@ -437,18 +481,18 @@
   }
 
   function finalizarCompra() {
-    if (!cart.length) return;
-    const itens = cart.map(i => `${i.title} x${i.quantidade}`).join('\n');
-    const total = document.getElementById('cartTotal').innerText;
-    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\n${total}`;
-    window.open(`https://wa.me/5585999999999?text=${encodeURIComponent(msg)}`, '_blank');
+    if (!cart.length) { showToast("Carrinho vazio"); return; }
+    const itens = cart.map(i => `${i.title} x${i.quantidade} (${i.price})`).join('\n');
+    const total = cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0).toFixed(2);
+    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nTOTAL: R$ ${total}\n\nObrigado!`;
+    window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
-  // ======================== RENDERIZAÇÃO ========================
+  // ======================== FILTROS E RENDER ========================
   function applyFilters() {
     const filtered = productsData.filter(p => {
       if (currentFilter !== 'todos' && p.categoria !== currentFilter) return false;
-      if (currentSearch && !p.title.toLowerCase().includes(currentSearch.toLowerCase())) return false;
+      if (currentSearch && !p.title.toLowerCase().includes(currentSearch.toLowerCase()) && !(p.specs || '').toLowerCase().includes(currentSearch.toLowerCase())) return false;
       return true;
     });
     renderProducts(filtered);
@@ -463,11 +507,11 @@
       cell.className = 'product-cell' + (editorMode ? ' editor-mode' : '');
       cell.setAttribute('data-idx', realIdx);
       cell.innerHTML = `
-        <div class="delete-card-btn" data-idx="${realIdx}">🗑</div>
-        <img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${realIdx}" onerror="this.src='https://i.imgur.com/placeholder.png'">
+        <div class="delete-card-btn" data-idx="${realIdx}" aria-label="Deletar produto">🗑</div>
+        <img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${realIdx}" alt="${prod.title}" onerror="this.src='https://placehold.co/400x300?text=Imagem+Indisponivel'">
         <div class="product-title" data-field="title" data-idx="${realIdx}">${prod.title}</div>
         <div class="product-price" data-field="price" data-idx="${realIdx}">${prod.price}</div>
-        <button class="acquire-btn">[ADQUIRIR ITEM]</button>
+        <button class="acquire-btn" aria-label="Adquirir item">[ADQUIRIR ITEM]</button>
       `;
       grid.appendChild(cell);
     });
@@ -483,26 +527,35 @@
         if (editorMode) abrirModalEdicao(idx);
         else abrirModalVisualizacao(prod);
       };
-      cell.querySelector('.acquire-btn').onclick = e => { e.stopPropagation(); addToCart(prod); };
+      const btn = cell.querySelector('.acquire-btn');
+      btn.onclick = e => {
+        e.stopPropagation();
+        addToCart(prod, 1, btn);
+      };
       const delBtn = cell.querySelector('.delete-card-btn');
-      if (delBtn) delBtn.onclick = async e => { e.stopPropagation(); if(confirm("Deletar?")){ await deleteProductById(prod.id); await loadProducts(); } };
+      if (delBtn) delBtn.onclick = async e => {
+        e.stopPropagation();
+        if(confirm("Deletar?")){
+          if(await deleteProductById(prod.id)) await loadProducts();
+        }
+      };
     });
 
     if (editorMode) {
-        document.querySelectorAll('[data-field="title"]').forEach(el => el.onclick = async e => {
-            e.stopPropagation();
-            const n = prompt("Novo título:", productsData[e.target.dataset.idx].title);
-            if(n) { productsData[e.target.dataset.idx].title = n; await saveProduct(productsData[e.target.dataset.idx]); applyFilters(); }
-        });
-        document.querySelectorAll('[data-field="price"]').forEach(el => el.onclick = async e => {
-            e.stopPropagation();
-            const n = prompt("Novo preço:", productsData[e.target.dataset.idx].price);
-            if(n) { productsData[e.target.dataset.idx].price = n; await saveProduct(productsData[e.target.dataset.idx]); applyFilters(); }
-        });
+      document.querySelectorAll('[data-field="title"]').forEach(el => el.onclick = async e => {
+        e.stopPropagation();
+        const n = prompt("Novo título:", productsData[e.target.dataset.idx].title);
+        if(n) { productsData[e.target.dataset.idx].title = n; await saveProduct(productsData[e.target.dataset.idx]); await loadProducts(); }
+      });
+      document.querySelectorAll('[data-field="price"]').forEach(el => el.onclick = async e => {
+        e.stopPropagation();
+        const n = prompt("Novo preço:", productsData[e.target.dataset.idx].price);
+        if(n) { productsData[e.target.dataset.idx].price = n; await saveProduct(productsData[e.target.dataset.idx]); await loadProducts(); }
+      });
     }
   }
 
-  // ======================== MODAIS ========================
+  // ======================== MODAL VISUALIZAÇÃO ========================
   let currentViewImages = [], currentViewIndex = 0;
   function abrirModalVisualizacao(prod) {
     document.getElementById('viewTitle').innerText = prod.title;
@@ -510,92 +563,139 @@
     currentViewImages = (prod.images && prod.images.length) ? prod.images : [prod.imgMain];
     currentViewIndex = 0;
     updateViewSlide();
+    // Produtos relacionados
+    const relacionados = productsData.filter(p => p.categoria === prod.categoria && p.id !== prod.id).slice(0, 2);
+    const relatedContainer = document.getElementById('relatedProductsContainer');
+    const relatedGrid = document.getElementById('relatedGrid');
+    if (relacionados.length) {
+      relatedContainer.style.display = 'block';
+      relatedGrid.innerHTML = '';
+      relacionados.forEach(rel => {
+        const card = document.createElement('div');
+        card.className = 'related-card';
+        card.innerHTML = `<img src="${rel.imgMain}" onerror="this.src='https://placehold.co/45x45?text=erro'" alt="${rel.title}"><div><strong>${rel.title}</strong><span style="color:#ff3b3b;"> ${rel.price}</span></div>`;
+        card.onclick = () => abrirModalVisualizacao(rel);
+        relatedGrid.appendChild(card);
+      });
+    } else {
+      relatedContainer.style.display = 'none';
+    }
     document.getElementById('viewBuyBtn').onclick = () => { addToCart(prod); document.getElementById('viewModal').style.display = 'none'; };
     document.getElementById('viewModal').style.display = 'flex';
   }
-
   function updateViewSlide() {
     document.getElementById('viewSlideImg').src = currentViewImages[currentViewIndex] || '';
     document.getElementById('viewCounter').innerText = `${currentViewIndex+1} / ${currentViewImages.length}`;
   }
-
-  document.getElementById('viewPrevBtn').onclick = () => { currentViewIndex = (currentViewIndex - 1 + currentViewImages.length) % currentViewImages.length; updateViewSlide(); };
-  document.getElementById('viewNextBtn').onclick = () => { currentViewIndex = (currentViewIndex + 1) % currentViewImages.length; updateViewSlide(); };
+  document.getElementById('viewPrevBtn').onclick = () => { if(currentViewImages.length) { currentViewIndex = (currentViewIndex-1+currentViewImages.length)%currentViewImages.length; updateViewSlide(); } };
+  document.getElementById('viewNextBtn').onclick = () => { if(currentViewImages.length) { currentViewIndex = (currentViewIndex+1)%currentViewImages.length; updateViewSlide(); } };
   document.getElementById('viewCloseBtn').onclick = () => document.getElementById('viewModal').style.display = 'none';
 
+  // ======================== MODAL EDIÇÃO ========================
   function abrirModalEdicao(idx) {
     currentEditIndex = idx;
     const prod = productsData[idx];
-    document.getElementById('editCategoria').value = prod.categoria || 'camera';
+    document.getElementById('editTitle').innerText = `Editar: ${prod.title}`;
+    document.getElementById('editCategoria').value = prod.categoria || 'acessorio';
     document.getElementById('editSpecsText').value = prod.specs || '';
     document.getElementById('editMainImage').src = prod.imgMain;
     window.editImagesList = [...(prod.images || [])];
     renderImageList();
     document.getElementById('editModal').style.display = 'flex';
   }
-
   function renderImageList() {
     const container = document.getElementById('imageListContainer');
     container.innerHTML = '';
     window.editImagesList.forEach((img, i) => {
       const div = document.createElement('div'); div.className = 'image-item';
-      div.innerHTML = `<span>IMAGEM ${i+1}</span><button onclick="window.editImagesList.splice(${i},1);renderImageList()">🗑</button>`;
+      div.innerHTML = `<span>${img.substring(0,40)}...</span><button class="remove-img-btn" data-idx="${i}" aria-label="Remover imagem">🗑</button>`;
       container.appendChild(div);
     });
+    document.querySelectorAll('.remove-img-btn').forEach(btn => btn.addEventListener('click', e => {
+      window.editImagesList.splice(btn.dataset.idx, 1);
+      renderImageList();
+    }));
   }
-
-  document.getElementById('uploadMainImageBtn').onclick = () => uploadImageFromDevice(img => document.getElementById('editMainImage').src = img);
-  document.getElementById('addImageBtn').onclick = () => uploadImageFromDevice(img => { window.editImagesList.push(img); renderImageList(); });
-  
+  document.getElementById('uploadMainImageBtn').onclick = () => uploadImageFromDevice(base64 => {
+    document.getElementById('editMainImage').src = base64;
+    if (window.editImagesList.length) window.editImagesList[0] = base64;
+    else window.editImagesList.push(base64);
+    renderImageList();
+  });
+  document.getElementById('addImageBtn').onclick = () => uploadImageFromDevice(base64 => { window.editImagesList.push(base64); renderImageList(); });
   document.getElementById('editSaveBtn').onclick = async () => {
     const prod = productsData[currentEditIndex];
     prod.categoria = document.getElementById('editCategoria').value;
     prod.specs = document.getElementById('editSpecsText').value;
     prod.imgMain = document.getElementById('editMainImage').src;
-    prod.images = window.editImagesList;
-    
-    const res = await saveProduct(prod);
-    if(res) {
-        document.getElementById('editModal').style.display = 'none';
-        applyFilters();
-    }
+    prod.images = [...window.editImagesList];
+    await saveProduct(prod);
+    await loadProducts();
+    document.getElementById('editModal').style.display = 'none';
   };
-
   document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
 
-  // ======================== MODO EDITOR & ADMIN ========================
+  // ======================== MODO EDITOR SEGURO (hash no Supabase) ========================
   let logoClicks = 0;
-  document.getElementById('mainLogo').onclick = () => {
+  document.getElementById('mainLogo').onclick = async () => {
     logoClicks++;
-    if(logoClicks >= 5) {
-        if(prompt("Senha:") === "admin123") {
-            editorMode = true;
-            document.getElementById('editorPanel').style.display = 'flex';
-            document.getElementById('addCardBtn').style.display = 'block';
-            applyFilters();
+    if (logoClicks >= 5) {
+      const senha = prompt("Senha admin:");
+      if (senha) {
+        const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        const { data, error } = await supabaseClient.from('settings').select('value').eq('key', 'admin_hash').single();
+        if (!error && data && data.value === hashHex) {
+          editorMode = true;
+          document.getElementById('editorPanel').style.display = 'flex';
+          document.getElementById('addCardBtn').style.display = 'block';
+          applyFilters();
+        } else {
+          alert("Senha incorreta!");
         }
-        logoClicks = 0;
+      }
+      logoClicks = 0;
     }
   };
 
-  document.getElementById('exitEditorBtn').onclick = () => location.reload();
+  document.getElementById('exitEditorBtn').onclick = () => {
+    editorMode = false;
+    document.getElementById('editorPanel').style.display = 'none';
+    document.getElementById('addCardBtn').style.display = 'none';
+    applyFilters();
+  };
+  document.getElementById('addCardBtn').onclick = async () => {
+    const last = productsData[productsData.length-1];
+    if (!last) { showToast("Nenhum produto para duplicar"); return; }
+    const { id, ...rest } = last;
+    const novo = { ...rest, title: rest.title + " (CÓPIA)" };
+    const saved = await saveProduct(novo);
+    if (saved) await loadProducts();
+  };
 
+  // ======================== BOTÃO DE EMERGÊNCIA (funcional) ========================
+  document.getElementById('emergencyCreateBtn').onclick = async () => {
+    const defaultProducts = [
+      { title: "CÂMERA VETIN MK-I", price: "R$299,00", imgMain: "https://placehold.co/400x300?text=CAMERA", specs: "<strong>Sensor:</strong> 20MP<br><strong>Resolução:</strong> 4K", images: [], categoria: "camera" },
+      { title: "LENTE 50MM F/1.8", price: "R$189,00", imgMain: "https://placehold.co/400x300?text=LENTE", specs: "<strong>Abertura:</strong> f/1.8<br><strong>Distância focal:</strong> 50mm", images: [], categoria: "acessorio" },
+      { title: "MOCHILA ASSAULT", price: "R$249,00", imgMain: "https://placehold.co/400x300?text=MOCHILA", specs: "<strong>Material:</strong> Nylon impermeável", images: [], categoria: "acessorio" }
+    ];
+    for (let p of defaultProducts) {
+      await saveProduct(p);
+    }
+    await loadProducts();
+    showToast("3 produtos criados!");
+  };
+
+  // ======================== OUTROS EVENTOS ========================
   document.getElementById('toggleFiltersBtn').onclick = () => {
     const bar = document.getElementById('filtersBar');
     const isHidden = bar.classList.toggle('hidden');
-    localStorage.setItem('vetin_filters_hidden', isHidden); // Salva preferência local
+    localStorage.setItem('vetin_filters_hidden', isHidden);
     document.getElementById('toggleFiltersBtn').innerText = isHidden ? '🔘 MOSTRAR FILTROS' : '🔘 OCULTAR FILTROS';
   };
 
-  document.getElementById('addCardBtn').onclick = async () => {
-    const last = productsData[productsData.length-1];
-    const { id, ...rest } = last;
-    const novo = { ...rest, title: rest.title + " (CÓPIA)" };
-    const { data } = await supabaseClient.from('products').insert(novo).select();
-    if(data) await loadProducts();
-  };
-
-  // Filtros e busca
   document.querySelectorAll('.filter-btn').forEach(btn => btn.onclick = () => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -604,6 +704,38 @@
   });
 
   document.getElementById('searchBtn').onclick = () => { currentSearch = document.getElementById('searchInput').value; applyFilters(); };
+  document.getElementById('searchInput').addEventListener('keypress', e => { if(e.key==='Enter') { currentSearch = e.target.value; applyFilters(); } });
+  document.getElementById('buscarBtn').onclick = () => document.getElementById('searchInput').focus();
+
+  // Exportar/Importar
+  document.getElementById('exportProductsBtn').onclick = () => {
+    const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'produtos.json'; a.click();
+  };
+  document.getElementById('importProductsBtn').onclick = () => document.getElementById('importFile').click();
+  document.getElementById('importFile').onchange = async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        for (let p of imported) { const { id, ...rest } = p; await saveProduct(rest); }
+        await loadProducts();
+        showToast("Importado!");
+      } catch { showToast("Erro no arquivo"); }
+    };
+    reader.readAsText(file);
+  };
+
+  // Trava da logo 3D
+  const logo3d = document.getElementById('logo3d');
+  logo3d.addEventListener('camera-change', () => {
+    logo3d.cameraOrbit = '0deg 90deg auto';
+    logo3d.zoom = '1';
+  });
+  logo3d.addEventListener('dblclick', e => e.preventDefault());
+  logo3d.addEventListener('mousedown', e => { if(e.detail > 1) e.preventDefault(); });
 
   // Inicialização
   (async () => {
@@ -611,6 +743,13 @@
     updateCartCount();
     document.getElementById('closeCartBtn').onclick = () => document.getElementById('cartModal').style.display = 'none';
     document.getElementById('checkoutBtn').onclick = finalizarCompra;
+    // Restaurar estado dos filtros
+    const filterState = localStorage.getItem('vetin_filters_hidden');
+    if(filterState === 'true') {
+      document.getElementById('filtersBar').classList.add('hidden');
+      document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS';
+    }
+    console.log('%c VETIN CYBER™ MELHORADO!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
