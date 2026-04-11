@@ -8,7 +8,7 @@
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* CSS BASE (igual ao original, sem alterações para desktop) */
+    /* ========== SEU CSS ORIGINAL (INTEIRAMENTE PRESERVADO) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
     .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
@@ -113,7 +113,7 @@
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
 
-    /* ========== MEDIA QUERIES APENAS PARA CELULAR (ATÉ 768px) ========== */
+    /* ========== MEDIA QUERIES PARA CELULAR (EXATAMENTE COMO VOCÊ TINHA) ========== */
     @media (max-width: 768px) {
       .main-content { padding: 1rem; }
       .header-row { gap: 0.8rem; margin-bottom: 1.5rem; }
@@ -148,7 +148,6 @@
       .toast { white-space: normal; text-align: center; width: 90%; font-size: 0.7rem; bottom: 20px; }
       .industrial-footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.6rem; }
     }
-    /* Para telas muito pequenas (até 480px) - opcional */
     @media (max-width: 480px) {
       .product-grid { gap: 0.8rem; }
       .product-title { font-size: 0.7rem; }
@@ -304,6 +303,7 @@
   const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZW1nZGl6b3FmcmVneWlhbGlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTkzNjgsImV4cCI6MjA5MTI3NTM2OH0.zN11NTeroxNsd-SzEGJBsASa-tZ_DkDcmjmCNcIJTiY';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const BUCKET_NAME = 'product-images'; // Nome do bucket que você criou no Supabase Storage
 
   // ======================== VARIÁVEIS GLOBAIS ========================
   let productsData = [];
@@ -403,46 +403,53 @@
     }
   }
 
-  // ======================== FUNÇÕES DE INTERFACE ========================
-  async function compressImage(base64, maxWidth = 1200, quality = 0.8) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = base64;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        if (width > maxWidth) {
-          height = (maxWidth / width) * height;
-          width = maxWidth;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+  // ======================== NOVAS FUNÇÕES PARA SUPABASE STORAGE ========================
+  async function compressImageForUpload(file, maxWidth = 1200, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = (maxWidth / width) * height;
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
       };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
   }
 
-  function uploadImageFromDevice(cb) {
-    const input = document.createElement('input'); 
-    input.type = 'file'; 
-    input.accept = 'image/*';
-    input.onchange = async e => { 
-      const file = e.target.files[0];
-      if(file) { 
-        const reader = new FileReader(); 
-        reader.onload = async ev => {
-          const compressed = await compressImage(ev.target.result);
-          cb(compressed);
-        };
-        reader.readAsDataURL(file); 
-      } 
-    };
-    input.click();
+  async function uploadImageToStorage(file, productId, suffix = 'main') {
+    try {
+      const compressedBlob = await compressImageForUpload(file);
+      const fileExt = 'jpg';
+      const fileName = `${productId}_${suffix}_${Date.now()}.${fileExt}`;
+      const { data, error } = await supabaseClient.storage
+        .from(BUCKET_NAME)
+        .upload(fileName, compressedBlob, { contentType: 'image/jpeg', upsert: true });
+      if (error) throw error;
+      const { data: { publicUrl } } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
+      return publicUrl;
+    } catch (err) {
+      console.error('Upload error:', err);
+      showToast('Erro ao enviar imagem.');
+      return null;
+    }
   }
 
+  // ======================== FUNÇÕES DE INTERFACE (CARRINHO, TOAST, ETC) ========================
   function updateCartCount() {
     document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantidade, 0);
   }
@@ -630,44 +637,71 @@
   document.getElementById('viewNextBtn').onclick = () => { if(currentViewImages.length) { currentViewIndex = (currentViewIndex+1)%currentViewImages.length; updateViewSlide(); } };
   document.getElementById('viewCloseBtn').onclick = () => document.getElementById('viewModal').style.display = 'none';
 
-  // ======================== MODAL EDIÇÃO ========================
+  // ======================== MODAL EDIÇÃO COM STORAGE ========================
+  let currentEditProductId = null;
+  let tempImagesList = [];
+
   function abrirModalEdicao(idx) {
     currentEditIndex = idx;
     const prod = productsData[idx];
+    currentEditProductId = prod.id;
     document.getElementById('editTitle').innerText = `Editar: ${prod.title}`;
     document.getElementById('editCategoria').value = prod.categoria || 'acessorio';
     document.getElementById('editSpecsText').value = prod.specs || '';
-    document.getElementById('editMainImage').src = prod.imgMain;
-    window.editImagesList = [...(prod.images || [])];
+    document.getElementById('editMainImage').src = prod.imgMain || 'https://placehold.co/400x300?text=Sem+imagem';
+    tempImagesList = [...(prod.images || [])];
     renderImageList();
     document.getElementById('editModal').style.display = 'flex';
   }
+
   function renderImageList() {
     const container = document.getElementById('imageListContainer');
     container.innerHTML = '';
-    window.editImagesList.forEach((img, i) => {
+    tempImagesList.forEach((img, i) => {
       const div = document.createElement('div'); div.className = 'image-item';
       div.innerHTML = `<span>${img.substring(0,40)}...</span><button class="remove-img-btn" data-idx="${i}" aria-label="Remover imagem">🗑</button>`;
       container.appendChild(div);
     });
     document.querySelectorAll('.remove-img-btn').forEach(btn => btn.addEventListener('click', e => {
-      window.editImagesList.splice(btn.dataset.idx, 1);
+      tempImagesList.splice(btn.dataset.idx, 1);
       renderImageList();
     }));
   }
-  document.getElementById('uploadMainImageBtn').onclick = () => uploadImageFromDevice(base64 => {
-    document.getElementById('editMainImage').src = base64;
-    if (window.editImagesList.length) window.editImagesList[0] = base64;
-    else window.editImagesList.push(base64);
-    renderImageList();
-  });
-  document.getElementById('addImageBtn').onclick = () => uploadImageFromDevice(base64 => { window.editImagesList.push(base64); renderImageList(); });
+
+  async function handleImageUpload(isMain = true) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      showToast('Enviando imagem...');
+      const productId = currentEditProductId || Date.now().toString();
+      const url = await uploadImageToStorage(file, productId, isMain ? 'main' : `gallery_${Date.now()}`);
+      if (url) {
+        if (isMain) {
+          document.getElementById('editMainImage').src = url;
+        } else {
+          tempImagesList.push(url);
+          renderImageList();
+        }
+        showToast('Imagem salva no Storage!');
+      } else {
+        showToast('Falha no upload.');
+      }
+    };
+    input.click();
+  }
+
+  document.getElementById('uploadMainImageBtn').onclick = () => handleImageUpload(true);
+  document.getElementById('addImageBtn').onclick = () => handleImageUpload(false);
+
   document.getElementById('editSaveBtn').onclick = async () => {
     const prod = productsData[currentEditIndex];
     prod.categoria = document.getElementById('editCategoria').value;
     prod.specs = document.getElementById('editSpecsText').value;
     prod.imgMain = document.getElementById('editMainImage').src;
-    prod.images = [...window.editImagesList];
+    prod.images = [...tempImagesList];
     await saveProduct(prod);
     await loadProducts();
     document.getElementById('editModal').style.display = 'none';
@@ -792,7 +826,7 @@
       document.getElementById('filtersBar').classList.add('hidden');
       document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS';
     }
-    console.log('%c VETIN CYBER™ MELHORADO!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ COM SUPABASE STORAGE!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
