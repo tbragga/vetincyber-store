@@ -8,16 +8,16 @@
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* === CSS IDÊNTICO AO ORIGINAL (apenas ajustes de responsividade) === */
+    /* CSS BASE (igual ao original, sem alterações para desktop) */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
-    .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&q=10'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
+    .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
     .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; }
-    .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 1rem; }
-    .header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 2rem; border-bottom: 1px solid rgba(192,192,192,0.3); padding-bottom: 1rem; gap: 0.8rem; }
-    .logo-unified { position: relative; width: 160px; height: 55px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .logo-globe-img { position: absolute; width: 55px; height: 55px; z-index: 1; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 26, 26, 0.3)); transition: all 0.3s ease; object-fit: contain; }
-    .logo-text-img { position: absolute; z-index: 2; width: 110px; height: auto; filter: brightness(1.1) contrast(1.2); transition: all 0.3s ease; object-fit: contain; }
+    .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 3rem; border-bottom: 1px solid rgba(192,192,192,0.3); padding-bottom: 1.5rem; min-height: 100px; gap: 1rem; }
+    .logo-unified { position: relative; width: 200px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .logo-globe-img { position: absolute; width: 70px; height: 70px; z-index: 1; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 26, 26, 0.3)); transition: all 0.3s ease; object-fit: contain; }
+    .logo-text-img { position: absolute; z-index: 2; width: 140px; height: auto; filter: brightness(1.1) contrast(1.2); transition: all 0.3s ease; object-fit: contain; }
     .logo-unified:hover .logo-globe-img {
       filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
       transform: scale(1.05);
@@ -25,60 +25,134 @@
     .logo-unified:hover .logo-text-img {
       filter: brightness(1.4) contrast(1.3);
     }
-    .logo-3d-container { flex-shrink: 0; width: 60px; height: 60px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
+    .logo-3d-container { flex-shrink: 0; width: 80px; height: 80px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
     model-viewer { width: 100%; height: 100%; background-color: transparent; }
-    .nav-links { display: flex; gap: 1rem; flex-wrap: wrap; font-family: monospace; font-size: 0.7rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.7); padding: 0.4rem 0.8rem; border: 1px solid #444; border-left: 2px solid #ff3b3b; }
-    .nav-item { cursor: pointer; color: #cdcdcd; transition: all 0.2s; padding: 0.2rem 0; }
+    .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; font-family: monospace; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.7); padding: 0.6rem 1rem; border: 1px solid #444; border-left: 2px solid #ff3b3b; }
+    .nav-item { cursor: pointer; color: #cdcdcd; transition: all 0.2s; position: relative; padding: 0.2rem 0; }
     .nav-item:hover { color: #ff4d4d; text-shadow: 0 0 8px rgba(255,77,77,0.6); }
-    .filters-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; transition: all 0.3s ease; }
+    .filters-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; transition: all 0.3s ease; }
     .filters-bar.hidden { display: none; }
-    .filter-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .filter-btn { background: #111; border: 1px solid #888; color: #ccc; font-family: monospace; font-size: 0.65rem; letter-spacing: 1px; padding: 0.3rem 0.6rem; cursor: pointer; transition: 0.2s; }
+    .filter-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .filter-btn { background: #111; border: 1px solid #888; color: #ccc; font-family: monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 0.4rem 0.8rem; cursor: pointer; transition: 0.2s; }
     .filter-btn:hover, .filter-btn.active { border-color: #ff3b3b; color: #ff3b3b; }
-    .search-box { display: flex; gap: 0.5rem; align-items: center; background: #111; border: 1px solid #888; padding: 0.2rem 0.4rem; }
-    .search-box input { background: transparent; border: none; color: #eee; font-family: monospace; font-size: 0.7rem; outline: none; width: 140px; }
-    .search-box button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.7rem; }
-    .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
-    .product-cell { background: rgba(10,10,10,0.85); border: 1px solid #888; padding: 0.8rem; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 0.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; overflow: hidden; cursor: pointer; }
+    .search-box { display: flex; gap: 0.5rem; align-items: center; background: #111; border: 1px solid #888; padding: 0.2rem 0.5rem; }
+    .search-box input { background: transparent; border: none; color: #eee; font-family: monospace; font-size: 0.75rem; outline: none; width: 180px; }
+    .search-box button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.8rem; }
+    .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 1rem; }
+    .product-cell { background: rgba(10,10,10,0.85); border: 1px solid #888; padding: 1rem; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; overflow: hidden; cursor: pointer; }
     .product-cell::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #ff3b3b, transparent); opacity: 0; transition: opacity 0.3s; }
     .product-cell:hover { border-color: #ff5e5e; box-shadow: 0 0 15px rgba(255,60,60,0.2), 0 4px 20px rgba(0,0,0,0.9); transform: translateY(-2px); }
     .product-cell:hover::before { opacity: 1; }
     .product-img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: transparent; border: 1px solid #333; filter: grayscale(30%) contrast(1.1); transition: all 0.3s; }
     .product-cell:hover .product-img { filter: grayscale(0%) contrast(1.2); border-color: #555; }
-    .product-title { font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #f0f0f0; border-left: 3px solid #ff3b3b; padding-left: 0.5rem; line-height: 1.2; }
-    .product-price { font-size: 1rem; font-weight: 700; background: linear-gradient(145deg, #ff4d4d, #ff0000, #b30000); background-clip: text; -webkit-background-clip: text; color: transparent; letter-spacing: 1px; font-family: monospace; text-shadow: 0 0 20px rgba(255,0,0,0.3); }
-    .product-price::before { content: '>'; color: #ff3b3b; margin-right: 0.3rem; font-size: 0.8rem; }
-    .acquire-btn { background: #0a0a0a; border: 1px solid #666; color: #e0e0e0; font-family: monospace; font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; padding: 0.6rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; text-align: center; margin-top: auto; }
+    .product-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #f0f0f0; border-left: 3px solid #ff3b3b; padding-left: 0.75rem; line-height: 1.3; }
+    .product-price { font-size: 1.3rem; font-weight: 700; background: linear-gradient(145deg, #ff4d4d, #ff0000, #b30000); background-clip: text; -webkit-background-clip: text; color: transparent; letter-spacing: 1px; font-family: monospace; text-shadow: 0 0 20px rgba(255,0,0,0.3); }
+    .product-price::before { content: '>'; color: #ff3b3b; margin-right: 0.5rem; font-size: 1rem; }
+    .acquire-btn { background: #0a0a0a; border: 1px solid #666; color: #e0e0e0; font-family: monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; padding: 0.8rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; text-align: center; margin-top: auto; }
     .acquire-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
     .acquire-btn:hover::before { left: 100%; }
     .acquire-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
-    .specs-modal, .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 1rem; }
-    .specs-modal-content, .cart-modal-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 1rem; max-width: 95%; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); position: relative; }
-    .specs-grid { flex-direction: column; gap: 1rem; }
-    .specs-details { border-right: none; padding-right: 0; }
-    .slide-img { max-height: 200px; }
-    .related-card { width: 100%; }
-    .editor-panel { bottom: 10px; right: 10px; padding: 0.5rem; gap: 0.3rem; }
-    .editor-panel button { font-size: 0.6rem; padding: 0.2rem 0.4rem; }
-    .toast { white-space: normal; text-align: center; width: 90%; bottom: 20px; font-size: 0.7rem; }
-    @media (min-width: 640px) {
-      .main-content { padding: 1.5rem; }
-      .product-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-      .product-title { font-size: 0.9rem; }
-      .product-price { font-size: 1.1rem; }
-      .logo-unified { width: 180px; height: 65px; }
-      .logo-globe-img { width: 65px; height: 65px; }
-      .logo-text-img { width: 130px; }
-      .logo-3d-container { width: 70px; height: 70px; }
+    .specs-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
+    .specs-modal-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 1.8rem; max-width: 900px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); position: relative; }
+    .specs-modal-content h3 { color: #ff3b3b; margin-bottom: 1.2rem; font-size: 1.3rem; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
+    .specs-grid { display: flex; flex-direction: row; gap: 2rem; flex-wrap: wrap; }
+    .specs-details { flex: 1; min-width: 200px; font-size: 0.9rem; line-height: 1.5; border-right: 1px solid #333; padding-right: 1rem; }
+    .specs-gallery { flex: 1; min-width: 240px; text-align: center; }
+    .slide-img { width: 100%; max-height: 280px; object-fit: contain; border: 1px solid #555; margin-bottom: 0.5rem; background: #000; }
+    .slide-controls { display: flex; justify-content: center; gap: 1rem; align-items: center; margin-top: 0.3rem; }
+    .slide-btn { background: #222; border: 1px solid #888; color: white; padding: 0.2rem 0.6rem; cursor: pointer; font-family: monospace; font-size: 0.8rem; transition: 0.2s; }
+    .slide-btn:hover { border-color: #ff3b3b; color: #ff3b3b; }
+    .slide-counter { font-size: 0.7rem; color: #aaa; }
+    .related-products { margin-top: 1.5rem; border-top: 1px solid #333; padding-top: 1rem; }
+    .related-title { color: #ff3b3b; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 0.8rem; text-transform: uppercase; }
+    .related-grid { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+    .related-card { background: #111; border: 1px solid #555; padding: 0.4rem; width: calc(50% - 0.4rem); min-width: 140px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 0.6rem; }
+    .related-card:hover { border-color: #ff3b3b; background: #1a1a1a; }
+    .related-card img { width: 45px; height: 45px; object-fit: contain; border: 1px solid #444; background: transparent; }
+    .related-card div { font-size: 0.7rem; line-height: 1.3; }
+    .related-card div strong { display: block; color: #ff3b3b; }
+    .modal-buttons { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.8rem; }
+    .modal-btn { flex: 1; background: #0a0a0a; border: 1px solid #666; color: #e0e0e0; font-family: monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; padding: 0.7rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; text-align: center; }
+    .modal-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
+    .modal-btn:hover::before { left: 100%; }
+    .modal-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
+    .buy-btn { border-color: #00ff41; color: #00ff41; }
+    .edit-modal .specs-details textarea { width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; font-family: monospace; padding: 0.5rem; font-size: 0.9rem; resize: vertical; }
+    .gallery-controls { display: flex; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .gallery-btn { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
+    .gallery-btn:hover { border-color: #ff3b3b; color: #ff3b3b; }
+    .image-list { display: flex; flex-direction: column; gap: 0.3rem; max-height: 200px; overflow-y: auto; margin-top: 0.5rem; }
+    .image-item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 0.2rem 0.5rem; border: 1px solid #444; }
+    .image-item span { font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .image-item button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.8rem; }
+    .cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
+    .cart-modal-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 2rem; max-width: 600px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); }
+    .cart-modal-content h3 { color: #ff3b3b; margin-bottom: 1.5rem; font-size: 1.4rem; text-align: center; }
+    .cart-items { max-height: 400px; overflow-y: auto; margin-bottom: 1rem; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding: 0.8rem 0; }
+    .cart-item-info { flex: 2; }
+    .cart-item-title { font-size: 0.9rem; }
+    .cart-item-price { color: #ff3b3b; font-size: 0.8rem; }
+    .cart-item-qty { display: flex; gap: 0.5rem; align-items: center; }
+    .cart-item-qty button { background: #222; border: 1px solid #888; color: white; width: 24px; cursor: pointer; }
+    .cart-item-remove { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 1.2rem; margin-left: 1rem; }
+    .cart-total { text-align: right; font-size: 1.2rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ff3b3b; }
+    .cart-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+    .cart-buttons button { flex: 1; background: #222; border: 1px solid #888; color: white; padding: 0.5rem; cursor: pointer; }
+    .editor-panel { position: fixed; bottom: 20px; right: 20px; background: #111; border: 2px solid #ff3b3b; padding: 0.8rem 1rem; z-index: 2000; display: none; flex-direction: column; gap: 0.5rem; font-family: monospace; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+    .editor-panel button { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; }
+    .product-cell.editor-mode .product-title,
+    .product-cell.editor-mode .product-price { cursor: pointer; outline: 1px dashed #ff3b3b; transition: outline 0.1s; }
+    .product-cell.editor-mode .product-title:hover,
+    .product-cell.editor-mode .product-price:hover { outline: 2px solid #ff3b3b; }
+    .delete-card-btn { position: absolute; top: 5px; right: 5px; background: #000; border: 1px solid #ff3b3b; color: #ff3b3b; font-size: 0.6rem; padding: 2px 5px; cursor: pointer; z-index: 10; display: none; }
+    .product-cell.editor-mode .delete-card-btn { display: block; }
+    .add-card-btn { margin: 20px auto 0; display: none; background: #222; border: 1px solid #ff3b3b; color: #ff3b3b; padding: 0.5rem 1rem; cursor: pointer; width: fit-content; }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #111; border: 1px solid #ff3b3b; color: #ff3b3b; padding: 0.5rem 1rem; font-family: monospace; font-size: 0.8rem; z-index: 3000; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
+    .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
+    .blink { animation: blink 2s infinite; }
+    @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
+
+    /* ========== MEDIA QUERIES APENAS PARA CELULAR (ATÉ 768px) ========== */
+    @media (max-width: 768px) {
+      .main-content { padding: 1rem; }
+      .header-row { gap: 0.8rem; margin-bottom: 1.5rem; }
+      .logo-unified { width: 140px; height: 50px; }
+      .logo-globe-img { width: 50px; height: 50px; }
+      .logo-text-img { width: 100px; }
+      .logo-3d-container { width: 55px; height: 55px; }
+      .nav-links { gap: 0.8rem; font-size: 0.65rem; padding: 0.4rem 0.6rem; }
+      .filters-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; margin-bottom: 1.5rem; }
+      .filter-buttons { justify-content: center; }
+      .filter-btn { font-size: 0.6rem; padding: 0.3rem 0.6rem; }
+      .search-box input { width: 100%; font-size: 0.7rem; }
+      .search-box button { font-size: 0.7rem; }
+      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .product-cell { padding: 0.7rem; gap: 0.7rem; }
+      .product-title { font-size: 0.75rem; padding-left: 0.4rem; letter-spacing: 1px; }
+      .product-price { font-size: 1rem; }
+      .product-price::before { font-size: 0.8rem; margin-right: 0.3rem; }
+      .acquire-btn { font-size: 0.6rem; padding: 0.5rem; letter-spacing: 1px; }
+      .specs-modal { padding: 1rem; }
+      .specs-modal-content { padding: 1rem; }
+      .specs-grid { flex-direction: column; gap: 1rem; }
+      .specs-details { border-right: none; padding-right: 0; }
+      .slide-img { max-height: 200px; }
+      .related-card { width: 100%; }
+      .modal-btn { font-size: 0.65rem; padding: 0.5rem; }
+      .cart-modal-content { padding: 1rem; }
+      .cart-item { flex-wrap: wrap; gap: 0.5rem; }
+      .cart-item-qty button { width: 28px; }
+      .editor-panel { bottom: 10px; right: 10px; padding: 0.5rem; gap: 0.3rem; }
+      .editor-panel button { font-size: 0.55rem; padding: 0.2rem 0.4rem; }
+      .toast { white-space: normal; text-align: center; width: 90%; font-size: 0.7rem; bottom: 20px; }
+      .industrial-footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.6rem; }
     }
-    @media (min-width: 1024px) {
-      .product-grid { grid-template-columns: repeat(4, 1fr); gap: 2rem; }
-      .main-content { padding: 2rem; }
-      .product-title { font-size: 0.9rem; }
-      .product-price { font-size: 1.3rem; }
-      .specs-grid { flex-direction: row; }
-      .specs-details { border-right: 1px solid #333; padding-right: 1rem; }
-      .related-card { width: calc(50% - 0.4rem); }
+    /* Para telas muito pequenas (até 480px) - opcional */
+    @media (max-width: 480px) {
+      .product-grid { gap: 0.8rem; }
+      .product-title { font-size: 0.7rem; }
+      .product-price { font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -90,13 +164,13 @@
 <main class="main-content">
   <div class="header-row">
     <div class="logo-unified" id="mainLogo">
-      <img src="https://placehold.co/70x70?text=Globo" alt="Globo" class="logo-globe-img">
-      <img src="https://placehold.co/140x40?text=VETIN+CYBER" alt="VETIN CYBER" class="logo-text-img">
+      <img src="images/globo.png" alt="Globo" class="logo-globe-img">
+      <img src="images/vetin cyber.png" alt="VETIN CYBER" class="logo-text-img">
     </div>
     <div class="logo-3d-container">
       <model-viewer 
         id="logo3d" 
-        src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+        src="images/logo3d.glb" 
         alt="Logo 3D" 
         auto-rotate 
         auto-rotate-delay="0" 
@@ -230,7 +304,6 @@
   const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZW1nZGl6b3FmcmVneWlhbGlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTkzNjgsImV4cCI6MjA5MTI3NTM2OH0.zN11NTeroxNsd-SzEGJBsASa-tZ_DkDcmjmCNcIJTiY';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const BUCKET_NAME = 'product-images';
 
   // ======================== VARIÁVEIS GLOBAIS ========================
   let productsData = [];
@@ -248,63 +321,53 @@
     setTimeout(() => toast.style.opacity = '0', 2000);
   }
 
-  async function compressImageForUpload(file, maxWidth = 1200, quality = 0.8) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          if (width > maxWidth) {
-            height = (maxWidth / width) * height;
-            width = maxWidth;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((blob) => resolve(blob), 'image/jpeg', quality);
-        };
-        img.onerror = reject;
-        img.src = e.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  async function logError(message, context) {
+    try {
+      await supabaseClient.from('error_logs').insert({ message, context });
+    } catch(e) { console.error("Erro ao logar:", e); }
   }
 
-  async function uploadImageToStorage(file, productId, suffix = 'main') {
-    try {
-      const compressedBlob = await compressImageForUpload(file);
-      const fileExt = 'jpg';
-      const fileName = `${productId}_${suffix}_${Date.now()}.${fileExt}`;
-      const { data, error } = await supabaseClient.storage
-        .from(BUCKET_NAME)
-        .upload(fileName, compressedBlob, { contentType: 'image/jpeg', upsert: true });
-      if (error) throw error;
-      const { data: { publicUrl } } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
-      return publicUrl;
-    } catch (err) {
-      console.error('Upload error:', err);
-      showToast('Erro ao enviar imagem.');
-      return null;
+  async function fetchWithRetry(fn, retries = 3, delay = 1000) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn();
+      } catch (error) {
+        if (i === retries - 1) throw error;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        showToast(`Tentativa ${i+2}...`);
+      }
     }
   }
 
-  // ======================== FUNÇÕES SUPABASE ========================
+  function validateProduct(product) {
+    if (!product.title || product.title.trim() === '') {
+      showToast("Título não pode ficar vazio!");
+      return false;
+    }
+    if (!product.price || !/^R\$\s?\d{1,3}(\.\d{3})*,\d{2}$/.test(product.price)) {
+      showToast("Preço deve estar no formato R$99,99 ou R$1.299,00");
+      return false;
+    }
+    if (!product.imgMain || product.imgMain === '') {
+      showToast("Imagem principal obrigatória.");
+      return false;
+    }
+    return true;
+  }
+
+  // ======================== FUNÇÕES SUPABASE COM RETRY ========================
   async function loadProducts() {
-    showToast("Carregando produtos...");
+    showToast("Carregando banco...");
     try {
-      const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: true });
+      const { data, error } = await fetchWithRetry(() => supabaseClient.from('products').select('*').order('id', { ascending: true }));
       if (error) throw error;
       productsData = data || [];
       productsData.forEach(p => { if (!p.images) p.images = []; });
       showToast(`${productsData.length} produtos carregados.`);
     } catch (error) {
       console.error(error);
-      showToast("Erro ao carregar.");
+      logError(error.message, "loadProducts");
+      showToast("Erro ao carregar. Verifique a internet.");
       productsData = [];
     }
     applyFilters();
@@ -312,32 +375,74 @@
   }
 
   async function saveProduct(product) {
+    if (!validateProduct(product)) return null;
     showToast("Salvando...");
     try {
-      const { data, error } = await supabaseClient.from('products').upsert(product, { onConflict: 'id' }).select();
+      const { data, error } = await fetchWithRetry(() => supabaseClient.from('products').upsert(product, { onConflict: 'id' }).select());
       if (error) throw error;
       showToast("Sincronizado!");
       return data[0];
     } catch (error) {
       console.error(error);
-      showToast("Erro ao salvar!");
+      logError(error.message, "saveProduct");
+      showToast("Erro ao salvar! Imagem muito grande?");
       return null;
     }
   }
 
   async function deleteProductById(id) {
     try {
-      const { error } = await supabaseClient.from('products').delete().eq('id', id);
+      const { error } = await fetchWithRetry(() => supabaseClient.from('products').delete().eq('id', id));
       if (error) throw error;
       return true;
     } catch (error) {
       console.error(error);
+      logError(error.message, "deleteProductById");
       showToast("Erro ao deletar.");
       return false;
     }
   }
 
   // ======================== FUNÇÕES DE INTERFACE ========================
+  async function compressImage(base64, maxWidth = 1200, quality = 0.8) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+    });
+  }
+
+  function uploadImageFromDevice(cb) {
+    const input = document.createElement('input'); 
+    input.type = 'file'; 
+    input.accept = 'image/*';
+    input.onchange = async e => { 
+      const file = e.target.files[0];
+      if(file) { 
+        const reader = new FileReader(); 
+        reader.onload = async ev => {
+          const compressed = await compressImage(ev.target.result);
+          cb(compressed);
+        };
+        reader.readAsDataURL(file); 
+      } 
+    };
+    input.click();
+  }
+
   function updateCartCount() {
     document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantidade, 0);
   }
@@ -497,6 +602,7 @@
     currentViewImages = (prod.images && prod.images.length) ? prod.images : [prod.imgMain];
     currentViewIndex = 0;
     updateViewSlide();
+    // Produtos relacionados
     const relacionados = productsData.filter(p => p.categoria === prod.categoria && p.id !== prod.id).slice(0, 2);
     const relatedContainer = document.getElementById('relatedProductsContainer');
     const relatedGrid = document.getElementById('relatedGrid');
@@ -524,79 +630,52 @@
   document.getElementById('viewNextBtn').onclick = () => { if(currentViewImages.length) { currentViewIndex = (currentViewIndex+1)%currentViewImages.length; updateViewSlide(); } };
   document.getElementById('viewCloseBtn').onclick = () => document.getElementById('viewModal').style.display = 'none';
 
-  // ======================== MODAL EDIÇÃO COM STORAGE ========================
-  let currentEditProductId = null;
-  let tempImagesList = [];
-
+  // ======================== MODAL EDIÇÃO ========================
   function abrirModalEdicao(idx) {
     currentEditIndex = idx;
     const prod = productsData[idx];
-    currentEditProductId = prod.id;
     document.getElementById('editTitle').innerText = `Editar: ${prod.title}`;
     document.getElementById('editCategoria').value = prod.categoria || 'acessorio';
     document.getElementById('editSpecsText').value = prod.specs || '';
-    document.getElementById('editMainImage').src = prod.imgMain || 'https://placehold.co/400x300?text=Sem+imagem';
-    tempImagesList = [...(prod.images || [])];
+    document.getElementById('editMainImage').src = prod.imgMain;
+    window.editImagesList = [...(prod.images || [])];
     renderImageList();
     document.getElementById('editModal').style.display = 'flex';
   }
-
   function renderImageList() {
     const container = document.getElementById('imageListContainer');
     container.innerHTML = '';
-    tempImagesList.forEach((img, i) => {
+    window.editImagesList.forEach((img, i) => {
       const div = document.createElement('div'); div.className = 'image-item';
       div.innerHTML = `<span>${img.substring(0,40)}...</span><button class="remove-img-btn" data-idx="${i}" aria-label="Remover imagem">🗑</button>`;
       container.appendChild(div);
     });
     document.querySelectorAll('.remove-img-btn').forEach(btn => btn.addEventListener('click', e => {
-      tempImagesList.splice(btn.dataset.idx, 1);
+      window.editImagesList.splice(btn.dataset.idx, 1);
       renderImageList();
     }));
   }
-
-  async function handleImageUpload(isMain = true) {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      showToast('Enviando imagem...');
-      const productId = currentEditProductId || Date.now().toString();
-      const url = await uploadImageToStorage(file, productId, isMain ? 'main' : `gallery_${Date.now()}`);
-      if (url) {
-        if (isMain) {
-          document.getElementById('editMainImage').src = url;
-        } else {
-          tempImagesList.push(url);
-          renderImageList();
-        }
-        showToast('Imagem enviada!');
-      } else {
-        showToast('Falha no upload.');
-      }
-    };
-    input.click();
-  }
-
-  document.getElementById('uploadMainImageBtn').onclick = () => handleImageUpload(true);
-  document.getElementById('addImageBtn').onclick = () => handleImageUpload(false);
-
+  document.getElementById('uploadMainImageBtn').onclick = () => uploadImageFromDevice(base64 => {
+    document.getElementById('editMainImage').src = base64;
+    if (window.editImagesList.length) window.editImagesList[0] = base64;
+    else window.editImagesList.push(base64);
+    renderImageList();
+  });
+  document.getElementById('addImageBtn').onclick = () => uploadImageFromDevice(base64 => { window.editImagesList.push(base64); renderImageList(); });
   document.getElementById('editSaveBtn').onclick = async () => {
     const prod = productsData[currentEditIndex];
     prod.categoria = document.getElementById('editCategoria').value;
     prod.specs = document.getElementById('editSpecsText').value;
     prod.imgMain = document.getElementById('editMainImage').src;
-    prod.images = [...tempImagesList];
+    prod.images = [...window.editImagesList];
     await saveProduct(prod);
     await loadProducts();
     document.getElementById('editModal').style.display = 'none';
   };
   document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
 
-  // ======================== MODO EDITOR (hash embutido) ========================
-  const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
+  // ======================== MODO EDITOR (hash embutido - com o hash que funcionou no seu navegador) ========================
+  const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"; // Hash de "admin123" no seu navegador
   let logoClicks = 0;
 
   document.getElementById('mainLogo').onclick = async () => {
@@ -607,6 +686,7 @@
         const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        
         if (hashHex === ADMIN_HASH) {
           editorMode = true;
           document.getElementById('editorPanel').style.display = 'flex';
@@ -637,6 +717,7 @@
     if (saved) await loadProducts();
   };
 
+  // ======================== BOTÃO DE EMERGÊNCIA ========================
   document.getElementById('emergencyCreateBtn').onclick = async () => {
     const defaultProducts = [
       { title: "CÂMERA VETIN MK-I", price: "R$299,00", imgMain: "https://placehold.co/400x300?text=CAMERA", specs: "<strong>Sensor:</strong> 20MP<br><strong>Resolução:</strong> 4K", images: [], categoria: "camera" },
@@ -669,6 +750,7 @@
   document.getElementById('searchInput').addEventListener('keypress', e => { if(e.key==='Enter') { currentSearch = e.target.value; applyFilters(); } });
   document.getElementById('buscarBtn').onclick = () => document.getElementById('searchInput').focus();
 
+  // Exportar/Importar
   document.getElementById('exportProductsBtn').onclick = () => {
     const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'produtos.json'; a.click();
@@ -689,6 +771,7 @@
     reader.readAsText(file);
   };
 
+  // Trava da logo 3D
   const logo3d = document.getElementById('logo3d');
   logo3d.addEventListener('camera-change', () => {
     logo3d.cameraOrbit = '0deg 90deg auto';
@@ -697,17 +780,19 @@
   logo3d.addEventListener('dblclick', e => e.preventDefault());
   logo3d.addEventListener('mousedown', e => { if(e.detail > 1) e.preventDefault(); });
 
+  // Inicialização
   (async () => {
     await loadProducts();
     updateCartCount();
     document.getElementById('closeCartBtn').onclick = () => document.getElementById('cartModal').style.display = 'none';
     document.getElementById('checkoutBtn').onclick = finalizarCompra;
+    // Restaurar estado dos filtros
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if(filterState === 'true') {
       document.getElementById('filtersBar').classList.add('hidden');
       document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS';
     }
-    console.log('%c VETIN CYBER™ COM SUPABASE STORAGE!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ MELHORADO!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
