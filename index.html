@@ -33,15 +33,12 @@
     .drawer-close { background: none; border: none; color: #ff3b3b; font-size: 1.5rem; cursor: pointer; align-self: flex-end; margin-bottom: 1rem; }
     .menu-toggle { display: none; cursor: pointer; font-size: 1.2rem; color: #ff3b3b; background: #111; border: 1px solid #888; padding: 0.2rem 0.6rem; border-radius: 4px; }
     @media (max-width: 768px) { .menu-toggle { display: inline-block; } .filters-bar { display: none; } }
-    /* Filtros principais */
+    /* Filtros principais (sem busca agora) */
     .filters-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; transition: all 0.3s ease; }
     .filters-bar.hidden { display: none; }
     .filter-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
     .filter-btn { background: #111; border: 1px solid #888; color: #ccc; font-family: monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 0.4rem 0.8rem; cursor: pointer; transition: 0.2s; }
     .filter-btn:hover, .filter-btn.active { border-color: #ff3b3b; color: #ff3b3b; }
-    .search-box { display: flex; gap: 0.5rem; align-items: center; background: #111; border: 1px solid #888; padding: 0.2rem 0.5rem; }
-    .search-box input { background: transparent; border: none; color: #eee; font-family: monospace; font-size: 0.75rem; outline: none; width: 180px; }
-    .search-box button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.8rem; }
     .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 1rem; }
     .product-cell { background: rgba(10,10,10,0.85); border: 1px solid #888; padding: 1rem; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; overflow: hidden; cursor: pointer; }
     .product-cell::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #ff3b3b, transparent); opacity: 0; transition: opacity 0.3s; }
@@ -57,8 +54,11 @@
     .acquire-btn:hover::before { left: 100%; }
     .acquire-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
     /* Modais */
-    .specs-modal, .cart-modal, .delete-confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
-    .specs-modal-content, .cart-modal-content, .delete-confirm-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 1.8rem; max-width: 900px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); position: relative; }
+    .specs-modal, .cart-modal, .delete-confirm-modal, .faq-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
+    .specs-modal-content, .cart-modal-content, .delete-confirm-content, .faq-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 1.8rem; max-width: 500px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); position: relative; }
+    .faq-content h3 { color: #ff3b3b; margin-bottom: 1rem; }
+    .faq-content p { margin-bottom: 0.8rem; font-size: 0.9rem; }
+    .close-faq { background: none; border: none; color: #ff3b3b; font-size: 1.5rem; cursor: pointer; position: absolute; top: 10px; right: 15px; }
     .delete-confirm-content { max-width: 400px; text-align: center; }
     .delete-confirm-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; }
     .specs-grid { display: flex; flex-direction: row; gap: 2rem; flex-wrap: wrap; }
@@ -91,6 +91,11 @@
     .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
+    /* FAQ flutuante com mesmo efeito do acquire-btn */
+    .faq-fab { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; background: #0a0a0a; border: 1px solid #ff3b3b; border-radius: 50%; color: #ff3b3b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; transition: all 0.3s ease; overflow: hidden; text-decoration: none; }
+    .faq-fab::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
+    .faq-fab:hover::before { left: 100%; }
+    .faq-fab:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); transform: scale(1.05); }
     @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-item-img { width: 40px; height: 40px; } }
   </style>
 </head>
@@ -111,12 +116,13 @@
     <div class="nav-links">
       <div class="nav-item" onclick="toggleCartModal()">CARRINHO (<span id="cartCount">0</span>)</div>
       <div class="nav-item" onclick="finalizarCompra()">FINALIZAR</div>
-      <div class="nav-item" id="buscarBtn">BUSCAR</div>
+      <!-- Ícone de busca estilo Corteiz (abre drawer) -->
+      <div class="nav-item" id="searchIconBtn">🔍</div>
       <div class="menu-toggle" id="menuToggle">☰</div>
     </div>
   </div>
 
-  <!-- Drawer de filtros (mobile) -->
+  <!-- Drawer de filtros (mobile e busca) -->
   <div class="filter-drawer" id="filterDrawer">
     <button class="drawer-close" id="drawerClose">✕</button>
     <div class="filter-buttons">
@@ -137,10 +143,7 @@
       <button class="filter-btn" data-cat="camera">CÂMERAS</button>
       <button class="filter-btn" data-cat="acessorio">ACESSÓRIOS</button>
     </div>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="BUSCAR PRODUTO...">
-      <button id="searchBtn">🔍</button>
-    </div>
+    <!-- Removido o campo de busca daqui -->
   </div>
 
   <div class="product-grid" id="productGrid"></div>
@@ -210,6 +213,19 @@
       <h3>⚠️ CONFIRMAR EXCLUSÃO</h3>
       <p>Tem certeza que deseja excluir este produto permanentemente?</p>
       <div class="delete-confirm-buttons"><button id="confirmDeleteBtn" class="modal-btn">SIM, EXCLUIR</button><button id="cancelDeleteBtn" class="modal-btn">CANCELAR</button></div>
+    </div>
+  </div>
+
+  <!-- FAQ flutuante -->
+  <div class="faq-fab" id="faqFab">❓</div>
+  <div id="faqModal" class="faq-modal">
+    <div class="faq-content">
+      <button class="close-faq" id="closeFaqBtn">✕</button>
+      <h3>❓ DÚVIDAS FREQUENTES</h3>
+      <p><strong>📷 Câmeras são novas ou seminovas?</strong> Todas as câmeras são seminovas, testadas e com garantia de 30 dias.</p>
+      <p><strong>🚚 Frete?</strong> Enviamos para todo Brasil via PAC ou Sedex. Calcule o frete no carrinho!</p>
+      <p><strong>💳 Pagamento?</strong> Pix, cartão de crédito (até 3x) ou boleto via PagBank.</p>
+      <p><strong>🔧 Dúvidas técnicas?</strong> Entre em contato pelo WhatsApp ou e-mail vetincyber@hotmail.com</p>
     </div>
   </div>
 
@@ -507,24 +523,24 @@
     await loadProducts(); showToast("3 produtos criados!");
   };
 
-  // Drawer mobile
+  // Drawer mobile e busca
   const menuToggle = document.getElementById('menuToggle'), filterDrawer = document.getElementById('filterDrawer'), drawerOverlay = document.getElementById('drawerOverlay');
   function openDrawer() { filterDrawer.classList.add('open'); drawerOverlay.classList.add('active'); }
   function closeDrawer() { filterDrawer.classList.remove('open'); drawerOverlay.classList.remove('active'); }
   menuToggle.onclick = openDrawer;
   document.getElementById('drawerClose').onclick = closeDrawer;
   drawerOverlay.onclick = closeDrawer;
+  // Abrir drawer ao clicar no ícone de busca (lupa)
+  document.getElementById('searchIconBtn').onclick = openDrawer;
   document.querySelectorAll('#filterDrawer .filter-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); closeDrawer(); }; });
   document.getElementById('drawerSearchBtn').onclick = () => { currentSearch = document.getElementById('drawerSearchInput').value; applyFilters(); closeDrawer(); };
   document.getElementById('drawerSearchInput').addEventListener('keypress', e => { if(e.key==='Enter') { currentSearch = e.target.value; applyFilters(); closeDrawer(); } });
 
-  // Filtros principais e busca com debounce
+  // Filtros principais (sem busca)
   document.querySelectorAll('.filters-bar .filter-btn').forEach(btn => btn.onclick = () => { document.querySelectorAll('.filters-bar .filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); });
-  const searchInput = document.getElementById('searchInput');
-  document.getElementById('searchBtn').onclick = () => { currentSearch = searchInput.value; applyFilters(); };
-  searchInput.addEventListener('keypress', e => { if(e.key==='Enter') { currentSearch = searchInput.value; applyFilters(); } });
-  searchInput.addEventListener('input', () => { if (searchDebounceTimer) clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => { currentSearch = searchInput.value; applyFilters(); }, 300); });
-  document.getElementById('buscarBtn').onclick = () => searchInput.focus();
+
+  // Busca principal agora é feita pelo drawer, mas mantemos a variável currentSearch para compatibilidade
+  // O campo de busca original foi removido, então não há necessidade de debounce aqui.
 
   // Exportar / Importar / Backup
   document.getElementById('exportProductsBtn').onclick = () => { const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'produtos.json'; a.click(); };
@@ -542,6 +558,14 @@
   document.querySelectorAll('img').forEach(img => { img.addEventListener('contextmenu', e => e.preventDefault()); img.setAttribute('draggable', 'false'); });
   const observer = new MutationObserver(() => { document.querySelectorAll('img').forEach(img => { if (!img.hasAttribute('data-contextmenu-blocked')) { img.addEventListener('contextmenu', e => e.preventDefault()); img.setAttribute('draggable', 'false'); img.setAttribute('data-contextmenu-blocked', 'true'); } }); });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // FAQ flutuante
+  const faqFab = document.getElementById('faqFab');
+  const faqModal = document.getElementById('faqModal');
+  const closeFaqBtn = document.getElementById('closeFaqBtn');
+  faqFab.onclick = () => { faqModal.style.display = 'flex'; };
+  closeFaqBtn.onclick = () => { faqModal.style.display = 'none'; };
+  window.onclick = (e) => { if (e.target === faqModal) faqModal.style.display = 'none'; };
 
   (async () => {
     await loadProducts();
