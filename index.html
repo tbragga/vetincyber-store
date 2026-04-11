@@ -2,13 +2,13 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>VETIN CYBER™</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* (TODO O CSS ORIGINAL FOI MANTIDO - NENHUMA ALTERAÇÃO) */
+    /* CSS BASE (igual ao original, sem alterações para desktop) */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
     .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
@@ -18,7 +18,6 @@
     .logo-unified { position: relative; width: 200px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .logo-globe-img { position: absolute; width: 70px; height: 70px; z-index: 1; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 26, 26, 0.3)); transition: all 0.3s ease; object-fit: contain; }
     .logo-text-img { position: absolute; z-index: 2; width: 140px; height: auto; filter: brightness(1.1) contrast(1.2); transition: all 0.3s ease; object-fit: contain; }
-    /* EFEITO DE GLOW NO HOVER */
     .logo-unified:hover .logo-globe-img {
       filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
       transform: scale(1.05);
@@ -113,8 +112,48 @@
     .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
-    @media (max-width: 1024px) { .product-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } .logo-3d-container { width: 60px; height: 60px; } }
-    @media (max-width: 640px) { .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .header-row { flex-direction: column; align-items: flex-start; } .nav-links { width: 100%; justify-content: space-between; } .logo-unified { width: 160px; height: 50px; } .logo-globe-img { width: 50px; height: 50px; } .logo-text-img { width: 110px; } .logo-3d-container { width: 55px; height: 55px; order: 2; margin: 0 auto; } .header-row { flex-direction: row; flex-wrap: wrap; } .logo-unified { order: 1; } .logo-3d-container { order: 2; } .nav-links { order: 3; width: 100%; justify-content: center; } .filters-bar { flex-direction: column; align-items: stretch; } .search-box input { width: 100%; } .specs-grid { flex-direction: column; } .related-card { width: 100%; } }
+
+    /* ========== MEDIA QUERIES APENAS PARA CELULAR (ATÉ 768px) ========== */
+    @media (max-width: 768px) {
+      .main-content { padding: 1rem; }
+      .header-row { gap: 0.8rem; margin-bottom: 1.5rem; }
+      .logo-unified { width: 140px; height: 50px; }
+      .logo-globe-img { width: 50px; height: 50px; }
+      .logo-text-img { width: 100px; }
+      .logo-3d-container { width: 55px; height: 55px; }
+      .nav-links { gap: 0.8rem; font-size: 0.65rem; padding: 0.4rem 0.6rem; }
+      .filters-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; margin-bottom: 1.5rem; }
+      .filter-buttons { justify-content: center; }
+      .filter-btn { font-size: 0.6rem; padding: 0.3rem 0.6rem; }
+      .search-box input { width: 100%; font-size: 0.7rem; }
+      .search-box button { font-size: 0.7rem; }
+      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .product-cell { padding: 0.7rem; gap: 0.7rem; }
+      .product-title { font-size: 0.75rem; padding-left: 0.4rem; letter-spacing: 1px; }
+      .product-price { font-size: 1rem; }
+      .product-price::before { font-size: 0.8rem; margin-right: 0.3rem; }
+      .acquire-btn { font-size: 0.6rem; padding: 0.5rem; letter-spacing: 1px; }
+      .specs-modal { padding: 1rem; }
+      .specs-modal-content { padding: 1rem; }
+      .specs-grid { flex-direction: column; gap: 1rem; }
+      .specs-details { border-right: none; padding-right: 0; }
+      .slide-img { max-height: 200px; }
+      .related-card { width: 100%; }
+      .modal-btn { font-size: 0.65rem; padding: 0.5rem; }
+      .cart-modal-content { padding: 1rem; }
+      .cart-item { flex-wrap: wrap; gap: 0.5rem; }
+      .cart-item-qty button { width: 28px; }
+      .editor-panel { bottom: 10px; right: 10px; padding: 0.5rem; gap: 0.3rem; }
+      .editor-panel button { font-size: 0.55rem; padding: 0.2rem 0.4rem; }
+      .toast { white-space: normal; text-align: center; width: 90%; font-size: 0.7rem; bottom: 20px; }
+      .industrial-footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.6rem; }
+    }
+    /* Para telas muito pequenas (até 480px) - opcional */
+    @media (max-width: 480px) {
+      .product-grid { gap: 0.8rem; }
+      .product-title { font-size: 0.7rem; }
+      .product-price { font-size: 0.9rem; }
+    }
   </style>
 </head>
 <body>
@@ -635,9 +674,8 @@
   };
   document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
 
-  // ======================== MODO EDITOR (hash embutido - SOLUÇÃO 2) ========================
-  // Hash SHA-256 de "admin123" fixo no código
-  const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
+  // ======================== MODO EDITOR (hash embutido - com o hash que funcionou no seu navegador) ========================
+  const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"; // Hash de "admin123" no seu navegador
   let logoClicks = 0;
 
   document.getElementById('mainLogo').onclick = async () => {
@@ -679,7 +717,7 @@
     if (saved) await loadProducts();
   };
 
-  // ======================== BOTÃO DE EMERGÊNCIA (funcional) ========================
+  // ======================== BOTÃO DE EMERGÊNCIA ========================
   document.getElementById('emergencyCreateBtn').onclick = async () => {
     const defaultProducts = [
       { title: "CÂMERA VETIN MK-I", price: "R$299,00", imgMain: "https://placehold.co/400x300?text=CAMERA", specs: "<strong>Sensor:</strong> 20MP<br><strong>Resolução:</strong> 4K", images: [], categoria: "camera" },
