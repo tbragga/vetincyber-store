@@ -168,6 +168,70 @@
       pointer-events: auto;
       touch-action: manipulation;
     }
+
+    /* ========== MELHORIAS PARA CELULAR (CABEÇALHO E EFEITOS TOUCH) ========== */
+    @media (max-width: 768px) {
+      /* Ajusta o header para empilhar de forma mais organizada */
+      .header-row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .logo-unified {
+        order: 1;
+        margin: 0;
+      }
+      .logo-3d-container {
+        order: 2;
+        margin: 0;
+      }
+      .nav-links {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.5rem;
+      }
+      /* Melhora o toque nos botões */
+      .acquire-btn,
+      .filter-btn,
+      .modal-btn,
+      .gallery-btn,
+      .cart-item-qty button,
+      .nav-item {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* Efeito de feedback ao tocar no botão adquirir */
+      .acquire-btn:active {
+        transform: scale(0.98);
+        background: #ff3b3b20;
+        border-color: #ff3b3b;
+      }
+      /* Efeito glow na logo ao tocar (simula hover) */
+      .logo-unified:active .logo-globe-img {
+        filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
+        transform: scale(1.05);
+      }
+      .logo-unified:active .logo-text-img {
+        filter: brightness(1.4) contrast(1.3);
+      }
+    }
+    /* Garante que os efeitos de hover no desktop continuem, e no mobile usamos :active */
+    @media (hover: hover) and (pointer: fine) {
+      .logo-unified:hover .logo-globe-img {
+        filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
+        transform: scale(1.05);
+      }
+      .logo-unified:hover .logo-text-img {
+        filter: brightness(1.4) contrast(1.3);
+      }
+      .acquire-btn:hover {
+        transform: translateY(-2px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -845,6 +909,22 @@
     });
   });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // ========== MELHORIAS PARA TOQUE EM DISPOSITIVOS MÓVEIS ==========
+  // Remove o atraso e dá feedback visual ao tocar nos botões
+  document.querySelectorAll('.acquire-btn, .filter-btn, .modal-btn, .gallery-btn, .nav-item, .logo-unified').forEach(el => {
+    el.addEventListener('touchstart', (e) => {
+      // Apenas para ativar o feedback visual mais rápido
+      el.classList.add('touch-active');
+      setTimeout(() => el.classList.remove('touch-active'), 150);
+    }, { passive: true });
+  });
+  // Garante que o efeito de glow no logo também funcione no toque
+  const logo = document.getElementById('mainLogo');
+  logo.addEventListener('touchstart', () => {
+    logo.classList.add('touch-glow');
+    setTimeout(() => logo.classList.remove('touch-glow'), 200);
+  });
 
   // Inicialização
   (async () => {
