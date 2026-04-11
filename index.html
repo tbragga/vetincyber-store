@@ -113,7 +113,7 @@
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
 
-    /* ========== MEDIA QUERIES PARA CELULAR (EXATAMENTE COMO VOCÊ TINHA) ========== */
+    /* ========== MEDIA QUERIES PARA CELULAR ========== */
     @media (max-width: 768px) {
       .main-content { padding: 1rem; }
       .header-row { gap: 0.8rem; margin-bottom: 1.5rem; }
@@ -167,70 +167,6 @@
       user-select: none !important;
       pointer-events: auto;
       touch-action: manipulation;
-    }
-
-    /* ========== MELHORIAS PARA CELULAR (CABEÇALHO E EFEITOS TOUCH) ========== */
-    @media (max-width: 768px) {
-      /* Ajusta o header para empilhar de forma mais organizada */
-      .header-row {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .logo-unified {
-        order: 1;
-        margin: 0;
-      }
-      .logo-3d-container {
-        order: 2;
-        margin: 0;
-      }
-      .nav-links {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        margin-top: 0.5rem;
-      }
-      /* Melhora o toque nos botões */
-      .acquire-btn,
-      .filter-btn,
-      .modal-btn,
-      .gallery-btn,
-      .cart-item-qty button,
-      .nav-item {
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-      }
-      /* Efeito de feedback ao tocar no botão adquirir */
-      .acquire-btn:active {
-        transform: scale(0.98);
-        background: #ff3b3b20;
-        border-color: #ff3b3b;
-      }
-      /* Efeito glow na logo ao tocar (simula hover) */
-      .logo-unified:active .logo-globe-img {
-        filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
-        transform: scale(1.05);
-      }
-      .logo-unified:active .logo-text-img {
-        filter: brightness(1.4) contrast(1.3);
-      }
-    }
-    /* Garante que os efeitos de hover no desktop continuem, e no mobile usamos :active */
-    @media (hover: hover) and (pointer: fine) {
-      .logo-unified:hover .logo-globe-img {
-        filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255, 0, 0, 0.4));
-        transform: scale(1.05);
-      }
-      .logo-unified:hover .logo-text-img {
-        filter: brightness(1.4) contrast(1.3);
-      }
-      .acquire-btn:hover {
-        transform: translateY(-2px);
-      }
     }
   </style>
 </head>
@@ -382,7 +318,7 @@
   const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZW1nZGl6b3FmcmVneWlhbGlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTkzNjgsImV4cCI6MjA5MTI3NTM2OH0.zN11NTeroxNsd-SzEGJBsASa-tZ_DkDcmjmCNcIJTiY';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const BUCKET_NAME = 'product-images'; // Nome do bucket que você criou no Supabase Storage
+  const BUCKET_NAME = 'product-images';
 
   // ======================== VARIÁVEIS GLOBAIS ========================
   let productsData = [];
@@ -482,7 +418,7 @@
     }
   }
 
-  // ======================== NOVAS FUNÇÕES PARA SUPABASE STORAGE ========================
+  // ======================== SUPABASE STORAGE ========================
   async function compressImageForUpload(file, maxWidth = 1200, quality = 0.8) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -528,7 +464,7 @@
     }
   }
 
-  // ======================== FUNÇÕES DE INTERFACE (CARRINHO, TOAST, ETC) ========================
+  // ======================== CARRINHO E INTERFACE ========================
   function updateCartCount() {
     document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantidade, 0);
   }
@@ -688,7 +624,6 @@
     currentViewImages = (prod.images && prod.images.length) ? prod.images : [prod.imgMain];
     currentViewIndex = 0;
     updateViewSlide();
-    // Produtos relacionados
     const relacionados = productsData.filter(p => p.categoria === prod.categoria && p.id !== prod.id).slice(0, 2);
     const relatedContainer = document.getElementById('relatedProductsContainer');
     const relatedGrid = document.getElementById('relatedGrid');
@@ -787,28 +722,35 @@
   };
   document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
 
-  // ======================== MODO EDITOR (hash embutido - com o hash que funcionou no seu navegador) ========================
-  const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"; // Hash de "admin123" no seu navegador
+  // ======================== MODO EDITOR COM E-MAIL E SENHA ========================
+  const ADMIN_EMAIL = "admin@vetin.com";
+  const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"; // hash de "admin123"
   let logoClicks = 0;
 
   document.getElementById('mainLogo').onclick = async () => {
     logoClicks++;
     if (logoClicks >= 5) {
-      const senha = prompt("Senha admin:");
-      if (senha) {
-        const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
-        if (hashHex === ADMIN_HASH) {
-          editorMode = true;
-          document.getElementById('editorPanel').style.display = 'flex';
-          document.getElementById('addCardBtn').style.display = 'block';
-          applyFilters();
-          showToast("Modo editor ativado");
+      const email = prompt("E-mail de administrador:");
+      if (email && email === ADMIN_EMAIL) {
+        const senha = prompt("Senha:");
+        if (senha) {
+          const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+          if (hashHex === ADMIN_HASH) {
+            editorMode = true;
+            document.getElementById('editorPanel').style.display = 'flex';
+            document.getElementById('addCardBtn').style.display = 'block';
+            applyFilters();
+            showToast("Modo editor ativado");
+          } else {
+            alert("Acesso negado! E-mail ou senha incorretos.");
+          }
         } else {
-          alert("Senha incorreta!");
+          alert("Senha não fornecida.");
         }
+      } else {
+        alert("Acesso negado! E-mail ou senha incorretos.");
       }
       logoClicks = 0;
     }
@@ -863,7 +805,6 @@
   document.getElementById('searchInput').addEventListener('keypress', e => { if(e.key==='Enter') { currentSearch = e.target.value; applyFilters(); } });
   document.getElementById('buscarBtn').onclick = () => document.getElementById('searchInput').focus();
 
-  // Exportar/Importar
   document.getElementById('exportProductsBtn').onclick = () => {
     const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'produtos.json'; a.click();
@@ -884,7 +825,6 @@
     reader.readAsText(file);
   };
 
-  // Trava da logo 3D
   const logo3d = document.getElementById('logo3d');
   logo3d.addEventListener('camera-change', () => {
     logo3d.cameraOrbit = '0deg 90deg auto';
@@ -893,12 +833,10 @@
   logo3d.addEventListener('dblclick', e => e.preventDefault());
   logo3d.addEventListener('mousedown', e => { if(e.detail > 1) e.preventDefault(); });
 
-  // ========== BLOQUEIA MENU DE CONTEXTO (SALVAR IMAGEM) EM TODOS OS DISPOSITIVOS ==========
   document.querySelectorAll('img').forEach(img => {
     img.addEventListener('contextmenu', (e) => e.preventDefault());
     img.setAttribute('draggable', 'false');
   });
-  // Também aplica para imagens que forem adicionadas dinamicamente (opcional)
   const observer = new MutationObserver(() => {
     document.querySelectorAll('img').forEach(img => {
       if (!img.hasAttribute('data-contextmenu-blocked')) {
@@ -910,29 +848,11 @@
   });
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // ========== MELHORIAS PARA TOQUE EM DISPOSITIVOS MÓVEIS ==========
-  // Remove o atraso e dá feedback visual ao tocar nos botões
-  document.querySelectorAll('.acquire-btn, .filter-btn, .modal-btn, .gallery-btn, .nav-item, .logo-unified').forEach(el => {
-    el.addEventListener('touchstart', (e) => {
-      // Apenas para ativar o feedback visual mais rápido
-      el.classList.add('touch-active');
-      setTimeout(() => el.classList.remove('touch-active'), 150);
-    }, { passive: true });
-  });
-  // Garante que o efeito de glow no logo também funcione no toque
-  const logo = document.getElementById('mainLogo');
-  logo.addEventListener('touchstart', () => {
-    logo.classList.add('touch-glow');
-    setTimeout(() => logo.classList.remove('touch-glow'), 200);
-  });
-
-  // Inicialização
   (async () => {
     await loadProducts();
     updateCartCount();
     document.getElementById('closeCartBtn').onclick = () => document.getElementById('cartModal').style.display = 'none';
     document.getElementById('checkoutBtn').onclick = finalizarCompra;
-    // Restaurar estado dos filtros
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if(filterState === 'true') {
       document.getElementById('filtersBar').classList.add('hidden');
