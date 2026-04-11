@@ -153,6 +153,21 @@
       .product-title { font-size: 0.7rem; }
       .product-price { font-size: 0.9rem; }
     }
+
+    /* ========== AJUSTE PARA BLOQUEAR MENU DE CONTEXTO E SALVAMENTO DE IMAGENS ========== */
+    img,
+    .product-img,
+    .logo-globe-img,
+    .logo-text-img,
+    .slide-img,
+    .related-card img,
+    model-viewer {
+      -webkit-touch-callout: none !important;
+      -webkit-user-select: none !important;
+      user-select: none !important;
+      pointer-events: auto;
+      touch-action: manipulation;
+    }
   </style>
 </head>
 <body>
@@ -813,6 +828,23 @@
   });
   logo3d.addEventListener('dblclick', e => e.preventDefault());
   logo3d.addEventListener('mousedown', e => { if(e.detail > 1) e.preventDefault(); });
+
+  // ========== BLOQUEIA MENU DE CONTEXTO (SALVAR IMAGEM) EM TODOS OS DISPOSITIVOS ==========
+  document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('contextmenu', (e) => e.preventDefault());
+    img.setAttribute('draggable', 'false');
+  });
+  // Também aplica para imagens que forem adicionadas dinamicamente (opcional)
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll('img').forEach(img => {
+      if (!img.hasAttribute('data-contextmenu-blocked')) {
+        img.addEventListener('contextmenu', (e) => e.preventDefault());
+        img.setAttribute('draggable', 'false');
+        img.setAttribute('data-contextmenu-blocked', 'true');
+      }
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 
   // Inicialização
   (async () => {
