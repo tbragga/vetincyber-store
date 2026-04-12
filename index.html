@@ -396,9 +396,50 @@
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
     
+    /* ========== MOBILE LOGO (aparece apenas no final da página) ========== */
+    .mobile-logo {
+      display: none;
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .mobile-logo .logo-unified {
+      position: relative;
+      width: 180px;
+      height: 60px;
+      margin: 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-logo .logo-globe-img {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      filter: drop-shadow(0 0 8px rgba(255,0,0,0.6));
+      transition: all 0.3s ease;
+    }
+    .mobile-logo .logo-text-img {
+      position: absolute;
+      width: 120px;
+      height: auto;
+      filter: brightness(1.1) contrast(1.2);
+      transition: all 0.3s ease;
+    }
+    .mobile-logo .logo-unified:hover .logo-globe-img {
+      filter: drop-shadow(0 0 12px #ff1a1a) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 35px rgba(255,0,0,0.4));
+      transform: scale(1.05);
+    }
+    .mobile-logo .logo-unified:hover .logo-text-img {
+      filter: brightness(1.4) contrast(1.3);
+    }
+    
     /* ========== RESPONSIVIDADE MOBILE ========== */
     @media (max-width: 768px) {
       .main-content { padding: 1rem; }
+      /* Esconder a logo original do header no mobile */
+      .header-row .logo-unified {
+        display: none;
+      }
       /* Header: reorganizar para ☰ | 3D | carrinho */
       .header-row {
         display: flex;
@@ -408,10 +449,7 @@
         margin-bottom: 1.5rem;
         padding-bottom: 0.8rem;
       }
-      .logo-unified { width: 140px; height: 50px; }
-      .logo-globe-img { width: 50px; height: 50px; }
-      .logo-text-img { width: 100px; }
-      .logo-3d-container { width: 55px; height: 55px; margin: 0; }
+      .logo-3d-container { width: 55px; height: 55px; margin: 0; order: 0; }
       /* Menu hambúrguer à esquerda */
       .menu-toggle {
         display: flex;
@@ -467,19 +505,14 @@
       .cart-item-drawer img { width: 50px; height: 50px; }
       .cart-item-actions button { width: 32px; height: 32px; }
       .frete-input-group input { font-size: 0.8rem; }
-      /* Carrossel de marcas no mobile: sem animação, posicionado após os produtos, apenas 5 marcas lado a lado */
+      /* Carrossel de marcas no mobile: sem animação, apenas 5 marcas lado a lado, no topo */
       .brands-carousel {
-        margin: 2rem 0 1rem 0;
-        order: 10; /* move para o final */
+        margin: 1rem 0 1.5rem 0;
       }
       .brands-track {
         animation: none !important;
         gap: 1.5rem;
         justify-content: center;
-      }
-      /* No mobile, as marcas extras (repetições) serão escondidas via CSS */
-      .brands-track .brand-item {
-        display: inline-flex;
       }
       /* Esconder os itens além do 5º (índice 5 em diante) */
       .brands-track .brand-item:nth-child(n+6) {
@@ -499,13 +532,17 @@
         margin-top: 0;
       }
       .brand-item { height: auto; margin-bottom: 0; }
+      /* Mostrar a logo móvel no final */
+      .mobile-logo {
+        display: block;
+      }
       /* Ocultar barra de filtros desktop no mobile (já existe drawer) */
       .filters-bar { display: none; }
       /* Drawer de filtros (já existe) */
       .filter-drawer { width: 85%; }
       .filter-btn { font-size: 0.8rem; padding: 0.6rem; }
       /* Footer */
-      .industrial-footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.6rem; }
+      .industrial-footer { margin-top: 1rem; padding-top: 1rem; font-size: 0.6rem; }
       /* Toast */
       .toast { white-space: normal; width: 90%; font-size: 0.7rem; bottom: 20px; }
       /* Bloquear completamente salvamento de imagens (toque longo) */
@@ -522,6 +559,9 @@
       .product-title { font-size: 0.7rem; }
       .product-price { font-size: 0.9rem; }
       .brands-track { gap: 1rem; }
+      .mobile-logo .logo-unified { width: 140px; height: 50px; }
+      .mobile-logo .logo-globe-img { width: 50px; height: 50px; }
+      .mobile-logo .logo-text-img { width: 100px; }
     }
   </style>
 </head>
@@ -572,7 +612,7 @@
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
 
-  <!-- Carrossel de marcas (desktop: animado, com repetições; mobile: sem animação, apenas 5 marcas, ao final) -->
+  <!-- Carrossel de marcas (desktop: animado, com repetições; mobile: sem animação, apenas 5 marcas, no topo) -->
   <div class="brands-carousel">
     <div class="brands-track" id="brandsTrack"></div>
   </div>
@@ -646,6 +686,14 @@
   <button id="addCardBtn" class="add-card-btn">+ DUPLICAR ÚLTIMO CARD</button>
   <div id="emergencyBtnContainer" style="text-align:center; margin-top:20px; display:none;">
     <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
+  </div>
+
+  <!-- Logo móvel (aparece apenas no mobile, no final da página) -->
+  <div class="mobile-logo">
+    <div class="logo-unified">
+      <img src="images/globo.png" alt="Globo" class="logo-globe-img">
+      <img src="images/vetin cyber.png" alt="VETIN CYBER" class="logo-text-img">
+    </div>
   </div>
 
   <div id="viewModal" class="specs-modal" style="display:none;"></div>
