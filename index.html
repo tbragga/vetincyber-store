@@ -23,7 +23,7 @@
     .logo-3d-container { flex-shrink: 0; width: 80px; height: 80px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
     model-viewer { width: 100%; height: 100%; background-color: transparent; }
     
-    /* ========== NAV LINKS REFORMULADO (sem fundo/borda, cores vermelhas) ========== */
+    /* ========== NAV LINKS SEM FUNDO, CORES VERMELHAS ========== */
     .nav-links {
       display: flex;
       gap: 2rem;
@@ -32,37 +32,36 @@
       font-size: 0.75rem;
       letter-spacing: 1.5px;
       align-items: baseline;
-      /* Removido background, border, border-left */
       background: transparent;
       border: none;
       padding: 0;
     }
-    /* Estilo para o grupo de busca */
+    /* Estilo para o grupo de busca (sem campo fixo) */
     .search-group {
       display: inline-flex;
       align-items: baseline;
       gap: 0.5rem;
-      color: #ff3b3b; /* texto e ícone vermelho */
-    }
-    .search-icon {
-      display: inline-flex;
-      align-items: center;
+      color: #ff3b3b;
+      cursor: pointer;
     }
     .search-icon svg {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       stroke: #ff3b3b;
-      stroke-width: 2.5;
+      stroke-width: 3;
       fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
     .search-text {
       font-size: 0.75rem;
       letter-spacing: 1.5px;
       color: #ff3b3b;
     }
-    .search-field {
-      position: relative;
+    /* Campo de busca que aparece ao clicar (inline) */
+    .search-input-wrapper {
       display: inline-block;
+      position: relative;
     }
     .search-input {
       background: transparent;
@@ -76,7 +75,7 @@
       width: 140px;
       letter-spacing: 1px;
     }
-    /* Estilo para o carrinho (ícone mais bonito) */
+    /* Estilo para o carrinho (ícone mais grosso) */
     .cart-group {
       display: inline-flex;
       align-items: baseline;
@@ -85,10 +84,10 @@
       color: #ff3b3b;
     }
     .cart-icon svg {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       stroke: #ff3b3b;
-      stroke-width: 2.5;
+      stroke-width: 3;
       fill: none;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -167,7 +166,7 @@
     .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
-    @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-item-img { width: 40px; height: 40px; } .search-input { width: 100px; } .nav-links { gap: 1rem; } }
+    @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-item-img { width: 40px; height: 40px; } .nav-links { gap: 1rem; } }
   </style>
 </head>
 <body>
@@ -185,23 +184,23 @@
       <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate rotation-per-second="30deg" camera-controls disable-zoom disable-pan disable-tap touch-action="pan-y" min-camera-orbit="auto 90deg auto" max-camera-orbit="auto 90deg auto" interaction-prompt="none" loading="lazy" style="width:100%; height:100%;"></model-viewer>
     </div>
     <div class="nav-links">
-      <!-- BUSCAR: ícone + texto + campo de entrada fixo (underline) -->
-      <div class="search-group">
+      <!-- BUSCAR: ícone + texto (clique mostra campo inline) -->
+      <div class="search-group" id="searchTrigger">
         <span class="search-icon">
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </span>
         <span class="search-text">BUSCAR</span>
-        <div class="search-field">
+        <span class="search-input-wrapper" id="searchInputWrapper" style="display: none;">
           <input type="text" id="searchInputHeader" class="search-input" placeholder="" autocomplete="off">
-        </div>
+        </span>
       </div>
       <!-- CARRINHO: ícone redesenhado + texto com contador -->
       <div class="cart-group nav-item" onclick="toggleCartModal()">
         <span class="cart-icon">
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="20" r="1.5"/>
             <circle cx="18" cy="20" r="1.5"/>
             <path d="M2 2h3l2 8h12l2-6H7"/>
@@ -624,23 +623,54 @@
   searchInput.addEventListener('keypress', e => { if(e.key==='Enter') { currentSearch = searchInput.value; applyFilters(); } });
   searchInput.addEventListener('input', () => { if (searchDebounceTimer) clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => { currentSearch = searchInput.value; applyFilters(); }, 300); });
   
-  // ========== CAMPO DE BUSCA FIXO NO HEADER ==========
+  // ========== COMPORTAMENTO DO SEARCH (CLIQUE MOSTRA CAMPO INLINE) ==========
+  const searchTrigger = document.getElementById('searchTrigger');
+  const searchInputWrapper = document.getElementById('searchInputWrapper');
   const headerSearchInput = document.getElementById('searchInputHeader');
-  if (headerSearchInput) {
-    headerSearchInput.addEventListener('input', () => {
-      if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-      searchDebounceTimer = setTimeout(() => {
-        currentSearch = headerSearchInput.value;
-        applyFilters();
-      }, 300);
-    });
-    headerSearchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        currentSearch = headerSearchInput.value;
-        applyFilters();
-      }
-    });
-  }
+  let searchActive = false;
+  
+  searchTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (searchActive) {
+      // Se já estiver ativo, realiza a busca
+      currentSearch = headerSearchInput.value;
+      applyFilters();
+      searchInputWrapper.style.display = 'none';
+      searchActive = false;
+    } else {
+      // Mostra o campo de busca
+      searchInputWrapper.style.display = 'inline-block';
+      headerSearchInput.focus();
+      searchActive = true;
+    }
+  });
+  
+  headerSearchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      currentSearch = headerSearchInput.value;
+      applyFilters();
+      searchInputWrapper.style.display = 'none';
+      searchActive = false;
+      headerSearchInput.value = '';
+    }
+  });
+  
+  // Fechar ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (searchActive && !searchTrigger.contains(e.target)) {
+      searchInputWrapper.style.display = 'none';
+      searchActive = false;
+      headerSearchInput.value = '';
+    }
+  });
+  
+  headerSearchInput.addEventListener('input', () => {
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      currentSearch = headerSearchInput.value;
+      applyFilters();
+    }, 300);
+  });
 
   // Exportar / Importar / Backup
   document.getElementById('exportProductsBtn').onclick = () => { const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'produtos.json'; a.click(); };
