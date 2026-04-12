@@ -396,22 +396,29 @@
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
     
-    /* ========== RESPONSIVIDADE MOBILE ========== */
+    /* ========== RESPONSIVIDADE MOBILE (estilo Corteiz) ========== */
     @media (max-width: 768px) {
       .main-content { padding: 1rem; }
-      /* Header: reorganizar para ☰ | 3D | carrinho */
+      /* Header: apenas ☰ | 3D | carrinho, sem a logo tradicional */
       .header-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 0.5rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.8rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
       }
-      .logo-unified { width: 140px; height: 50px; }
-      .logo-globe-img { width: 50px; height: 50px; }
-      .logo-text-img { width: 100px; }
-      .logo-3d-container { width: 55px; height: 55px; margin: 0; }
+      /* Esconder a logo tradicional (globo + texto) no mobile */
+      .logo-unified {
+        display: none !important;
+      }
+      /* Ajustar container 3D para centralizar */
+      .logo-3d-container {
+        width: 55px;
+        height: 55px;
+        margin: 0 auto;
+        order: 0;
+      }
       /* Menu hambúrguer à esquerda */
       .menu-toggle {
         display: flex;
@@ -422,8 +429,9 @@
         border: 1px solid #ff3b3b;
         border-radius: 6px;
         color: #ff3b3b;
+        margin: 0;
       }
-      /* Ícone de carrinho à direita */
+      /* Ícone de carrinho à direita (substitui o link CART) */
       .cart-icon-mobile {
         display: flex !important;
         order: 2;
@@ -441,16 +449,16 @@
         stroke-width: 1.5;
         fill: none;
       }
-      /* Esconder os links de texto do header no mobile */
+      /* Esconder todos os outros links do header no mobile */
       .nav-links .nav-item:not(.menu-toggle):not(.cart-icon-mobile) {
         display: none;
       }
-      /* Esconder busca inline no mobile (pois não há SEARCH) */
+      /* Esconder busca inline no mobile */
       .search-inline {
         display: none !important;
       }
-      /* Produtos */
-      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      /* Produtos grid 2 colunas */
+      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 0.5rem; }
       .product-cell { padding: 0.7rem; gap: 0.7rem; }
       .product-title { font-size: 0.75rem; padding-left: 0.4rem; letter-spacing: 1px; }
       .product-price { font-size: 1rem; }
@@ -467,21 +475,16 @@
       .cart-item-drawer img { width: 50px; height: 50px; }
       .cart-item-actions button { width: 32px; height: 32px; }
       .frete-input-group input { font-size: 0.8rem; }
-      /* Carrossel de marcas no mobile: sem animação, posicionado após os produtos, apenas 5 marcas lado a lado */
+      /* Carrossel de marcas no mobile: sem animação, apenas 5 marcas, após os produtos */
       .brands-carousel {
         margin: 2rem 0 1rem 0;
-        order: 10; /* move para o final */
       }
       .brands-track {
         animation: none !important;
         gap: 1.5rem;
         justify-content: center;
+        flex-wrap: wrap;
       }
-      /* No mobile, as marcas extras (repetições) serão escondidas via CSS */
-      .brands-track .brand-item {
-        display: inline-flex;
-      }
-      /* Esconder os itens além do 5º (índice 5 em diante) */
       .brands-track .brand-item:nth-child(n+6) {
         display: none;
       }
@@ -489,7 +492,6 @@
         height: 20px;
         opacity: 0.65;
       }
-      /* Resetar alturas individuais no mobile */
       .brand-item img.brand-sony,
       .brand-item img.brand-nikon,
       .brand-item img.brand-samsung,
@@ -499,17 +501,52 @@
         margin-top: 0;
       }
       .brand-item { height: auto; margin-bottom: 0; }
-      /* Ocultar barra de filtros desktop no mobile (já existe drawer) */
+      /* Ocultar barra de filtros desktop no mobile */
       .filters-bar { display: none; }
       /* Drawer de filtros (já existe) */
       .filter-drawer { width: 85%; }
       .filter-btn { font-size: 0.8rem; padding: 0.6rem; }
-      /* Footer */
-      .industrial-footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.6rem; }
+      /* Rodapé com a logo tradicional (globo + texto) */
+      .mobile-logo-footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 2rem 0 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,59,59,0.3);
+      }
+      .mobile-logo-footer .logo-unified-mobile {
+        position: relative;
+        width: 160px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .mobile-logo-footer .logo-globe-img-mobile {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        filter: drop-shadow(0 0 8px rgba(255,0,0,0.6));
+        object-fit: contain;
+      }
+      .mobile-logo-footer .logo-text-img-mobile {
+        position: absolute;
+        width: 110px;
+        height: auto;
+        filter: brightness(1.1) contrast(1.2);
+        object-fit: contain;
+      }
+      .industrial-footer {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        font-size: 0.6rem;
+      }
       /* Toast */
       .toast { white-space: normal; width: 90%; font-size: 0.7rem; bottom: 20px; }
-      /* Bloquear completamente salvamento de imagens (toque longo) */
-      img, .product-img, .logo-globe-img, .logo-text-img, .slide-img, .brand-item img {
+      /* Bloquear salvamento de imagens */
+      img, .product-img, .logo-globe-img, .logo-text-img, .slide-img, .brand-item img,
+      .logo-globe-img-mobile, .logo-text-img-mobile {
         -webkit-touch-callout: none !important;
         -webkit-user-select: none !important;
         user-select: none !important;
@@ -527,7 +564,7 @@
 </head>
 <body>
 
-<!-- LINHA VERMELHA NO TOPO (estilo Corteiz) - COR SCARLET -->
+<!-- LINHA VERMELHA NO TOPO (estilo Corteiz) -->
 <div class="top-red-line"></div>
 
 <div class="urban-bg"></div>
@@ -535,17 +572,19 @@
 
 <main class="main-content">
   <div class="header-row">
+    <!-- Logo tradicional (desktop) - será ocultada no mobile -->
     <div class="logo-unified" id="mainLogo">
       <img src="images/globo.png" alt="Globo" class="logo-globe-img">
       <img src="images/vetin cyber.png" alt="VETIN CYBER" class="logo-text-img">
     </div>
+    <!-- Logo 3D (centralizado no mobile) -->
     <div class="logo-3d-container">
       <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate rotation-per-second="30deg" camera-controls disable-zoom disable-pan disable-tap touch-action="pan-y" min-camera-orbit="auto 90deg auto" max-camera-orbit="auto 90deg auto" interaction-prompt="none" loading="lazy" style="width:100%; height:100%;"></model-viewer>
     </div>
     <div class="nav-links">
-      <!-- Menu toggle (hambúrguer) para mobile e desktop -->
+      <!-- Menu toggle (hambúrguer) -->
       <div class="menu-toggle" id="menuToggle">☰</div>
-      <!-- Ícone de carrinho para mobile (aparece apenas no mobile via CSS) -->
+      <!-- Ícone de carrinho para mobile -->
       <div class="nav-item cart-icon-mobile" id="cartIconMobile" style="display: none;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1"></circle>
@@ -567,14 +606,29 @@
     </div>
   </div>
 
-  <!-- Campo de busca inline (aparece ao clicar em SEARCH) - será oculto no mobile via CSS -->
+  <!-- Campo de busca inline (desktop) -->
   <div id="searchInlineContainer" class="search-inline">
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
 
-  <!-- Carrossel de marcas (desktop: animado, com repetições; mobile: sem animação, apenas 5 marcas, ao final) -->
+  <!-- Carrossel de marcas (desktop: animado; mobile: sem animação, apenas 5 marcas) -->
   <div class="brands-carousel">
     <div class="brands-track" id="brandsTrack"></div>
+  </div>
+
+  <!-- Grid de produtos -->
+  <div class="product-grid" id="productGrid"></div>
+  <button id="addCardBtn" class="add-card-btn">+ DUPLICAR ÚLTIMO CARD</button>
+  <div id="emergencyBtnContainer" style="text-align:center; margin-top:20px; display:none;">
+    <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
+  </div>
+
+  <!-- Logo tradicional no mobile (rodapé) -->
+  <div class="mobile-logo-footer" id="mobileLogoFooter" style="display: none;">
+    <div class="logo-unified-mobile">
+      <img src="images/globo.png" alt="Globo" class="logo-globe-img-mobile">
+      <img src="images/vetin cyber.png" alt="VETIN CYBER" class="logo-text-img-mobile">
+    </div>
   </div>
 
   <!-- Drawer do carrinho -->
@@ -642,53 +696,14 @@
     </div>
   </div>
 
-  <div class="product-grid" id="productGrid"></div>
-  <button id="addCardBtn" class="add-card-btn">+ DUPLICAR ÚLTIMO CARD</button>
-  <div id="emergencyBtnContainer" style="text-align:center; margin-top:20px; display:none;">
-    <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
-  </div>
-
   <div id="viewModal" class="specs-modal" style="display:none;"></div>
-  <div id="editModal" class="specs-modal edit-modal">
-    <div class="specs-modal-content">
-      <h3 id="editTitle">Editar Produto</h3>
-      <div class="specs-grid">
-        <div class="specs-details">
-          <label style="color:#ff3b3b;">Categoria:</label>
-          <select id="editCategoria" style="background:#111; border:1px solid #ff3b3b; color:#eee; margin-bottom:1rem; width:100%;"><option value="camera">Câmera</option><option value="acessorio">Acessório</option></select>
-          <label style="color:#ff3b3b;">Especificações (HTML):</label>
-          <textarea id="editSpecsText" rows="6"></textarea>
-        </div>
-        <div class="specs-gallery">
-          <img id="editMainImage" class="slide-img" src="" style="cursor:pointer;" alt="Imagem principal">
-          <div class="gallery-controls"><button id="uploadMainImageBtn" class="gallery-btn">📷 TROCAR FOTO PRINCIPAL</button></div>
-          <div style="margin-top:1rem;"><label style="color:#ff3b3b;">Galeria de imagens:</label><div id="imageGridContainer" class="image-grid"></div><div class="gallery-controls"><button id="addImageBtn" class="gallery-btn">+ ADICIONAR IMAGEM</button></div></div>
-        </div>
-      </div>
-      <div class="modal-buttons"><button id="editSaveBtn" class="modal-btn">💾 SALVAR</button><button id="editCloseBtn" class="modal-btn">FECHAR</button></div>
-    </div>
-  </div>
-
-  <div id="deleteConfirmModal" class="delete-confirm-modal">
-    <div class="delete-confirm-content">
-      <h3>⚠️ CONFIRMAR EXCLUSÃO</h3>
-      <p>Tem certeza que deseja excluir este produto permanentemente?</p>
-      <div class="delete-confirm-buttons"><button id="confirmDeleteBtn" class="modal-btn">SIM, EXCLUIR</button><button id="cancelDeleteBtn" class="modal-btn">CANCELAR</button></div>
-    </div>
-  </div>
+  <div id="editModal" class="specs-modal edit-modal">...</div>
+  <div id="deleteConfirmModal" class="delete-confirm-modal">...</div>
 
   <div class="industrial-footer"><span class="blink">●</span> VETIN CYBER™<span class="blink">●</span></div>
 </main>
 
-<div id="editorPanel" class="editor-panel">
-  <button id="exitEditorBtn">SAIR DO MODO EDITOR</button>
-  <button id="toggleFiltersBtn">🔘 OCULTAR FILTROS</button>
-  <button id="exportProductsBtn">📁 EXPORTAR PRODUTOS</button>
-  <button id="importProductsBtn">📂 IMPORTAR PRODUTOS</button>
-  <button id="backupBtn">📦 BACKUP AGORA</button>
-  <input type="file" id="importFile" accept=".json" style="display:none;">
-  <span style="font-size:0.7rem;">Clique no título/preço para editar</span>
-</div>
+<div id="editorPanel" class="editor-panel">...</div>
 <div id="toast" class="toast"></div>
 
 <script>
@@ -886,7 +901,7 @@
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
-  // ========== CARROSSEL DE MARCAS (construção dinâmica para desktop e mobile) ==========
+  // ========== CARROSSEL DE MARCAS ==========
   const brands = [
     { name: 'Sony', file: 'sony.svg', className: 'brand-sony' },
     { name: 'Nikon', file: 'nikon.svg', className: 'brand-nikon' },
@@ -900,7 +915,7 @@
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
     let items = '';
     if (isMobile) {
-      // Mobile: apenas 1 repetição (5 marcas), sem animação
+      // Mobile: apenas 1 repetição (5 marcas), sem animação (já tratado no CSS)
       brands.forEach(b => {
         items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}" class="${b.className}"></div>`;
       });
@@ -915,10 +930,19 @@
     trackBrands.innerHTML = items;
   }
   buildBrandsCarousel();
-  // Recriar o carrossel ao redimensionar a tela (para alternar entre mobile/desktop)
-  window.addEventListener('resize', () => {
-    buildBrandsCarousel();
-  });
+  window.addEventListener('resize', () => buildBrandsCarousel());
+
+  // Mostrar/ocultar rodapé com logo no mobile
+  function toggleMobileLogo() {
+    const mobileFooter = document.getElementById('mobileLogoFooter');
+    if (window.innerWidth <= 768) {
+      mobileFooter.style.display = 'flex';
+    } else {
+      mobileFooter.style.display = 'none';
+    }
+  }
+  window.addEventListener('resize', toggleMobileLogo);
+  toggleMobileLogo();
 
   // Modal de produto em tela cheia
   const productFullModal = document.getElementById('productFullModal');
@@ -1135,7 +1159,7 @@
   logo3d.addEventListener('camera-change', () => { logo3d.cameraOrbit = '0deg 90deg auto'; logo3d.zoom = '1'; });
   logo3d.addEventListener('dblclick', e => e.preventDefault());
 
-  // Bloquear menu de contexto e salvamento de imagens em todos os dispositivos
+  // Bloquear menu de contexto e salvamento de imagens
   document.querySelectorAll('img').forEach(img => {
     img.addEventListener('contextmenu', (e) => e.preventDefault());
     img.setAttribute('draggable', 'false');
@@ -1157,7 +1181,7 @@
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ MOBILE OTIMIZADO!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ MOBILE CORTEIZ STYLE!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
