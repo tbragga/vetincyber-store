@@ -75,17 +75,18 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      filter: invert(36%) sepia(99%) saturate(7474%) hue-rotate(358deg) brightness(96%) contrast(117%);
       transition: transform 0.2s;
     }
     .brand-item img {
-      height: 30px;
+      height: 24px;
       width: auto;
       object-fit: contain;
+      filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(2555%) hue-rotate(345deg) brightness(98%) contrast(104%);
+      transition: filter 0.2s, transform 0.2s;
     }
-    .brand-item:hover {
-      transform: scale(1.1);
-      filter: invert(36%) sepia(99%) saturate(7474%) hue-rotate(358deg) brightness(96%) contrast(117%) drop-shadow(0 0 4px #ff3b3b);
+    .brand-item:hover img {
+      filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(2555%) hue-rotate(345deg) brightness(98%) contrast(104%) drop-shadow(0 0 4px #ff3b3b);
+      transform: scale(1.05);
     }
     @keyframes scrollBrands {
       0% { transform: translateX(0); }
