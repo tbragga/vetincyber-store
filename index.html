@@ -396,7 +396,7 @@
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
     
-    /* ========== RESPONSIVIDADE MOBILE (APENAS LAYOUT, SEM ALTERAR FUNCIONALIDADES) ========== */
+    /* ========== RESPONSIVIDADE MOBILE ========== */
     @media (max-width: 768px) {
       .main-content { padding: 1rem; }
       /* Header: reorganizar para ☰ | 3D | carrinho */
@@ -467,16 +467,23 @@
       .cart-item-drawer img { width: 50px; height: 50px; }
       .cart-item-actions button { width: 32px; height: 32px; }
       .frete-input-group input { font-size: 0.8rem; }
-      /* Carrossel de marcas no mobile: sem animação, estático, centralizado, ao final */
+      /* Carrossel de marcas no mobile: sem animação, posicionado após os produtos, apenas 5 marcas lado a lado */
       .brands-carousel {
         margin: 2rem 0 1rem 0;
-        order: 10;
+        order: 10; /* move para o final */
       }
       .brands-track {
         animation: none !important;
         gap: 1.5rem;
-        flex-wrap: wrap;
         justify-content: center;
+      }
+      /* No mobile, as marcas extras (repetições) serão escondidas via CSS */
+      .brands-track .brand-item {
+        display: inline-flex;
+      }
+      /* Esconder os itens além do 5º (índice 5 em diante) */
+      .brands-track .brand-item:nth-child(n+6) {
+        display: none;
       }
       .brand-item img {
         height: 20px;
@@ -491,7 +498,7 @@
         height: 20px;
         margin-top: 0;
       }
-      .brand-item { height: auto; margin-bottom: 0.5rem; }
+      .brand-item { height: auto; margin-bottom: 0; }
       /* Ocultar barra de filtros desktop no mobile (já existe drawer) */
       .filters-bar { display: none; }
       /* Drawer de filtros (já existe) */
@@ -536,9 +543,9 @@
       <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate rotation-per-second="30deg" camera-controls disable-zoom disable-pan disable-tap touch-action="pan-y" min-camera-orbit="auto 90deg auto" max-camera-orbit="auto 90deg auto" interaction-prompt="none" loading="lazy" style="width:100%; height:100%;"></model-viewer>
     </div>
     <div class="nav-links">
-      <!-- Menu toggle (hambúrguer) para mobile e desktop (visível em ambos) -->
+      <!-- Menu toggle (hambúrguer) para mobile e desktop -->
       <div class="menu-toggle" id="menuToggle">☰</div>
-      <!-- Ícone de carrinho para mobile (aparece apenas no mobile via CSS, mas já deixamos aqui) -->
+      <!-- Ícone de carrinho para mobile (aparece apenas no mobile via CSS) -->
       <div class="nav-item cart-icon-mobile" id="cartIconMobile" style="display: none;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1"></circle>
@@ -563,6 +570,11 @@
   <!-- Campo de busca inline (aparece ao clicar em SEARCH) - será oculto no mobile via CSS -->
   <div id="searchInlineContainer" class="search-inline">
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
+  </div>
+
+  <!-- Carrossel de marcas (desktop: animado, com repetições; mobile: sem animação, apenas 5 marcas, ao final) -->
+  <div class="brands-carousel">
+    <div class="brands-track" id="brandsTrack"></div>
   </div>
 
   <!-- Drawer do carrinho -->
@@ -634,11 +646,6 @@
   <button id="addCardBtn" class="add-card-btn">+ DUPLICAR ÚLTIMO CARD</button>
   <div id="emergencyBtnContainer" style="text-align:center; margin-top:20px; display:none;">
     <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
-  </div>
-
-  <!-- Carrossel de marcas (no mobile será movido visualmente para o final via CSS) -->
-  <div class="brands-carousel">
-    <div class="brands-track" id="brandsTrack"></div>
   </div>
 
   <div id="viewModal" class="specs-modal" style="display:none;"></div>
@@ -879,7 +886,7 @@
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
-  // ========== CARROSSEL DE MARCAS (com repetição suficiente) ==========
+  // ========== CARROSSEL DE MARCAS (construção dinâmica para desktop e mobile) ==========
   const brands = [
     { name: 'Sony', file: 'sony.svg', className: 'brand-sony' },
     { name: 'Nikon', file: 'nikon.svg', className: 'brand-nikon' },
@@ -888,16 +895,30 @@
     { name: 'Canon', file: 'canon.svg', className: 'brand-canon' }
   ];
   const trackBrands = document.getElementById('brandsTrack');
+  
   function buildBrandsCarousel() {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
     let items = '';
-    for (let i = 0; i < 6; i++) {
+    if (isMobile) {
+      // Mobile: apenas 1 repetição (5 marcas), sem animação
       brands.forEach(b => {
         items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}" class="${b.className}"></div>`;
       });
+    } else {
+      // Desktop: 6 repetições para animação infinita
+      for (let i = 0; i < 6; i++) {
+        brands.forEach(b => {
+          items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}" class="${b.className}"></div>`;
+        });
+      }
     }
     trackBrands.innerHTML = items;
   }
   buildBrandsCarousel();
+  // Recriar o carrossel ao redimensionar a tela (para alternar entre mobile/desktop)
+  window.addEventListener('resize', () => {
+    buildBrandsCarousel();
+  });
 
   // Modal de produto em tela cheia
   const productFullModal = document.getElementById('productFullModal');
