@@ -11,6 +11,18 @@
     /* ========== CSS ORIGINAL (PRESERVADO) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
+    
+    /* LINHA VERMELHA NO TOPO (estilo Corteiz) */
+    .top-red-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #ff3b3b;
+      z-index: 10000;
+    }
+    
     .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
     .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; }
     .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 2rem; }
@@ -45,7 +57,51 @@
       padding: 0.5rem 0;
       outline: none;
     }
-    /* ========== DRAWER DO CARRINHO (estilo Corteiz) ========== */
+    /* ========== CARROSSEL DE MARCAS ========== */
+    .brands-carousel {
+      margin: 1rem 0 2rem 0;
+      overflow: hidden;
+      position: relative;
+      border-top: 1px solid rgba(255,59,59,0.3);
+      border-bottom: 1px solid rgba(255,59,59,0.3);
+      padding: 0.8rem 0;
+    }
+    .brands-track {
+      display: flex;
+      gap: 3rem;
+      animation: scrollBrands 20s linear infinite;
+      width: fit-content;
+    }
+    .brands-track:hover {
+      animation-play-state: paused;
+    }
+    .brand-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 1.2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #ccc;
+      transition: all 0.3s;
+      cursor: default;
+      white-space: nowrap;
+    }
+    .brand-item:hover {
+      color: #ff3b3b;
+      text-shadow: 0 0 8px rgba(255,59,59,0.5);
+      transform: scale(1.05);
+    }
+    @keyframes scrollBrands {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @media (max-width: 768px) {
+      .brands-track { gap: 1.5rem; }
+      .brand-item { font-size: 0.9rem; }
+    }
+    /* ========== DRAWER DO CARRINHO COM FRETE ========== */
     .cart-drawer {
       position: fixed;
       top: 0;
@@ -137,12 +193,66 @@
       cursor: pointer;
       font-size: 1rem;
     }
+    /* Seção de frete */
+    .frete-section {
+      margin-top: 1rem;
+      border-top: 1px solid #333;
+      padding-top: 1rem;
+    }
+    .frete-title {
+      color: #ff3b3b;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+    .frete-input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .frete-input-group input {
+      flex: 1;
+      background: #111;
+      border: 1px solid #888;
+      color: #eee;
+      font-family: monospace;
+      padding: 0.4rem;
+      outline: none;
+    }
+    .frete-input-group input:focus {
+      border-color: #ff3b3b;
+    }
+    .frete-btn {
+      background: #222;
+      border: 1px solid #888;
+      color: #ff3b3b;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-family: monospace;
+      transition: 0.2s;
+    }
+    .frete-btn:hover {
+      background: #ff3b3b20;
+      border-color: #ff3b3b;
+    }
+    .frete-result {
+      font-size: 0.8rem;
+      color: #0f0;
+      margin-top: 0.3rem;
+    }
     .cart-subtotal {
       text-align: right;
       font-size: 1.2rem;
       border-top: 1px solid #ff3b3b;
       padding-top: 1rem;
       margin-top: 1rem;
+    }
+    .cart-total-with-frete {
+      text-align: right;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-top: 0.5rem;
+      color: #ff3b3b;
     }
     .checkout-drawer-btn {
       width: 100%;
@@ -175,7 +285,7 @@
     .drawer-overlay.active {
       display: block;
     }
-    /* ========== MODAL DE PRODUTO EM TELA CHEIA (estilo página) ========== */
+    /* ========== MODAL DE PRODUTO EM TELA CHEIA ========== */
     .product-modal-full {
       display: none;
       position: fixed;
@@ -366,6 +476,9 @@
 </head>
 <body>
 
+<!-- LINHA VERMELHA NO TOPO (estilo Corteiz) -->
+<div class="top-red-line"></div>
+
 <div class="urban-bg"></div>
 <div class="scanlines"></div>
 
@@ -395,26 +508,54 @@
     </div>
   </div>
 
+  <!-- CARROSSEL DE MARCAS -->
+  <div class="brands-carousel">
+    <div class="brands-track" id="brandsTrack">
+      <span class="brand-item">SONY</span>
+      <span class="brand-item">CANON</span>
+      <span class="brand-item">NIKON</span>
+      <span class="brand-item">SAMSUNG</span>
+      <span class="brand-item">CASIO</span>
+      <span class="brand-item">SONY</span>
+      <span class="brand-item">CANON</span>
+      <span class="brand-item">NIKON</span>
+      <span class="brand-item">SAMSUNG</span>
+      <span class="brand-item">CASIO</span>
+    </div>
+  </div>
+
   <!-- Campo de busca inline (aparece ao clicar em SEARCH) -->
   <div id="searchInlineContainer" class="search-inline">
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
 
-  <!-- Drawer do carrinho (lateral direito) -->
+  <!-- Drawer do carrinho (lateral direito) com cálculo de frete -->
   <div id="cartDrawer" class="cart-drawer">
     <div class="drawer-header">
       <h3>🛒 SEU CARRINHO</h3>
       <button class="drawer-close" id="closeCartDrawer">✕</button>
     </div>
     <div id="cartDrawerItems" class="cart-items-drawer"></div>
-    <div id="cartDrawerSubtotal" class="cart-subtotal">TOTAL: R$0,00</div>
+    
+    <!-- Seção de cálculo de frete -->
+    <div class="frete-section">
+      <div class="frete-title">📦 MEIOS DE ENVIO</div>
+      <div class="frete-input-group">
+        <input type="text" id="cepInput" placeholder="SEU CEP" maxlength="8">
+        <button id="calcFreteBtn" class="frete-btn">CALCULAR</button>
+      </div>
+      <div id="freteResult" class="frete-result"></div>
+    </div>
+    
+    <div id="cartDrawerSubtotal" class="cart-subtotal">SUBTOTAL: R$0,00</div>
+    <div id="cartDrawerTotal" class="cart-total-with-frete">TOTAL: R$0,00</div>
     <button id="checkoutDrawerBtn" class="checkout-drawer-btn">FINALIZAR COMPRA</button>
   </div>
 
   <!-- Overlay para drawers -->
   <div id="drawerOverlay" class="drawer-overlay"></div>
 
-  <!-- Modal de produto em tela cheia (estilo página) -->
+  <!-- Modal de produto em tela cheia -->
   <div id="productFullModal" class="product-modal-full">
     <div class="product-modal-content">
       <button class="product-modal-close" id="closeProductFullModal">✕</button>
@@ -446,7 +587,6 @@
       <button class="filter-btn" data-cat="camera">CÂMERAS</button>
       <button class="filter-btn" data-cat="acessorio">ACESSÓRIOS</button>
     </div>
-    <!-- Removido o campo de busca daqui -->
   </div>
   <div class="drawer-overlay" id="filterOverlay"></div>
 
@@ -456,7 +596,6 @@
       <button class="filter-btn" data-cat="camera">CÂMERAS</button>
       <button class="filter-btn" data-cat="acessorio">ACESSÓRIOS</button>
     </div>
-    <!-- Campo de busca removido daqui -->
   </div>
 
   <div class="product-grid" id="productGrid"></div>
@@ -465,7 +604,7 @@
     <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
   </div>
 
-  <!-- Modal Visualização (desativado, substituído pelo modal full) -->
+  <!-- Modal Visualização (desativado) -->
   <div id="viewModal" class="specs-modal" style="display:none;"></div>
 
   <!-- Modal Edição -->
@@ -523,6 +662,7 @@
   let currentViewImages = [], currentViewIndex = 0, currentViewProduct = null;
   let pendingDeleteId = null;
   let searchDebounceTimer = null;
+  let currentFrete = 0;
 
   function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000); }
 
@@ -617,11 +757,23 @@
     showToast(`📷 ${product.title} adicionado`);
     if (btnElement) { const orig = btnElement.innerText; btnElement.innerText = "✔️ ADICIONADO!"; setTimeout(() => btnElement.innerText = orig, 1000); }
   }
+  
+  function getCartSubtotal() {
+    return cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0);
+  }
+  
+  function updateTotalDisplay() {
+    const subtotal = getCartSubtotal();
+    const total = subtotal + currentFrete;
+    document.getElementById('cartDrawerSubtotal').innerHTML = `SUBTOTAL: R$ ${subtotal.toFixed(2).replace('.',',')}`;
+    document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
+  }
+  
   function finalizarCompra() {
     if (!cart.length) { showToast("Carrinho vazio"); return; }
     const itens = cart.map(i => `${i.title} x${i.quantidade} (${i.price})`).join('\n');
-    const total = cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0).toFixed(2);
-    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nTOTAL: R$ ${total}\n\nObrigado!`;
+    const total = getCartSubtotal() + currentFrete;
+    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nSUBTOTAL: R$ ${getCartSubtotal().toFixed(2)}\nFRETE: R$ ${currentFrete.toFixed(2)}\nTOTAL: R$ ${total.toFixed(2)}\n\nObrigado!`;
     window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
@@ -654,13 +806,9 @@
   // Renderizar drawer do carrinho
   function renderCartDrawer() {
     const container = document.getElementById('cartDrawerItems');
-    const totalSpan = document.getElementById('cartDrawerSubtotal');
-    if (!cart.length) { container.innerHTML = '<div style="text-align:center;padding:2rem;">CARRINHO VAZIO</div>'; totalSpan.innerHTML = 'TOTAL: R$0,00'; return; }
-    let total = 0;
+    if (!cart.length) { container.innerHTML = '<div style="text-align:center;padding:2rem;">CARRINHO VAZIO</div>'; updateTotalDisplay(); return; }
     container.innerHTML = '';
     cart.forEach((item, idx) => {
-      const preco = parseFloat(item.price.replace('R$','').replace(',','.'));
-      total += preco * item.quantidade;
       const div = document.createElement('div'); div.className = 'cart-item-drawer';
       div.innerHTML = `
         <img src="${item.imgMain}" onerror="this.src='https://placehold.co/70x70?text=erro'">
@@ -677,7 +825,7 @@
       `;
       container.appendChild(div);
     });
-    totalSpan.innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
+    updateTotalDisplay();
     document.querySelectorAll('.cart-qty-down, .cart-qty-up').forEach(btn => {
       btn.onclick = (e) => { const idx = btn.dataset.idx, delta = parseInt(btn.dataset.delta); cart[idx].quantidade += delta; if(cart[idx].quantidade <= 0) cart.splice(idx,1); saveCart(); renderCartDrawer(); };
     });
@@ -685,6 +833,17 @@
       btn.onclick = (e) => { const idx = btn.dataset.idx; cart.splice(idx,1); saveCart(); renderCartDrawer(); };
     });
   }
+
+  // Calcular frete (simulação)
+  document.getElementById('calcFreteBtn').onclick = () => {
+    const cep = document.getElementById('cepInput').value;
+    if (!cep || cep.length !== 8) { showToast("Digite um CEP válido (8 números)"); return; }
+    // Simulação de frete fixo por enquanto (integração real com API depois)
+    currentFrete = 15.00;
+    document.getElementById('freteResult').innerHTML = `🚚 Frete para CEP ${cep}: R$ 15,00 (PAC)`;
+    updateTotalDisplay();
+    showToast(`Frete calculado: R$ 15,00`);
+  };
 
   // Drawer do carrinho
   document.getElementById('cartBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
@@ -860,10 +1019,10 @@
   filterOverlay.onclick = closeFilterDrawer;
   document.querySelectorAll('#filterDrawer .filter-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); closeFilterDrawer(); }; });
 
-  // Filtros principais e busca com debounce
+  // Filtros principais
   document.querySelectorAll('.filters-bar .filter-btn').forEach(btn => btn.onclick = () => { document.querySelectorAll('.filters-bar .filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); });
   
-  // Busca inline (comportamento igual ao original)
+  // Busca inline
   const searchCorteizBtn = document.getElementById('searchBtnCorteiz');
   const searchInlineContainer = document.getElementById('searchInlineContainer');
   const searchInlineInput = document.getElementById('searchInlineInput');
@@ -928,7 +1087,7 @@
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ CORTEIZ STYLE!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ COMPLETO!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
