@@ -57,7 +57,7 @@
       padding: 0.5rem 0;
       outline: none;
     }
-    /* ========== CARROSSEL DE MARCAS COM AJUSTES ========== */
+    /* ========== CARROSSEL DE MARCAS ========== */
     .brands-carousel {
       margin: 1rem 0 2rem 0;
       overflow: hidden;
@@ -69,7 +69,7 @@
     .brands-track {
       display: flex;
       gap: 3rem;
-      animation: scrollBrands 35s linear infinite; /* mais lento e fluido */
+      animation: scrollBrands 35s linear infinite;
       width: fit-content;
       will-change: transform;
     }
@@ -82,23 +82,21 @@
       justify-content: center;
       height: 35px;
     }
-    /* Todas as logos herdam uma altura padrão de 30px, opacidade reduzida */
     .brand-item img {
       height: 30px;
       width: auto;
       max-width: 100px;
       object-fit: contain;
       filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7487%) hue-rotate(358deg) brightness(96%) contrast(117%);
-      opacity: 0.65; /* opacidade reduzida para não chamar tanta atenção */
+      opacity: 0.65;
       transition: transform 0.2s, opacity 0.2s;
     }
-    /* Ajustes individuais por marca - ALTERE AQUI TAMANHO E POSIÇÃO */
-    .brand-item img.brand-sony { height: 15px; margin-top: 0px; }      /* Sony - ajuste vertical */
-    .brand-item img.brand-nikon { height: 70px; margin-top: -3px; }    /* Nikon */
-    .brand-item img.brand-samsung { height: 30px; margin-top: 0; }      /* Samsung */
-    .brand-item img.brand-olympus { height: 120px; margin-top: 0px; } /* Olympus */
-    .brand-item img.brand-canon { height: 17px; margin-top: 0px; }      /* Canon */
-    
+    /* Ajustes individuais por marca */
+    .brand-item img.brand-sony { height: 15px; margin-top: 0px; }
+    .brand-item img.brand-nikon { height: 70px; margin-top: -3px; }
+    .brand-item img.brand-samsung { height: 30px; margin-top: 0; }
+    .brand-item img.brand-olympus { height: 120px; margin-top: 0px; }
+    .brand-item img.brand-canon { height: 17px; margin-top: 0px; }
     .brand-item:hover img {
       transform: scale(1.1);
       opacity: 0.9;
@@ -108,17 +106,7 @@
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
-    @media (max-width: 768px) {
-      .brands-track { gap: 1.5rem; animation-duration: 25s; }
-      .brand-item img { height: 20px; opacity: 0.65; }
-      .brand-item img.brand-sony { height: 20px; margin-top: 0; }
-      .brand-item img.brand-nikon { height: 20px; margin-top: 0; }
-      .brand-item img.brand-samsung { height: 20px; margin-top: 0; }
-      .brand-item img.brand-olympus { height: 20px; margin-top: 0; }
-      .brand-item img.brand-canon { height: 20px; margin-top: 0; }
-      .brand-item { height: 25px; }
-    }
-    /* ========== DRAWER DO CARRINHO COM FRETE ========== */
+    /* ========== DRAWER DO CARRINHO ========== */
     .cart-drawer {
       position: fixed;
       top: 0;
@@ -262,7 +250,6 @@
       border-radius: 8px;
     }
     .checkout-drawer-btn:hover { background: #ff3b3b20; }
-    /* Overlay para drawers */
     .drawer-overlay {
       position: fixed;
       top: 0;
@@ -348,14 +335,13 @@
     .filter-drawer.open { left: 0; }
     .drawer-close-filters { background: none; border: none; color: #ff3b3b; font-size: 1.5rem; cursor: pointer; align-self: flex-end; margin-bottom: 1rem; }
     .menu-toggle { display: none; cursor: pointer; font-size: 1.2rem; color: #ff3b3b; background: #111; border: 1px solid #888; padding: 0.2rem 0.6rem; border-radius: 4px; }
-    @media (max-width: 768px) { .menu-toggle { display: inline-block; } .filters-bar { display: none; } }
-    /* Filtros principais (sem campo de busca) */
+    /* Filtros principais (desktop) */
     .filters-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; transition: all 0.3s ease; }
     .filters-bar.hidden { display: none; }
     .filter-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
     .filter-btn { background: #111; border: 1px solid #888; color: #ccc; font-family: monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 0.4rem 0.8rem; cursor: pointer; transition: 0.2s; }
     .filter-btn:hover, .filter-btn.active { border-color: #ff3b3b; color: #ff3b3b; }
-    /* Produtos e demais estilos (preservados) */
+    /* Produtos e demais estilos */
     .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 1rem; }
     .product-cell { background: rgba(10,10,10,0.85); border: 1px solid #888; padding: 1rem; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; overflow: hidden; cursor: pointer; }
     .product-cell::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #ff3b3b, transparent); opacity: 0; transition: opacity 0.3s; }
@@ -370,7 +356,7 @@
     .acquire-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
     .acquire-btn:hover::before { left: 100%; }
     .acquire-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
-    /* Modais restantes (edição, confirmação) - preservados */
+    /* Modais restantes (edição, confirmação) */
     .edit-modal .specs-details textarea { width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; font-family: monospace; padding: 0.5rem; font-size: 0.9rem; resize: vertical; }
     .gallery-controls { display: flex; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
     .gallery-btn { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
@@ -409,7 +395,127 @@
     .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
-    @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-item-img { width: 40px; height: 40px; } .cart-drawer { width: 90%; border-radius: 20px 0 0 20px; } .product-modal-content { padding: 1.5rem; } .product-modal-info h2 { font-size: 1.3rem; } }
+    
+    /* ========== RESPONSIVIDADE MOBILE (APENAS LAYOUT, SEM ALTERAR FUNCIONALIDADES) ========== */
+    @media (max-width: 768px) {
+      .main-content { padding: 1rem; }
+      /* Header: reorganizar para ☰ | 3D | carrinho */
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.8rem;
+      }
+      .logo-unified { width: 140px; height: 50px; }
+      .logo-globe-img { width: 50px; height: 50px; }
+      .logo-text-img { width: 100px; }
+      .logo-3d-container { width: 55px; height: 55px; margin: 0; }
+      /* Menu hambúrguer à esquerda */
+      .menu-toggle {
+        display: flex;
+        order: -1;
+        font-size: 1.5rem;
+        padding: 0.3rem 0.8rem;
+        background: #111;
+        border: 1px solid #ff3b3b;
+        border-radius: 6px;
+        color: #ff3b3b;
+      }
+      /* Ícone de carrinho à direita */
+      .cart-icon-mobile {
+        display: flex !important;
+        order: 2;
+        background: none;
+        border: none;
+        padding: 0.3rem;
+        color: #ff3b3b;
+        align-items: center;
+        gap: 0.2rem;
+      }
+      .cart-icon-mobile svg {
+        width: 24px;
+        height: 24px;
+        stroke: #ff3b3b;
+        stroke-width: 1.5;
+        fill: none;
+      }
+      /* Esconder os links de texto do header no mobile */
+      .nav-links .nav-item:not(.menu-toggle):not(.cart-icon-mobile) {
+        display: none;
+      }
+      /* Esconder busca inline no mobile (pois não há SEARCH) */
+      .search-inline {
+        display: none !important;
+      }
+      /* Produtos */
+      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+      .product-cell { padding: 0.7rem; gap: 0.7rem; }
+      .product-title { font-size: 0.75rem; padding-left: 0.4rem; letter-spacing: 1px; }
+      .product-price { font-size: 1rem; }
+      .product-price::before { font-size: 0.8rem; margin-right: 0.3rem; }
+      .acquire-btn { font-size: 0.6rem; padding: 0.5rem; letter-spacing: 1px; }
+      /* Modal de produto */
+      .product-modal-content { padding: 1rem; gap: 1rem; }
+      .product-modal-gallery img { max-height: 200px; }
+      .product-modal-info h2 { font-size: 1.2rem; }
+      .product-modal-price { font-size: 1.3rem; }
+      .product-modal-buttons button { font-size: 0.65rem; padding: 0.5rem; }
+      /* Drawer do carrinho */
+      .cart-drawer { width: 90%; right: -90%; }
+      .cart-item-drawer img { width: 50px; height: 50px; }
+      .cart-item-actions button { width: 32px; height: 32px; }
+      .frete-input-group input { font-size: 0.8rem; }
+      /* Carrossel de marcas no mobile: sem animação, estático, centralizado, ao final */
+      .brands-carousel {
+        margin: 2rem 0 1rem 0;
+        order: 10;
+      }
+      .brands-track {
+        animation: none !important;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .brand-item img {
+        height: 20px;
+        opacity: 0.65;
+      }
+      /* Resetar alturas individuais no mobile */
+      .brand-item img.brand-sony,
+      .brand-item img.brand-nikon,
+      .brand-item img.brand-samsung,
+      .brand-item img.brand-olympus,
+      .brand-item img.brand-canon {
+        height: 20px;
+        margin-top: 0;
+      }
+      .brand-item { height: auto; margin-bottom: 0.5rem; }
+      /* Ocultar barra de filtros desktop no mobile (já existe drawer) */
+      .filters-bar { display: none; }
+      /* Drawer de filtros (já existe) */
+      .filter-drawer { width: 85%; }
+      .filter-btn { font-size: 0.8rem; padding: 0.6rem; }
+      /* Footer */
+      .industrial-footer { margin-top: 2rem; padding-top: 1rem; font-size: 0.6rem; }
+      /* Toast */
+      .toast { white-space: normal; width: 90%; font-size: 0.7rem; bottom: 20px; }
+      /* Bloquear completamente salvamento de imagens (toque longo) */
+      img, .product-img, .logo-globe-img, .logo-text-img, .slide-img, .brand-item img {
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+        pointer-events: auto;
+        touch-action: manipulation;
+      }
+    }
+    @media (max-width: 480px) {
+      .product-grid { gap: 0.8rem; }
+      .product-title { font-size: 0.7rem; }
+      .product-price { font-size: 0.9rem; }
+      .brands-track { gap: 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -430,6 +536,18 @@
       <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate rotation-per-second="30deg" camera-controls disable-zoom disable-pan disable-tap touch-action="pan-y" min-camera-orbit="auto 90deg auto" max-camera-orbit="auto 90deg auto" interaction-prompt="none" loading="lazy" style="width:100%; height:100%;"></model-viewer>
     </div>
     <div class="nav-links">
+      <!-- Menu toggle (hambúrguer) para mobile e desktop (visível em ambos) -->
+      <div class="menu-toggle" id="menuToggle">☰</div>
+      <!-- Ícone de carrinho para mobile (aparece apenas no mobile via CSS, mas já deixamos aqui) -->
+      <div class="nav-item cart-icon-mobile" id="cartIconMobile" style="display: none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span id="cartCountMobile" style="margin-left: 0.2rem;">0</span>
+      </div>
+      <!-- Links desktop (serão ocultos no mobile) -->
       <div class="nav-item" id="searchBtnCorteiz">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         SEARCH
@@ -439,16 +557,10 @@
         CART (<span id="cartCount">0</span>)
       </div>
       <div class="nav-item" id="checkoutBtnCorteiz">CHECKOUT</div>
-      <div class="menu-toggle" id="menuToggle">☰</div>
     </div>
   </div>
 
-  <!-- CARROSSEL DE MARCAS COM LOGOS SVG E AJUSTES -->
-  <div class="brands-carousel">
-    <div class="brands-track" id="brandsTrack"></div>
-  </div>
-
-  <!-- Campo de busca inline -->
+  <!-- Campo de busca inline (aparece ao clicar em SEARCH) - será oculto no mobile via CSS -->
   <div id="searchInlineContainer" class="search-inline">
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
@@ -524,8 +636,12 @@
     <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
   </div>
 
-  <div id="viewModal" class="specs-modal" style="display:none;"></div>
+  <!-- Carrossel de marcas (no mobile será movido visualmente para o final via CSS) -->
+  <div class="brands-carousel">
+    <div class="brands-track" id="brandsTrack"></div>
+  </div>
 
+  <div id="viewModal" class="specs-modal" style="display:none;"></div>
   <div id="editModal" class="specs-modal edit-modal">
     <div class="specs-modal-content">
       <h3 id="editTitle">Editar Produto</h3>
@@ -660,7 +776,12 @@
     } catch (error) { showToast("Erro ao deletar."); return false; }
   }
 
-  function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantidade, 0); }
+  function updateCartCount() {
+    const count = cart.reduce((s, i) => s + i.quantidade, 0);
+    document.getElementById('cartCount').innerText = count;
+    const mobileCount = document.getElementById('cartCountMobile');
+    if (mobileCount) mobileCount.innerText = count;
+  }
   function saveCart() { localStorage.setItem('vetin_cart', JSON.stringify(cart)); updateCartCount(); renderCartDrawer(); }
   function addToCart(product, qtd = 1, btnElement = null) {
     const existing = cart.find(i => i.title === product.title);
@@ -749,13 +870,16 @@
     showToast(`Frete calculado: R$ 15,00`);
   };
 
+  // Abrir drawer do carrinho (desktop e mobile)
   document.getElementById('cartBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('checkoutBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
+  const cartIconMobile = document.getElementById('cartIconMobile');
+  if (cartIconMobile) cartIconMobile.onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('closeCartDrawer').onclick = () => closeDrawer('cartDrawer');
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
-  // ========== CARROSSEL DE MARCAS COM CLASSES INDIVIDUAIS (SEM ESPAÇO VAZIO) ==========
+  // ========== CARROSSEL DE MARCAS (com repetição suficiente) ==========
   const brands = [
     { name: 'Sony', file: 'sony.svg', className: 'brand-sony' },
     { name: 'Nikon', file: 'nikon.svg', className: 'brand-nikon' },
@@ -766,8 +890,7 @@
   const trackBrands = document.getElementById('brandsTrack');
   function buildBrandsCarousel() {
     let items = '';
-    // Duplica várias vezes para garantir que nunca haja espaço vazio (loop infinito perfeito)
-    for (let i = 0; i < 6; i++) {  // 6 repetições garantem cobertura total
+    for (let i = 0; i < 6; i++) {
       brands.forEach(b => {
         items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}" class="${b.className}"></div>`;
       });
@@ -991,8 +1114,20 @@
   logo3d.addEventListener('camera-change', () => { logo3d.cameraOrbit = '0deg 90deg auto'; logo3d.zoom = '1'; });
   logo3d.addEventListener('dblclick', e => e.preventDefault());
 
-  document.querySelectorAll('img').forEach(img => { img.addEventListener('contextmenu', e => e.preventDefault()); img.setAttribute('draggable', 'false'); });
-  const observer = new MutationObserver(() => { document.querySelectorAll('img').forEach(img => { if (!img.hasAttribute('data-contextmenu-blocked')) { img.addEventListener('contextmenu', e => e.preventDefault()); img.setAttribute('draggable', 'false'); img.setAttribute('data-contextmenu-blocked', 'true'); } }); });
+  // Bloquear menu de contexto e salvamento de imagens em todos os dispositivos
+  document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('contextmenu', (e) => e.preventDefault());
+    img.setAttribute('draggable', 'false');
+  });
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll('img').forEach(img => {
+      if (!img.hasAttribute('data-contextmenu-blocked')) {
+        img.addEventListener('contextmenu', (e) => e.preventDefault());
+        img.setAttribute('draggable', 'false');
+        img.setAttribute('data-contextmenu-blocked', 'true');
+      }
+    });
+  });
   observer.observe(document.body, { childList: true, subtree: true });
 
   (async () => {
@@ -1001,7 +1136,7 @@
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ COM CARROSSEL PERFEITO!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ MOBILE OTIMIZADO!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
