@@ -8,7 +8,7 @@
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ========== SEU CSS ORIGINAL (NÃO ALTERADO) ========== */
+    /* ========== CSS ORIGINAL (PRESERVADO) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
     .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
@@ -23,13 +23,29 @@
     .logo-3d-container { flex-shrink: 0; width: 80px; height: 80px; margin: 0 auto; display: flex; justify-content: center; align-items: center; }
     model-viewer { width: 100%; height: 100%; background-color: transparent; }
     .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; font-family: monospace; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.7); padding: 0.6rem 1rem; border: 1px solid #444; border-left: 2px solid #ff3b3b; align-items: center; }
-    .nav-item { cursor: pointer; color: #cdcdcd; transition: all 0.2s; padding: 0.2rem 0; }
+    .nav-item { cursor: pointer; color: #cdcdcd; transition: all 0.2s; padding: 0.2rem 0; display: flex; align-items: center; gap: 0.4rem; }
     .nav-item:hover { color: #ff4d4d; text-shadow: 0 0 8px rgba(255,77,77,0.6); }
-    /* Estilo extra para os novos links */
-    .search-inline-container { display: none; margin: -1rem 0 1rem 0; padding: 0 1rem; }
-    .search-inline-container.active { display: block; }
-    .search-inline-input { width: 100%; background: transparent; border: none; border-bottom: 2px solid #ff3b3b; color: #eee; font-family: monospace; font-size: 1rem; padding: 0.5rem 0; outline: none; }
-    /* Drawer de filtros (mobile) - mantido */
+    /* Estilo para o campo de busca inline */
+    .search-inline {
+      display: none;
+      margin: -1rem 0 1rem 0;
+      width: 100%;
+    }
+    .search-inline.active {
+      display: block;
+    }
+    .search-inline input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #ff3b3b;
+      color: #eee;
+      font-family: monospace;
+      font-size: 1rem;
+      padding: 0.5rem 0;
+      outline: none;
+    }
+    /* Drawer de filtros (mobile) */
     .filter-drawer { position: fixed; top: 0; left: -100%; width: 85%; max-width: 300px; height: 100%; background: #0a0a0a; border-right: 2px solid #ff3b3b; z-index: 2000; transition: left 0.3s ease; padding: 2rem 1rem; display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 5px 0 20px rgba(0,0,0,0.8); }
     .filter-drawer.open { left: 0; }
     .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1999; display: none; }
@@ -37,12 +53,15 @@
     .drawer-close { background: none; border: none; color: #ff3b3b; font-size: 1.5rem; cursor: pointer; align-self: flex-end; margin-bottom: 1rem; }
     .menu-toggle { display: none; cursor: pointer; font-size: 1.2rem; color: #ff3b3b; background: #111; border: 1px solid #888; padding: 0.2rem 0.6rem; border-radius: 4px; }
     @media (max-width: 768px) { .menu-toggle { display: inline-block; } .filters-bar { display: none; } }
-    /* Filtros principais (sem busca agora) */
+    /* Filtros principais */
     .filters-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; transition: all 0.3s ease; }
     .filters-bar.hidden { display: none; }
     .filter-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
     .filter-btn { background: #111; border: 1px solid #888; color: #ccc; font-family: monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 0.4rem 0.8rem; cursor: pointer; transition: 0.2s; }
     .filter-btn:hover, .filter-btn.active { border-color: #ff3b3b; color: #ff3b3b; }
+    .search-box { display: flex; gap: 0.5rem; align-items: center; background: #111; border: 1px solid #888; padding: 0.2rem 0.5rem; }
+    .search-box input { background: transparent; border: none; color: #eee; font-family: monospace; font-size: 0.75rem; outline: none; width: 180px; }
+    .search-box button { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.8rem; }
     .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 1rem; }
     .product-cell { background: rgba(10,10,10,0.85); border: 1px solid #888; padding: 1rem; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; overflow: hidden; cursor: pointer; }
     .product-cell::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #ff3b3b, transparent); opacity: 0; transition: opacity 0.3s; }
@@ -110,17 +129,25 @@
       <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate rotation-per-second="30deg" camera-controls disable-zoom disable-pan disable-tap touch-action="pan-y" min-camera-orbit="auto 90deg auto" max-camera-orbit="auto 90deg auto" interaction-prompt="none" loading="lazy" style="width:100%; height:100%;"></model-viewer>
     </div>
     <div class="nav-links">
-      <!-- NOVOS LINKS ESTILO CORTEIZ -->
-      <div class="nav-item" id="searchNav">🔍 SEARCH</div>
-      <div class="nav-item" id="cartNav">CART (<span id="cartCount">0</span>)</div>
-      <div class="nav-item" id="checkoutNav">CHECKOUT</div>
+      <!-- SEARCH com ícone e busca inline -->
+      <div class="nav-item" id="searchBtnCorteiz">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        SEARCH
+      </div>
+      <!-- CART com ícone e contador -->
+      <div class="nav-item" id="cartBtnCorteiz" onclick="toggleCartModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        CART (<span id="cartCount">0</span>)
+      </div>
+      <!-- CHECKOUT -->
+      <div class="nav-item" id="checkoutBtnCorteiz" onclick="finalizarCompra()">CHECKOUT</div>
       <div class="menu-toggle" id="menuToggle">☰</div>
     </div>
   </div>
 
   <!-- Campo de busca inline (aparece ao clicar em SEARCH) -->
-  <div id="searchInline" class="search-inline-container">
-    <input type="text" id="searchInlineInput" class="search-inline-input" placeholder="BUSCAR PRODUTO...">
+  <div id="searchInlineContainer" class="search-inline">
+    <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
 
   <!-- Drawer de filtros (mobile) -->
@@ -144,7 +171,10 @@
       <button class="filter-btn" data-cat="camera">CÂMERAS</button>
       <button class="filter-btn" data-cat="acessorio">ACESSÓRIOS</button>
     </div>
-    <!-- Campo de busca original removido (agora está inline) -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="BUSCAR PRODUTO...">
+      <button id="searchBtn">🔍</button>
+    </div>
   </div>
 
   <div class="product-grid" id="productGrid"></div>
@@ -524,57 +554,54 @@
 
   // Filtros principais e busca com debounce
   document.querySelectorAll('.filters-bar .filter-btn').forEach(btn => btn.onclick = () => { document.querySelectorAll('.filters-bar .filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); });
+  const searchInput = document.getElementById('searchInput');
+  document.getElementById('searchBtn').onclick = () => { currentSearch = searchInput.value; applyFilters(); };
+  searchInput.addEventListener('keypress', e => { if(e.key==='Enter') { currentSearch = searchInput.value; applyFilters(); } });
+  searchInput.addEventListener('input', () => { if (searchDebounceTimer) clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => { currentSearch = searchInput.value; applyFilters(); }, 300); });
   
-  // === NOVA BUSCA INLINE (estilo Corteiz) ===
-  const searchNav = document.getElementById('searchNav');
-  const searchInlineDiv = document.getElementById('searchInline');
+  // ========== NOVO COMPORTAMENTO DO SEARCH (estilo Corteiz) ==========
+  const searchCorteizBtn = document.getElementById('searchBtnCorteiz');
+  const searchInlineContainer = document.getElementById('searchInlineContainer');
   const searchInlineInput = document.getElementById('searchInlineInput');
-  let searchInlineVisible = false;
-
-  function showSearchInline() {
-    searchInlineDiv.classList.add('active');
-    searchInlineInput.focus();
-    searchInlineVisible = true;
-  }
-  function hideSearchInline() {
-    searchInlineDiv.classList.remove('active');
-    searchInlineVisible = false;
-    searchInlineInput.value = '';
-    // Não limpa a busca atual, apenas esconde
-  }
-  searchNav.onclick = (e) => {
+  let searchInlineActive = false;
+  
+  searchCorteizBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (searchInlineVisible) {
-      hideSearchInline();
-    } else {
-      showSearchInline();
-    }
-  };
-  // Busca ao digitar (debounce)
-  searchInlineInput.addEventListener('input', () => {
-    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-    searchDebounceTimer = setTimeout(() => {
+    if (searchInlineActive) {
+      // Se já estiver aberto, realiza a busca
       currentSearch = searchInlineInput.value;
       applyFilters();
-    }, 300);
+      searchInlineContainer.classList.remove('active');
+      searchInlineActive = false;
+    } else {
+      // Abre o campo de busca
+      searchInlineContainer.classList.add('active');
+      searchInlineInput.focus();
+      searchInlineActive = true;
+    }
   });
+  
   searchInlineInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       currentSearch = searchInlineInput.value;
       applyFilters();
-      hideSearchInline();
+      searchInlineContainer.classList.remove('active');
+      searchInlineActive = false;
+      searchInlineInput.value = '';
     }
   });
-  // Esconder ao clicar fora
+  
+  // Fechar o campo de busca ao clicar fora
   document.addEventListener('click', (e) => {
-    if (searchInlineVisible && !searchInlineDiv.contains(e.target) && e.target !== searchNav) {
-      hideSearchInline();
+    if (searchInlineActive && !searchInlineContainer.contains(e.target) && e.target !== searchCorteizBtn) {
+      searchInlineContainer.classList.remove('active');
+      searchInlineActive = false;
+      searchInlineInput.value = '';
     }
   });
-
-  // Links do novo header
-  document.getElementById('cartNav').onclick = toggleCartModal;
-  document.getElementById('checkoutNav').onclick = finalizarCompra;
+  
+  // Atualiza o contador do carrinho no novo link CART também (já existe #cartCount)
+  // O link CART já chama toggleCartModal() via onclick, então nada mais precisa ser feito.
 
   // Exportar / Importar / Backup
   document.getElementById('exportProductsBtn').onclick = () => { const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'produtos.json'; a.click(); };
