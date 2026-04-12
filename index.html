@@ -11,21 +11,21 @@
     /* ========== CSS ORIGINAL (PRESERVADO) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
+    .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
+    .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; }
     
-    /* LINHA VERMELHA NO TOPO (estilo Corteiz) */
+    /* Linha vermelha no topo (estilo Corteiz) */
     .top-red-line {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 2px;
+      height: 3px;
       background: #ff3b3b;
-      z-index: 10000;
+      z-index: 1001;
     }
     
-    .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
-    .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; }
-    .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 2rem; margin-top: 3px; }
     .header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 3rem; border-bottom: 1px solid rgba(192,192,192,0.3); padding-bottom: 1.5rem; min-height: 100px; gap: 1rem; }
     .logo-unified { position: relative; width: 200px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .logo-globe-img { position: absolute; width: 70px; height: 70px; z-index: 1; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 26, 26, 0.3)); transition: all 0.3s ease; object-fit: contain; }
@@ -37,7 +37,8 @@
     .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; font-family: monospace; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.7); padding: 0.6rem 1rem; border: 1px solid #444; border-left: 2px solid #ff3b3b; align-items: center; }
     .nav-item { cursor: pointer; color: #cdcdcd; transition: all 0.2s; padding: 0.2rem 0; display: flex; align-items: center; gap: 0.4rem; }
     .nav-item:hover { color: #ff4d4d; text-shadow: 0 0 8px rgba(255,77,77,0.6); }
-    /* Campo de busca inline (aparece ao clicar em SEARCH) */
+    
+    /* Campo de busca inline */
     .search-inline {
       display: none;
       margin: -1rem 0 1rem 0;
@@ -57,51 +58,52 @@
       padding: 0.5rem 0;
       outline: none;
     }
-    /* ========== CARROSSEL DE MARCAS ========== */
+    
+    /* ========== CARROSSEL INFINITO DE MARCAS ========== */
     .brands-carousel {
-      margin: 1rem 0 2rem 0;
       overflow: hidden;
-      position: relative;
-      border-top: 1px solid rgba(255,59,59,0.3);
-      border-bottom: 1px solid rgba(255,59,59,0.3);
+      white-space: nowrap;
+      background: rgba(0,0,0,0.5);
+      border-top: 1px solid #ff3b3b;
+      border-bottom: 1px solid #ff3b3b;
       padding: 0.8rem 0;
+      margin-bottom: 2rem;
+      position: relative;
     }
     .brands-track {
-      display: flex;
+      display: inline-flex;
+      animation: scrollBrands 25s linear infinite;
       gap: 3rem;
-      animation: scrollBrands 20s linear infinite;
-      width: fit-content;
-    }
-    .brands-track:hover {
-      animation-play-state: paused;
     }
     .brand-item {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 0.5rem;
       font-family: monospace;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: bold;
       letter-spacing: 2px;
-      color: #ccc;
-      transition: all 0.3s;
-      cursor: default;
-      white-space: nowrap;
-    }
-    .brand-item:hover {
       color: #ff3b3b;
-      text-shadow: 0 0 8px rgba(255,59,59,0.5);
-      transform: scale(1.05);
+      text-transform: uppercase;
+      text-shadow: 0 0 5px rgba(255,0,0,0.5);
+    }
+    .brand-item img {
+      height: 24px;
+      width: auto;
+      filter: brightness(0) invert(1);
+    }
+    /* Fallback se não houver imagem */
+    .brand-item.no-img::before {
+      content: "⚡";
+      margin-right: 0.3rem;
+      color: #ff3b3b;
     }
     @keyframes scrollBrands {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
-    @media (max-width: 768px) {
-      .brands-track { gap: 1.5rem; }
-      .brand-item { font-size: 0.9rem; }
-    }
-    /* ========== DRAWER DO CARRINHO COM FRETE ========== */
+    
+    /* ========== DRAWER DO CARRINHO ESTILIZADO ========== */
     .cart-drawer {
       position: fixed;
       top: 0;
@@ -120,10 +122,9 @@
       padding: 1.5rem;
       box-shadow: -5px 0 30px rgba(0,0,0,0.5);
       overflow-y: auto;
+      font-family: 'Courier New', monospace;
     }
-    .cart-drawer.open {
-      right: 0;
-    }
+    .cart-drawer.open { right: 0; }
     .drawer-header {
       display: flex;
       justify-content: space-between;
@@ -136,6 +137,7 @@
       color: #ff3b3b;
       font-size: 1.2rem;
       letter-spacing: 2px;
+      margin: 0;
     }
     .drawer-close {
       background: none;
@@ -143,6 +145,7 @@
       color: #ff3b3b;
       font-size: 1.5rem;
       cursor: pointer;
+      padding: 0;
     }
     .cart-items-drawer {
       flex: 1;
@@ -185,6 +188,8 @@
       color: white;
       width: 28px;
       cursor: pointer;
+      font-family: monospace;
+      font-weight: bold;
     }
     .cart-item-remove {
       background: none;
@@ -194,23 +199,23 @@
       font-size: 1rem;
     }
     /* Seção de frete */
-    .frete-section {
-      margin-top: 1rem;
+    .shipping-section {
+      margin: 1rem 0;
+      padding-top: 0.5rem;
       border-top: 1px solid #333;
-      padding-top: 1rem;
     }
-    .frete-title {
+    .shipping-title {
       color: #ff3b3b;
       font-size: 0.8rem;
-      margin-bottom: 0.5rem;
       letter-spacing: 1px;
+      margin-bottom: 0.5rem;
     }
-    .frete-input-group {
+    .cep-input-group {
       display: flex;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
     }
-    .frete-input-group input {
+    .cep-input-group input {
       flex: 1;
       background: #111;
       border: 1px solid #888;
@@ -219,44 +224,53 @@
       padding: 0.4rem;
       outline: none;
     }
-    .frete-input-group input:focus {
-      border-color: #ff3b3b;
-    }
-    .frete-btn {
-      background: #222;
-      border: 1px solid #888;
+    .cep-input-group button, .calc-frete-btn {
+      background: #0a0a0a;
+      border: 1px solid #ff3b3b;
       color: #ff3b3b;
       padding: 0.4rem 0.8rem;
       cursor: pointer;
       font-family: monospace;
-      transition: 0.2s;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
     }
-    .frete-btn:hover {
-      background: #ff3b3b20;
-      border-color: #ff3b3b;
+    .cep-input-group button::before, .calc-frete-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent);
+      transition: left 0.5s ease-out;
+      z-index: -1;
+    }
+    .cep-input-group button:hover::before, .calc-frete-btn:hover::before {
+      left: 100%;
+    }
+    .cep-input-group button:hover, .calc-frete-btn:hover {
+      border-color: #ff4d4d;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(255,77,77,0.4);
     }
     .frete-result {
       font-size: 0.8rem;
       color: #0f0;
-      margin-top: 0.3rem;
+      margin: 0.5rem 0;
     }
     .cart-subtotal {
       text-align: right;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       border-top: 1px solid #ff3b3b;
       padding-top: 1rem;
-      margin-top: 1rem;
-    }
-    .cart-total-with-frete {
-      text-align: right;
-      font-size: 1.3rem;
-      font-weight: bold;
       margin-top: 0.5rem;
-      color: #ff3b3b;
     }
     .checkout-drawer-btn {
       width: 100%;
-      background: #222;
+      background: #0a0a0a;
       border: 1px solid #ff3b3b;
       color: #ff3b3b;
       padding: 0.8rem;
@@ -264,12 +278,32 @@
       margin-top: 1rem;
       font-family: monospace;
       font-weight: bold;
-      transition: 0.2s;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
       border-radius: 8px;
     }
-    .checkout-drawer-btn:hover {
-      background: #ff3b3b20;
+    .checkout-drawer-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent);
+      transition: left 0.5s ease-out;
+      z-index: -1;
     }
+    .checkout-drawer-btn:hover::before {
+      left: 100%;
+    }
+    .checkout-drawer-btn:hover {
+      border-color: #ff4d4d;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(255,77,77,0.4);
+    }
+    
     /* Overlay para drawers */
     .drawer-overlay {
       position: fixed;
@@ -282,10 +316,9 @@
       z-index: 1999;
       display: none;
     }
-    .drawer-overlay.active {
-      display: block;
-    }
-    /* ========== MODAL DE PRODUTO EM TELA CHEIA ========== */
+    .drawer-overlay.active { display: block; }
+    
+    /* Modal de produto fullscreen */
     .product-modal-full {
       display: none;
       position: fixed;
@@ -314,49 +347,13 @@
       position: relative;
       box-shadow: 0 0 40px rgba(255,0,0,0.3);
     }
-    .product-modal-gallery {
-      flex: 1;
-      min-width: 280px;
-      text-align: center;
-    }
-    .product-modal-gallery img {
-      width: 100%;
-      max-height: 400px;
-      object-fit: contain;
-      border: 1px solid #555;
-      background: #000;
-      border-radius: 12px;
-    }
-    .product-modal-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .product-modal-info h2 {
-      color: #ff3b3b;
-      font-size: 1.8rem;
-      letter-spacing: 2px;
-    }
-    .product-modal-price {
-      font-size: 2rem;
-      background: linear-gradient(145deg, #ff4d4d, #b30000);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-    .product-modal-specs {
-      font-size: 0.9rem;
-      line-height: 1.5;
-      border-top: 1px solid #333;
-      padding-top: 1rem;
-    }
-    .product-modal-buttons {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
+    .product-modal-gallery { flex: 1; min-width: 280px; text-align: center; }
+    .product-modal-gallery img { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #555; background: #000; border-radius: 12px; }
+    .product-modal-info { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+    .product-modal-info h2 { color: #ff3b3b; font-size: 1.8rem; letter-spacing: 2px; }
+    .product-modal-price { font-size: 2rem; background: linear-gradient(145deg, #ff4d4d, #b30000); background-clip: text; -webkit-background-clip: text; color: transparent; }
+    .product-modal-specs { font-size: 0.9rem; line-height: 1.5; border-top: 1px solid #333; padding-top: 1rem; }
+    .product-modal-buttons { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
     .product-modal-buttons button {
       flex: 1;
       background: #0a0a0a;
@@ -386,38 +383,25 @@
       transition: left 0.5s ease-out;
       z-index: -1;
     }
-    .product-modal-buttons button:hover::before {
-      left: 100%;
-    }
-    .product-modal-buttons button:hover {
-      border-color: #ff4d4d;
-      color: #ffffff;
-      box-shadow: 0 0 10px rgba(255,77,77,0.4);
-    }
-    .product-modal-close {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background: none;
-      border: none;
-      color: #ff3b3b;
-      font-size: 1.8rem;
-      cursor: pointer;
-      z-index: 10;
-    }
-    /* Drawer de filtros (mobile) - mantido */
+    .product-modal-buttons button:hover::before { left: 100%; }
+    .product-modal-buttons button:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); }
+    .product-modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #ff3b3b; font-size: 1.8rem; cursor: pointer; }
+    
+    /* Drawer de filtros (mobile) */
     .filter-drawer { position: fixed; top: 0; left: -100%; width: 85%; max-width: 300px; height: 100%; background: #0a0a0a; border-right: 2px solid #ff3b3b; z-index: 2000; transition: left 0.3s ease; padding: 2rem 1rem; display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 5px 0 20px rgba(0,0,0,0.8); }
     .filter-drawer.open { left: 0; }
     .drawer-close-filters { background: none; border: none; color: #ff3b3b; font-size: 1.5rem; cursor: pointer; align-self: flex-end; margin-bottom: 1rem; }
     .menu-toggle { display: none; cursor: pointer; font-size: 1.2rem; color: #ff3b3b; background: #111; border: 1px solid #888; padding: 0.2rem 0.6rem; border-radius: 4px; }
     @media (max-width: 768px) { .menu-toggle { display: inline-block; } .filters-bar { display: none; } }
-    /* Filtros principais (sem campo de busca) */
+    
+    /* Filtros principais */
     .filters-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; transition: all 0.3s ease; }
     .filters-bar.hidden { display: none; }
     .filter-buttons { display: flex; gap: 0.8rem; flex-wrap: wrap; }
     .filter-btn { background: #111; border: 1px solid #888; color: #ccc; font-family: monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 0.4rem 0.8rem; cursor: pointer; transition: 0.2s; }
     .filter-btn:hover, .filter-btn.active { border-color: #ff3b3b; color: #ff3b3b; }
-    /* Produtos e demais estilos (preservados) */
+    
+    /* Produtos e demais estilos */
     .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 1rem; }
     .product-cell { background: rgba(10,10,10,0.85); border: 1px solid #888; padding: 1rem; transition: all 0.3s ease; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.8); position: relative; overflow: hidden; cursor: pointer; }
     .product-cell::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #ff3b3b, transparent); opacity: 0; transition: opacity 0.3s; }
@@ -432,11 +416,8 @@
     .acquire-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
     .acquire-btn:hover::before { left: 100%; }
     .acquire-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
-    /* Modais restantes (edição, confirmação) - preservados */
-    .edit-modal .specs-details textarea { width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; font-family: monospace; padding: 0.5rem; font-size: 0.9rem; resize: vertical; }
-    .gallery-controls { display: flex; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
-    .gallery-btn { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
-    .gallery-btn:hover { border-color: #ff3b3b; color: #ff3b3b; }
+    
+    /* Modais restantes (edição, confirmação) */
     .specs-modal, .delete-confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; font-family: monospace; overflow-y: auto; padding: 2rem; }
     .specs-modal-content, .delete-confirm-content { background: #0a0a0a; border: 2px solid #ff3b3b; padding: 1.8rem; max-width: 900px; width: 100%; text-align: left; color: #eee; box-shadow: 0 0 40px rgba(255,0,0,0.3); position: relative; }
     .delete-confirm-content { max-width: 400px; text-align: center; }
@@ -450,17 +431,6 @@
     .image-thumb { position: relative; background: #111; border: 1px solid #444; padding: 0.3rem; text-align: center; }
     .image-thumb img { width: 100%; height: 70px; object-fit: contain; }
     .image-thumb button { position: absolute; top: 2px; right: 2px; background: #000; border: none; color: #ff3b3b; cursor: pointer; font-size: 0.7rem; border-radius: 50%; width: 20px; height: 20px; }
-    .cart-item { display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid #333; padding: 0.8rem 0; }
-    .cart-item-img { width: 50px; height: 50px; object-fit: contain; background: #000; border: 1px solid #555; }
-    .cart-item-info { flex: 2; }
-    .cart-item-title { font-size: 0.9rem; }
-    .cart-item-price { color: #ff3b3b; font-size: 0.8rem; }
-    .cart-item-qty { display: flex; gap: 0.5rem; align-items: center; }
-    .cart-item-qty button { background: #222; border: 1px solid #888; color: white; width: 28px; cursor: pointer; }
-    .cart-item-remove { background: none; border: none; color: #ff3b3b; cursor: pointer; font-size: 1.2rem; }
-    .cart-total { text-align: right; font-size: 1.2rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ff3b3b; }
-    .cart-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
-    .cart-buttons button { flex: 1; background: #222; border: 1px solid #888; color: white; padding: 0.5rem; cursor: pointer; }
     .editor-panel { position: fixed; bottom: 20px; right: 20px; background: #111; border: 2px solid #ff3b3b; padding: 0.8rem 1rem; z-index: 2000; display: none; flex-direction: column; gap: 0.5rem; font-family: monospace; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
     .editor-panel button { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; }
     .product-cell.editor-mode .product-title, .product-cell.editor-mode .product-price { cursor: pointer; outline: 1px dashed #ff3b3b; }
@@ -471,12 +441,12 @@
     .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
-    @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-item-img { width: 40px; height: 40px; } .cart-drawer { width: 90%; border-radius: 20px 0 0 20px; } .product-modal-content { padding: 1.5rem; } .product-modal-info h2 { font-size: 1.3rem; } }
+    @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-drawer { width: 90%; border-radius: 20px 0 0 20px; } .product-modal-content { padding: 1.5rem; } .product-modal-info h2 { font-size: 1.3rem; } .brand-item { font-size: 0.8rem; } .brand-item img { height: 18px; } .brands-track { gap: 1.5rem; } }
   </style>
 </head>
 <body>
 
-<!-- LINHA VERMELHA NO TOPO (estilo Corteiz) -->
+<!-- Linha vermelha no topo -->
 <div class="top-red-line"></div>
 
 <div class="urban-bg"></div>
@@ -492,70 +462,54 @@
       <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate rotation-per-second="30deg" camera-controls disable-zoom disable-pan disable-tap touch-action="pan-y" min-camera-orbit="auto 90deg auto" max-camera-orbit="auto 90deg auto" interaction-prompt="none" loading="lazy" style="width:100%; height:100%;"></model-viewer>
     </div>
     <div class="nav-links">
-      <!-- SEARCH com ícone e busca inline -->
       <div class="nav-item" id="searchBtnCorteiz">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         SEARCH
       </div>
-      <!-- CART com ícone e contador (abre drawer do carrinho) -->
       <div class="nav-item" id="cartBtnCorteiz">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
         CART (<span id="cartCount">0</span>)
       </div>
-      <!-- CHECKOUT (abre o drawer do carrinho) -->
       <div class="nav-item" id="checkoutBtnCorteiz">CHECKOUT</div>
       <div class="menu-toggle" id="menuToggle">☰</div>
     </div>
   </div>
 
-  <!-- CARROSSEL DE MARCAS -->
-  <div class="brands-carousel">
-    <div class="brands-track" id="brandsTrack">
-      <span class="brand-item">SONY</span>
-      <span class="brand-item">CANON</span>
-      <span class="brand-item">NIKON</span>
-      <span class="brand-item">SAMSUNG</span>
-      <span class="brand-item">CASIO</span>
-      <span class="brand-item">SONY</span>
-      <span class="brand-item">CANON</span>
-      <span class="brand-item">NIKON</span>
-      <span class="brand-item">SAMSUNG</span>
-      <span class="brand-item">CASIO</span>
-    </div>
-  </div>
-
-  <!-- Campo de busca inline (aparece ao clicar em SEARCH) -->
+  <!-- Campo de busca inline -->
   <div id="searchInlineContainer" class="search-inline">
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
 
-  <!-- Drawer do carrinho (lateral direito) com cálculo de frete -->
+  <!-- Carrossel infinito de marcas -->
+  <div class="brands-carousel">
+    <div class="brands-track" id="brandsTrack">
+      <!-- As marcas serão duplicadas via JavaScript para efeito infinito -->
+    </div>
+  </div>
+
+  <!-- Drawer do carrinho (com cálculo de frete) -->
   <div id="cartDrawer" class="cart-drawer">
     <div class="drawer-header">
       <h3>🛒 SEU CARRINHO</h3>
       <button class="drawer-close" id="closeCartDrawer">✕</button>
     </div>
     <div id="cartDrawerItems" class="cart-items-drawer"></div>
-    
-    <!-- Seção de cálculo de frete -->
-    <div class="frete-section">
-      <div class="frete-title">📦 MEIOS DE ENVIO</div>
-      <div class="frete-input-group">
+    <div class="shipping-section">
+      <div class="shipping-title">MEIOS DE ENVIO</div>
+      <div class="cep-input-group">
         <input type="text" id="cepInput" placeholder="SEU CEP" maxlength="8">
-        <button id="calcFreteBtn" class="frete-btn">CALCULAR</button>
+        <button id="calcFreteBtn">CALCULAR</button>
       </div>
       <div id="freteResult" class="frete-result"></div>
     </div>
-    
-    <div id="cartDrawerSubtotal" class="cart-subtotal">SUBTOTAL: R$0,00</div>
-    <div id="cartDrawerTotal" class="cart-total-with-frete">TOTAL: R$0,00</div>
+    <div id="cartDrawerSubtotal" class="cart-subtotal">TOTAL: R$0,00</div>
     <button id="checkoutDrawerBtn" class="checkout-drawer-btn">FINALIZAR COMPRA</button>
   </div>
 
   <!-- Overlay para drawers -->
   <div id="drawerOverlay" class="drawer-overlay"></div>
 
-  <!-- Modal de produto em tela cheia -->
+  <!-- Modal de produto fullscreen -->
   <div id="productFullModal" class="product-modal-full">
     <div class="product-modal-content">
       <button class="product-modal-close" id="closeProductFullModal">✕</button>
@@ -666,7 +620,28 @@
 
   function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000); }
 
-  // Detectar conexão lenta
+  // ======================== CARROSSEL INFINITO DE MARCAS ========================
+  const brands = [
+    { name: "SONY", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Sony_logo.svg/1200px-Sony_logo.svg.png" },
+    { name: "CANON", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Canon_Inc._logo.svg/1200px-Canon_Inc._logo.svg.png" },
+    { name: "NIKON", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Nikon_Corporation_logo.svg/1200px-Nikon_Corporation_logo.svg.png" },
+    { name: "SAMSUNG", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/1200px-Samsung_Logo.svg.png" },
+    { name: "CASIO", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Casio_logo.svg/1200px-Casio_logo.svg.png" }
+  ];
+  const brandsTrack = document.getElementById('brandsTrack');
+  function renderBrands() {
+    let html = '';
+    // Duplica as marcas para efeito infinito
+    for (let i = 0; i < 2; i++) {
+      brands.forEach(b => {
+        html += `<div class="brand-item"><img src="${b.img}" alt="${b.name}" onerror="this.style.display='none'; this.parentElement.classList.add('no-img'); this.parentElement.innerHTML = '⚡ ${b.name}';"> ${b.name}</div>`;
+      });
+    }
+    brandsTrack.innerHTML = html;
+  }
+  renderBrands();
+
+  // ======================== FUNÇÕES SUPABASE (CRUD) ========================
   function getConnectionQuality() {
     if (navigator.connection && navigator.connection.effectiveType) {
       const type = navigator.connection.effectiveType;
@@ -675,8 +650,6 @@
     }
     return { maxWidth: 1200, quality: 0.7 };
   }
-
-  // Compressão para WebP
   async function compressImageForUpload(file, maxWidth, quality) {
     const { maxWidth: autoWidth, quality: autoQuality } = getConnectionQuality();
     const finalMaxWidth = maxWidth || autoWidth;
@@ -701,7 +674,6 @@
       reader.readAsDataURL(file);
     });
   }
-
   async function uploadImageToStorage(file, productId, suffix = 'main') {
     try {
       const compressedBlob = await compressImageForUpload(file);
@@ -712,8 +684,6 @@
       return publicUrl;
     } catch (err) { console.error(err); showToast('Erro ao enviar imagem.'); return null; }
   }
-
-  // Funções CRUD
   async function loadProducts() {
     showToast("Carregando...");
     try {
@@ -726,7 +696,6 @@
     applyFilters();
     document.getElementById('emergencyBtnContainer').style.display = (productsData.length === 0 && !editorMode) ? 'block' : 'none';
   }
-
   async function saveProduct(product) {
     showToast("Salvando...");
     try {
@@ -736,7 +705,6 @@
       return data[0];
     } catch (error) { showToast("Erro ao salvar."); return null; }
   }
-
   async function deleteProductById(id) {
     try {
       const { error } = await supabaseClient.from('products').delete().eq('id', id);
@@ -746,7 +714,7 @@
     } catch (error) { showToast("Erro ao deletar."); return false; }
   }
 
-  // Carrinho com miniatura e drawer
+  // ======================== CARRINHO E DRAWER ========================
   function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantidade, 0); }
   function saveCart() { localStorage.setItem('vetin_cart', JSON.stringify(cart)); updateCartCount(); renderCartDrawer(); }
   function addToCart(product, qtd = 1, btnElement = null) {
@@ -757,24 +725,65 @@
     showToast(`📷 ${product.title} adicionado`);
     if (btnElement) { const orig = btnElement.innerText; btnElement.innerText = "✔️ ADICIONADO!"; setTimeout(() => btnElement.innerText = orig, 1000); }
   }
-  
-  function getCartSubtotal() {
-    return cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0);
-  }
-  
-  function updateTotalDisplay() {
-    const subtotal = getCartSubtotal();
-    const total = subtotal + currentFrete;
-    document.getElementById('cartDrawerSubtotal').innerHTML = `SUBTOTAL: R$ ${subtotal.toFixed(2).replace('.',',')}`;
-    document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
-  }
-  
   function finalizarCompra() {
     if (!cart.length) { showToast("Carrinho vazio"); return; }
+    const totalItens = cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0);
+    const totalComFrete = totalItens + currentFrete;
     const itens = cart.map(i => `${i.title} x${i.quantidade} (${i.price})`).join('\n');
-    const total = getCartSubtotal() + currentFrete;
-    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nSUBTOTAL: R$ ${getCartSubtotal().toFixed(2)}\nFRETE: R$ ${currentFrete.toFixed(2)}\nTOTAL: R$ ${total.toFixed(2)}\n\nObrigado!`;
+    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nSUBTOTAL: R$ ${totalItens.toFixed(2)}\nFRETE: R$ ${currentFrete.toFixed(2)}\nTOTAL: R$ ${totalComFrete.toFixed(2)}`;
     window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  // Calcular frete (simulação com CEP)
+  function calcularFrete() {
+    const cep = document.getElementById('cepInput').value.replace(/\D/g, '');
+    if (cep.length !== 8) {
+      showToast("CEP inválido");
+      return;
+    }
+    // Simulação: frete baseado no CEP (apenas para demonstração)
+    const frete = Math.floor(Math.random() * 30) + 10;
+    currentFrete = frete;
+    document.getElementById('freteResult').innerHTML = `🚚 Frete para CEP ${cep}: R$ ${frete.toFixed(2)} (PAC)`;
+    renderCartDrawer(); // atualiza total com frete
+  }
+
+  function renderCartDrawer() {
+    const container = document.getElementById('cartDrawerItems');
+    const totalSpan = document.getElementById('cartDrawerSubtotal');
+    if (!cart.length) { container.innerHTML = '<div style="text-align:center;padding:2rem;">CARRINHO VAZIO</div>'; totalSpan.innerHTML = 'TOTAL: R$0,00'; return; }
+    let subtotal = 0;
+    container.innerHTML = '';
+    cart.forEach((item, idx) => {
+      const preco = parseFloat(item.price.replace('R$','').replace(',','.'));
+      subtotal += preco * item.quantidade;
+      const div = document.createElement('div'); div.className = 'cart-item-drawer';
+      div.innerHTML = `
+        <img src="${item.imgMain}" onerror="this.src='https://placehold.co/70x70?text=erro'">
+        <div class="cart-item-details">
+          <div class="cart-item-title">${item.title}</div>
+          <div class="cart-item-price">${item.price}</div>
+          <div class="cart-item-actions">
+            <button class="cart-qty-down" data-idx="${idx}" data-delta="-1">-</button>
+            <span>${item.quantidade}</span>
+            <button class="cart-qty-up" data-idx="${idx}" data-delta="1">+</button>
+            <button class="cart-item-remove-drawer" data-idx="${idx}">🗑</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+    const total = subtotal + currentFrete;
+    totalSpan.innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
+    if (currentFrete > 0) {
+      totalSpan.innerHTML += ` <span style="font-size:0.7rem;">(frete R$ ${currentFrete.toFixed(2)})</span>`;
+    }
+    document.querySelectorAll('.cart-qty-down, .cart-qty-up').forEach(btn => {
+      btn.onclick = (e) => { const idx = btn.dataset.idx, delta = parseInt(btn.dataset.delta); cart[idx].quantidade += delta; if(cart[idx].quantidade <= 0) cart.splice(idx,1); saveCart(); renderCartDrawer(); };
+    });
+    document.querySelectorAll('.cart-item-remove-drawer').forEach(btn => {
+      btn.onclick = (e) => { const idx = btn.dataset.idx; cart.splice(idx,1); saveCart(); renderCartDrawer(); };
+    });
   }
 
   // Drawer controls
@@ -794,65 +803,20 @@
     drawer.classList.remove('open');
     overlay.classList.remove('active');
     if (activeDrawer === drawerId) activeDrawer = null;
-    if (document.querySelectorAll('.drawer.open, .filter-drawer.open').length === 0) {
+    if (!document.querySelector('.cart-drawer.open, .filter-drawer.open')) {
       document.body.style.overflow = '';
     }
   }
-  function closeAllDrawers() {
-    if (activeDrawer) closeDrawer(activeDrawer);
-    document.body.style.overflow = '';
-  }
+  function closeAllDrawers() { if (activeDrawer) closeDrawer(activeDrawer); document.body.style.overflow = ''; }
 
-  // Renderizar drawer do carrinho
-  function renderCartDrawer() {
-    const container = document.getElementById('cartDrawerItems');
-    if (!cart.length) { container.innerHTML = '<div style="text-align:center;padding:2rem;">CARRINHO VAZIO</div>'; updateTotalDisplay(); return; }
-    container.innerHTML = '';
-    cart.forEach((item, idx) => {
-      const div = document.createElement('div'); div.className = 'cart-item-drawer';
-      div.innerHTML = `
-        <img src="${item.imgMain}" onerror="this.src='https://placehold.co/70x70?text=erro'">
-        <div class="cart-item-details">
-          <div class="cart-item-title">${item.title}</div>
-          <div class="cart-item-price">${item.price}</div>
-          <div class="cart-item-actions">
-            <button class="cart-qty-down" data-idx="${idx}" data-delta="-1">-</button>
-            <span>${item.quantidade}</span>
-            <button class="cart-qty-up" data-idx="${idx}" data-delta="1">+</button>
-            <button class="cart-item-remove-drawer" data-idx="${idx}">🗑</button>
-          </div>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-    updateTotalDisplay();
-    document.querySelectorAll('.cart-qty-down, .cart-qty-up').forEach(btn => {
-      btn.onclick = (e) => { const idx = btn.dataset.idx, delta = parseInt(btn.dataset.delta); cart[idx].quantidade += delta; if(cart[idx].quantidade <= 0) cart.splice(idx,1); saveCart(); renderCartDrawer(); };
-    });
-    document.querySelectorAll('.cart-item-remove-drawer').forEach(btn => {
-      btn.onclick = (e) => { const idx = btn.dataset.idx; cart.splice(idx,1); saveCart(); renderCartDrawer(); };
-    });
-  }
-
-  // Calcular frete (simulação)
-  document.getElementById('calcFreteBtn').onclick = () => {
-    const cep = document.getElementById('cepInput').value;
-    if (!cep || cep.length !== 8) { showToast("Digite um CEP válido (8 números)"); return; }
-    // Simulação de frete fixo por enquanto (integração real com API depois)
-    currentFrete = 15.00;
-    document.getElementById('freteResult').innerHTML = `🚚 Frete para CEP ${cep}: R$ 15,00 (PAC)`;
-    updateTotalDisplay();
-    showToast(`Frete calculado: R$ 15,00`);
-  };
-
-  // Drawer do carrinho
   document.getElementById('cartBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('checkoutBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('closeCartDrawer').onclick = () => closeDrawer('cartDrawer');
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
+  document.getElementById('calcFreteBtn').onclick = calcularFrete;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
-  // Modal de produto em tela cheia
+  // Modal de produto fullscreen
   const productFullModal = document.getElementById('productFullModal');
   const productFullImage = document.getElementById('productFullImage');
   const productFullTitle = document.getElementById('productFullTitle');
@@ -1018,10 +982,8 @@
   document.getElementById('drawerCloseFilters').onclick = closeFilterDrawer;
   filterOverlay.onclick = closeFilterDrawer;
   document.querySelectorAll('#filterDrawer .filter-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); closeFilterDrawer(); }; });
-
-  // Filtros principais
   document.querySelectorAll('.filters-bar .filter-btn').forEach(btn => btn.onclick = () => { document.querySelectorAll('.filters-bar .filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); });
-  
+
   // Busca inline
   const searchCorteizBtn = document.getElementById('searchBtnCorteiz');
   const searchInlineContainer = document.getElementById('searchInlineContainer');
@@ -1081,13 +1043,14 @@
   const observer = new MutationObserver(() => { document.querySelectorAll('img').forEach(img => { if (!img.hasAttribute('data-contextmenu-blocked')) { img.addEventListener('contextmenu', e => e.preventDefault()); img.setAttribute('draggable', 'false'); img.setAttribute('data-contextmenu-blocked', 'true'); } }); });
   observer.observe(document.body, { childList: true, subtree: true });
 
+  // Inicialização
   (async () => {
     await loadProducts();
     updateCartCount();
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ COMPLETO!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ FINAL!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
