@@ -57,7 +57,7 @@
       padding: 0.5rem 0;
       outline: none;
     }
-    /* ========== CARROSSEL DE MARCAS ========== */
+    /* ========== CARROSSEL DE MARCAS (apenas desktop) ========== */
     .brands-carousel {
       margin: 1rem 0 2rem 0;
       overflow: hidden;
@@ -433,7 +433,7 @@
       filter: brightness(1.4) contrast(1.3);
     }
     
-    /* ========== RESPONSIVIDADE MOBILE ========== */
+    /* ========== RESPONSIVIDADE MOBILE (APENAS LAYOUT, NADA DE DESKTOP) ========== */
     @media (max-width: 768px) {
       .main-content { padding: 1rem; }
       /* Esconder a logo original do header no mobile */
@@ -505,33 +505,10 @@
       .cart-item-drawer img { width: 50px; height: 50px; }
       .cart-item-actions button { width: 32px; height: 32px; }
       .frete-input-group input { font-size: 0.8rem; }
-      /* Carrossel de marcas no mobile: sem animação, apenas 5 marcas lado a lado, no topo */
+      /* Carrossel de marcas: oculto no mobile */
       .brands-carousel {
-        margin: 1rem 0 1.5rem 0;
-      }
-      .brands-track {
-        animation: none !important;
-        gap: 1.5rem;
-        justify-content: center;
-      }
-      /* Esconder os itens além do 5º (índice 5 em diante) */
-      .brands-track .brand-item:nth-child(n+6) {
         display: none;
       }
-      .brand-item img {
-        height: 20px;
-        opacity: 0.65;
-      }
-      /* Resetar alturas individuais no mobile */
-      .brand-item img.brand-sony,
-      .brand-item img.brand-nikon,
-      .brand-item img.brand-samsung,
-      .brand-item img.brand-olympus,
-      .brand-item img.brand-canon {
-        height: 20px;
-        margin-top: 0;
-      }
-      .brand-item { height: auto; margin-bottom: 0; }
       /* Mostrar a logo móvel no final */
       .mobile-logo {
         display: block;
@@ -558,7 +535,6 @@
       .product-grid { gap: 0.8rem; }
       .product-title { font-size: 0.7rem; }
       .product-price { font-size: 0.9rem; }
-      .brands-track { gap: 1rem; }
       .mobile-logo .logo-unified { width: 140px; height: 50px; }
       .mobile-logo .logo-globe-img { width: 50px; height: 50px; }
       .mobile-logo .logo-text-img { width: 100px; }
@@ -612,7 +588,7 @@
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
 
-  <!-- Carrossel de marcas (desktop: animado, com repetições; mobile: sem animação, apenas 5 marcas, no topo) -->
+  <!-- Carrossel de marcas (aparece apenas no desktop) -->
   <div class="brands-carousel">
     <div class="brands-track" id="brandsTrack"></div>
   </div>
@@ -946,24 +922,20 @@
   
   function buildBrandsCarousel() {
     const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    let items = '';
     if (isMobile) {
-      // Mobile: apenas 1 repetição (5 marcas), sem animação
+      // Mobile: não precisa construir, pois o carrossel está oculto via CSS
+      trackBrands.innerHTML = '';
+      return;
+    }
+    let items = '';
+    for (let i = 0; i < 6; i++) {
       brands.forEach(b => {
         items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}" class="${b.className}"></div>`;
       });
-    } else {
-      // Desktop: 6 repetições para animação infinita
-      for (let i = 0; i < 6; i++) {
-        brands.forEach(b => {
-          items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}" class="${b.className}"></div>`;
-        });
-      }
     }
     trackBrands.innerHTML = items;
   }
   buildBrandsCarousel();
-  // Recriar o carrossel ao redimensionar a tela (para alternar entre mobile/desktop)
   window.addEventListener('resize', () => {
     buildBrandsCarousel();
   });
