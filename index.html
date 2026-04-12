@@ -11,20 +11,22 @@
     /* ========== CSS ORIGINAL (PRESERVADO) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
-    .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
-    .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; }
-    .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 2rem; }
-    .header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 3rem; border-bottom: 1px solid rgba(192,192,192,0.3); padding-bottom: 1.5rem; min-height: 100px; gap: 1rem; position: relative; }
-    /* Linha vermelha no topo (estilo Corteiz) */
-    .header-row::before {
-      content: '';
-      position: absolute;
-      top: -1rem;
+    
+    /* LINHA VERMELHA NO TOPO (estilo Corteiz) */
+    .top-red-line {
+      position: fixed;
+      top: 0;
       left: 0;
       width: 100%;
       height: 2px;
       background: #ff3b3b;
+      z-index: 10000;
     }
+    
+    .urban-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background-image: url('images/fortaleza.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.15; filter: grayscale(100%) contrast(1.2); pointer-events: none; }
+    .scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); mix-blend-mode: overlay; }
+    .main-content { position: relative; z-index: 5; max-width: 1400px; margin: 0 auto; padding: 2rem; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 3rem; border-bottom: 1px solid rgba(192,192,192,0.3); padding-bottom: 1.5rem; min-height: 100px; gap: 1rem; }
     .logo-unified { position: relative; width: 200px; height: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .logo-globe-img { position: absolute; width: 70px; height: 70px; z-index: 1; filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 26, 26, 0.3)); transition: all 0.3s ease; object-fit: contain; }
     .logo-text-img { position: absolute; z-index: 2; width: 140px; height: auto; filter: brightness(1.1) contrast(1.2); transition: all 0.3s ease; object-fit: contain; }
@@ -35,7 +37,7 @@
     .nav-links { display: flex; gap: 1.5rem; flex-wrap: wrap; font-family: monospace; font-size: 0.75rem; letter-spacing: 1.5px; background: rgba(0,0,0,0.7); padding: 0.6rem 1rem; border: 1px solid #444; border-left: 2px solid #ff3b3b; align-items: center; }
     .nav-item { cursor: pointer; color: #cdcdcd; transition: all 0.2s; padding: 0.2rem 0; display: flex; align-items: center; gap: 0.4rem; }
     .nav-item:hover { color: #ff4d4d; text-shadow: 0 0 8px rgba(255,77,77,0.6); }
-    /* Campo de busca inline */
+    /* Campo de busca inline (aparece ao clicar em SEARCH) */
     .search-inline {
       display: none;
       margin: -1rem 0 1rem 0;
@@ -55,46 +57,51 @@
       padding: 0.5rem 0;
       outline: none;
     }
-    /* Carrossel infinito de marcas - VERSÃO CORRIGIDA */
+    /* ========== CARROSSEL DE MARCAS ========== */
     .brands-carousel {
-      width: 100%;
+      margin: 1rem 0 2rem 0;
       overflow: hidden;
-      background: rgba(0,0,0,0.5);
+      position: relative;
+      border-top: 1px solid rgba(255,59,59,0.3);
+      border-bottom: 1px solid rgba(255,59,59,0.3);
       padding: 0.8rem 0;
-      margin: -1rem 0 1.5rem 0;
-      border-top: 1px solid #ff3b3b40;
-      border-bottom: 1px solid #ff3b3b40;
     }
-    .carousel-track {
+    .brands-track {
       display: flex;
       gap: 3rem;
       animation: scrollBrands 20s linear infinite;
-      width: max-content;
+      width: fit-content;
+    }
+    .brands-track:hover {
+      animation-play-state: paused;
     }
     .brand-item {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 35px; /* altura fixa para alinhar todas */
+      font-family: monospace;
+      font-size: 1.2rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #ccc;
+      transition: all 0.3s;
+      cursor: default;
+      white-space: nowrap;
     }
-    .brand-item img {
-      height: 30px;      /* todas com a mesma altura */
-      width: auto;
-      max-width: 100px;
-      object-fit: contain;
-      /* Filtro para transformar qualquer cor em vermelho (#ff3b3b) */
-      filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7487%) hue-rotate(358deg) brightness(96%) contrast(117%);
-      transition: transform 0.2s;
-    }
-    .brand-item:hover img {
-      transform: scale(1.1);
-      filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7487%) hue-rotate(358deg) brightness(96%) contrast(117%) drop-shadow(0 0 4px #ff3b3b);
+    .brand-item:hover {
+      color: #ff3b3b;
+      text-shadow: 0 0 8px rgba(255,59,59,0.5);
+      transform: scale(1.05);
     }
     @keyframes scrollBrands {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
-    /* Drawer do carrinho (estilo melhorado) */
+    @media (max-width: 768px) {
+      .brands-track { gap: 1.5rem; }
+      .brand-item { font-size: 0.9rem; }
+    }
+    /* ========== DRAWER DO CARRINHO COM FRETE ========== */
     .cart-drawer {
       position: fixed;
       top: 0;
@@ -113,9 +120,10 @@
       padding: 1.5rem;
       box-shadow: -5px 0 30px rgba(0,0,0,0.5);
       overflow-y: auto;
-      font-family: monospace;
     }
-    .cart-drawer.open { right: 0; }
+    .cart-drawer.open {
+      right: 0;
+    }
     .drawer-header {
       display: flex;
       justify-content: space-between;
@@ -136,7 +144,10 @@
       font-size: 1.5rem;
       cursor: pointer;
     }
-    .cart-items-drawer { flex: 1; margin-bottom: 1rem; }
+    .cart-items-drawer {
+      flex: 1;
+      margin-bottom: 1rem;
+    }
     .cart-item-drawer {
       display: flex;
       gap: 1rem;
@@ -151,9 +162,17 @@
       background: #000;
       border: 1px solid #555;
     }
-    .cart-item-details { flex: 1; }
-    .cart-item-title { font-size: 0.9rem; font-weight: bold; }
-    .cart-item-price { color: #ff3b3b; font-size: 0.8rem; }
+    .cart-item-details {
+      flex: 1;
+    }
+    .cart-item-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .cart-item-price {
+      color: #ff3b3b;
+      font-size: 0.8rem;
+    }
     .cart-item-actions {
       display: flex;
       align-items: center;
@@ -165,17 +184,7 @@
       border: 1px solid #888;
       color: white;
       width: 28px;
-      height: 28px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      transition: all 0.2s;
-    }
-    .cart-item-actions button:hover {
-      border-color: #ff3b3b;
-      background: #ff3b3b20;
     }
     .cart-item-remove {
       background: none;
@@ -183,57 +192,49 @@
       color: #ff3b3b;
       cursor: pointer;
       font-size: 1rem;
-      display: inline-flex;
-      align-items: center;
     }
+    /* Seção de frete */
     .frete-section {
-      margin: 1rem 0;
-      padding: 1rem 0;
+      margin-top: 1rem;
       border-top: 1px solid #333;
-      border-bottom: 1px solid #333;
+      padding-top: 1rem;
     }
-    .frete-box {
+    .frete-title {
+      color: #ff3b3b;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+    .frete-input-group {
       display: flex;
       gap: 0.5rem;
-      margin: 0.5rem 0;
+      margin-bottom: 0.5rem;
     }
-    .frete-box input {
+    .frete-input-group input {
       flex: 1;
       background: #111;
       border: 1px solid #888;
-      padding: 0.5rem;
-      color: white;
+      color: #eee;
       font-family: monospace;
+      padding: 0.4rem;
       outline: none;
     }
-    .frete-box button {
-      background: #0a0a0a;
-      border: 1px solid #666;
-      color: #e0e0e0;
-      font-family: monospace;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      padding: 0.5rem 1rem;
+    .frete-input-group input:focus {
+      border-color: #ff3b3b;
+    }
+    .frete-btn {
+      background: #222;
+      border: 1px solid #888;
+      color: #ff3b3b;
+      padding: 0.4rem 0.8rem;
       cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
+      font-family: monospace;
+      transition: 0.2s;
     }
-    .frete-box button::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent);
-      transition: left 0.5s ease-out;
-      z-index: -1;
+    .frete-btn:hover {
+      background: #ff3b3b20;
+      border-color: #ff3b3b;
     }
-    .frete-box button:hover::before { left: 100%; }
-    .frete-box button:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); }
     .frete-result {
       font-size: 0.8rem;
       color: #0f0;
@@ -241,20 +242,21 @@
     }
     .cart-subtotal {
       text-align: right;
-      font-size: 1rem;
-      margin: 0.5rem 0;
-    }
-    .cart-total {
-      text-align: right;
       font-size: 1.2rem;
       border-top: 1px solid #ff3b3b;
-      padding-top: 0.8rem;
-      margin-top: 0.5rem;
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+    .cart-total-with-frete {
+      text-align: right;
+      font-size: 1.3rem;
       font-weight: bold;
+      margin-top: 0.5rem;
+      color: #ff3b3b;
     }
     .checkout-drawer-btn {
       width: 100%;
-      background: #0a0a0a;
+      background: #222;
       border: 1px solid #ff3b3b;
       color: #ff3b3b;
       padding: 0.8rem;
@@ -262,28 +264,13 @@
       margin-top: 1rem;
       font-family: monospace;
       font-weight: bold;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
+      transition: 0.2s;
       border-radius: 8px;
-      font-size: 0.8rem;
-      letter-spacing: 2px;
     }
-    .checkout-drawer-btn::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent);
-      transition: left 0.5s ease-out;
-      z-index: -1;
+    .checkout-drawer-btn:hover {
+      background: #ff3b3b20;
     }
-    .checkout-drawer-btn:hover::before { left: 100%; }
-    .checkout-drawer-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); }
-    /* Overlay */
+    /* Overlay para drawers */
     .drawer-overlay {
       position: fixed;
       top: 0;
@@ -295,8 +282,10 @@
       z-index: 1999;
       display: none;
     }
-    .drawer-overlay.active { display: block; }
-    /* Modal de produto em tela cheia */
+    .drawer-overlay.active {
+      display: block;
+    }
+    /* ========== MODAL DE PRODUTO EM TELA CHEIA ========== */
     .product-modal-full {
       display: none;
       position: fixed;
@@ -325,13 +314,49 @@
       position: relative;
       box-shadow: 0 0 40px rgba(255,0,0,0.3);
     }
-    .product-modal-gallery { flex: 1; min-width: 280px; text-align: center; }
-    .product-modal-gallery img { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #555; background: #000; border-radius: 12px; }
-    .product-modal-info { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
-    .product-modal-info h2 { color: #ff3b3b; font-size: 1.8rem; letter-spacing: 2px; }
-    .product-modal-price { font-size: 2rem; background: linear-gradient(145deg, #ff4d4d, #b30000); background-clip: text; -webkit-background-clip: text; color: transparent; }
-    .product-modal-specs { font-size: 0.9rem; line-height: 1.5; border-top: 1px solid #333; padding-top: 1rem; }
-    .product-modal-buttons { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+    .product-modal-gallery {
+      flex: 1;
+      min-width: 280px;
+      text-align: center;
+    }
+    .product-modal-gallery img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border: 1px solid #555;
+      background: #000;
+      border-radius: 12px;
+    }
+    .product-modal-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .product-modal-info h2 {
+      color: #ff3b3b;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+    }
+    .product-modal-price {
+      font-size: 2rem;
+      background: linear-gradient(145deg, #ff4d4d, #b30000);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .product-modal-specs {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      border-top: 1px solid #333;
+      padding-top: 1rem;
+    }
+    .product-modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
     .product-modal-buttons button {
       flex: 1;
       background: #0a0a0a;
@@ -361,9 +386,25 @@
       transition: left 0.5s ease-out;
       z-index: -1;
     }
-    .product-modal-buttons button:hover::before { left: 100%; }
-    .product-modal-buttons button:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); }
-    .product-modal-close { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #ff3b3b; font-size: 1.8rem; cursor: pointer; z-index: 10; }
+    .product-modal-buttons button:hover::before {
+      left: 100%;
+    }
+    .product-modal-buttons button:hover {
+      border-color: #ff4d4d;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(255,77,77,0.4);
+    }
+    .product-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #ff3b3b;
+      font-size: 1.8rem;
+      cursor: pointer;
+      z-index: 10;
+    }
     /* Drawer de filtros (mobile) - mantido */
     .filter-drawer { position: fixed; top: 0; left: -100%; width: 85%; max-width: 300px; height: 100%; background: #0a0a0a; border-right: 2px solid #ff3b3b; z-index: 2000; transition: left 0.3s ease; padding: 2rem 1rem; display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 5px 0 20px rgba(0,0,0,0.8); }
     .filter-drawer.open { left: 0; }
@@ -391,7 +432,7 @@
     .acquire-btn::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,26,26,0.8), rgba(255,94,94,0.9), #ffffff, rgba(180,180,180,0.8), transparent); transition: left 0.5s ease-out; z-index: -1; }
     .acquire-btn:hover::before { left: 100%; }
     .acquire-btn:hover { border-color: #ff4d4d; color: #ffffff; box-shadow: 0 0 10px rgba(255,77,77,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
-    /* Modais restantes (edição, confirmação) */
+    /* Modais restantes (edição, confirmação) - preservados */
     .edit-modal .specs-details textarea { width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; font-family: monospace; padding: 0.5rem; font-size: 0.9rem; resize: vertical; }
     .gallery-controls { display: flex; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
     .gallery-btn { background: #222; border: 1px solid #888; color: white; padding: 0.3rem 0.6rem; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
@@ -430,10 +471,13 @@
     .industrial-footer { margin-top: 4rem; text-align: center; border-top: 1px solid rgba(192,192,192,0.2); padding-top: 2rem; font-size: 0.7rem; letter-spacing: 3px; color: #666; }
     .blink { animation: blink 2s infinite; }
     @keyframes blink { 0%,50%{opacity:1;} 51%,100%{opacity:0.3;} }
-    @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-item-img { width: 40px; height: 40px; } .cart-drawer { width: 90%; border-radius: 20px 0 0 20px; } .product-modal-content { padding: 1.5rem; } .product-modal-info h2 { font-size: 1.3rem; } .brand-item img { height: 20px; } }
+    @media (max-width: 768px) { .main-content { padding: 1rem; } .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .product-title { font-size: 0.75rem; } .product-price { font-size: 1rem; } .specs-grid { flex-direction: column; } .image-grid { grid-template-columns: repeat(3, 1fr); } .cart-item-img { width: 40px; height: 40px; } .cart-drawer { width: 90%; border-radius: 20px 0 0 20px; } .product-modal-content { padding: 1.5rem; } .product-modal-info h2 { font-size: 1.3rem; } }
   </style>
 </head>
 <body>
+
+<!-- LINHA VERMELHA NO TOPO (estilo Corteiz) -->
+<div class="top-red-line"></div>
 
 <div class="urban-bg"></div>
 <div class="scanlines"></div>
@@ -448,48 +492,67 @@
       <model-viewer id="logo3d" src="images/logo3d.glb" alt="Logo 3D" auto-rotate rotation-per-second="30deg" camera-controls disable-zoom disable-pan disable-tap touch-action="pan-y" min-camera-orbit="auto 90deg auto" max-camera-orbit="auto 90deg auto" interaction-prompt="none" loading="lazy" style="width:100%; height:100%;"></model-viewer>
     </div>
     <div class="nav-links">
+      <!-- SEARCH com ícone e busca inline -->
       <div class="nav-item" id="searchBtnCorteiz">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         SEARCH
       </div>
+      <!-- CART com ícone e contador (abre drawer do carrinho) -->
       <div class="nav-item" id="cartBtnCorteiz">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
         CART (<span id="cartCount">0</span>)
       </div>
+      <!-- CHECKOUT (abre o drawer do carrinho) -->
       <div class="nav-item" id="checkoutBtnCorteiz">CHECKOUT</div>
       <div class="menu-toggle" id="menuToggle">☰</div>
     </div>
   </div>
 
-  <!-- Campo de busca inline -->
+  <!-- CARROSSEL DE MARCAS -->
+  <div class="brands-carousel">
+    <div class="brands-track" id="brandsTrack">
+      <span class="brand-item">SONY</span>
+      <span class="brand-item">CANON</span>
+      <span class="brand-item">NIKON</span>
+      <span class="brand-item">SAMSUNG</span>
+      <span class="brand-item">CASIO</span>
+      <span class="brand-item">SONY</span>
+      <span class="brand-item">CANON</span>
+      <span class="brand-item">NIKON</span>
+      <span class="brand-item">SAMSUNG</span>
+      <span class="brand-item">CASIO</span>
+    </div>
+  </div>
+
+  <!-- Campo de busca inline (aparece ao clicar em SEARCH) -->
   <div id="searchInlineContainer" class="search-inline">
     <input type="text" id="searchInlineInput" placeholder="BUSCAR PRODUTO...">
   </div>
 
-  <!-- Carrossel infinito de marcas (com logos SVG reais - VERSÃO CORRIGIDA) -->
-  <div class="brands-carousel">
-    <div class="carousel-track" id="brandsTrack"></div>
-  </div>
-
-  <!-- Drawer do carrinho (lateral direito) -->
+  <!-- Drawer do carrinho (lateral direito) com cálculo de frete -->
   <div id="cartDrawer" class="cart-drawer">
     <div class="drawer-header">
       <h3>🛒 SEU CARRINHO</h3>
       <button class="drawer-close" id="closeCartDrawer">✕</button>
     </div>
     <div id="cartDrawerItems" class="cart-items-drawer"></div>
+    
+    <!-- Seção de cálculo de frete -->
     <div class="frete-section">
-      <div class="frete-box">
+      <div class="frete-title">📦 MEIOS DE ENVIO</div>
+      <div class="frete-input-group">
         <input type="text" id="cepInput" placeholder="SEU CEP" maxlength="8">
-        <button id="calcFreteBtn">CALCULAR</button>
+        <button id="calcFreteBtn" class="frete-btn">CALCULAR</button>
       </div>
       <div id="freteResult" class="frete-result"></div>
     </div>
+    
     <div id="cartDrawerSubtotal" class="cart-subtotal">SUBTOTAL: R$0,00</div>
-    <div id="cartDrawerTotal" class="cart-total">TOTAL: R$0,00</div>
+    <div id="cartDrawerTotal" class="cart-total-with-frete">TOTAL: R$0,00</div>
     <button id="checkoutDrawerBtn" class="checkout-drawer-btn">FINALIZAR COMPRA</button>
   </div>
 
+  <!-- Overlay para drawers -->
   <div id="drawerOverlay" class="drawer-overlay"></div>
 
   <!-- Modal de produto em tela cheia -->
@@ -540,6 +603,9 @@
   <div id="emergencyBtnContainer" style="text-align:center; margin-top:20px; display:none;">
     <button id="emergencyCreateBtn" style="background:#222; border:1px solid #ff3b3b; color:#ff3b3b; padding:0.5rem 1rem; cursor:pointer;">🚨 CRIAR 3 PRODUTOS INICIAIS 🚨</button>
   </div>
+
+  <!-- Modal Visualização (desativado) -->
+  <div id="viewModal" class="specs-modal" style="display:none;"></div>
 
   <!-- Modal Edição -->
   <div id="editModal" class="specs-modal edit-modal">
@@ -596,72 +662,93 @@
   let currentViewImages = [], currentViewIndex = 0, currentViewProduct = null;
   let pendingDeleteId = null;
   let searchDebounceTimer = null;
-  let freteValor = 0;
+  let currentFrete = 0;
 
   function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000); }
 
-  // ========== CARROSSEL INFINITO DE MARCAS (COM LOGOS REAIS E TAMANHOS IGUAIS) ==========
-  const brands = [
-    { name: 'Canon', file: 'canon-logo.svg' },
-    { name: 'Nikon', file: 'nikon-logo.svg' },
-    { name: 'Samsung', file: 'samsung-logo.svg' },
-    { name: 'Olympus', file: 'olympus-logo.svg' },
-    { name: 'Sony', file: 'sony-logo.svg' }
-  ];
-  const track = document.getElementById('brandsTrack');
-  function buildCarousel() {
-    let items = '';
-    // Duplica 3 vezes para efeito infinito suave
-    for (let i = 0; i < 3; i++) {
-      brands.forEach(b => {
-        items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}"></div>`;
-      });
+  // Detectar conexão lenta
+  function getConnectionQuality() {
+    if (navigator.connection && navigator.connection.effectiveType) {
+      const type = navigator.connection.effectiveType;
+      if (type === 'slow-2g' || type === '2g') return { maxWidth: 600, quality: 0.5 };
+      if (type === '3g') return { maxWidth: 800, quality: 0.6 };
     }
-    track.innerHTML = items;
+    return { maxWidth: 1200, quality: 0.7 };
   }
-  buildCarousel();
 
-  // ========== DRAWER DO CARRINHO COM FRETE ==========
-  function updateCartTotals() {
-    const subtotal = cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0);
-    const total = subtotal + freteValor;
-    document.getElementById('cartDrawerSubtotal').innerHTML = `SUBTOTAL: R$ ${subtotal.toFixed(2).replace('.',',')}`;
-    document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
-  }
-  function renderCartDrawer() {
-    const container = document.getElementById('cartDrawerItems');
-    if (!cart.length) { container.innerHTML = '<div style="text-align:center;padding:2rem;">CARRINHO VAZIO</div>'; updateCartTotals(); return; }
-    let subtotal = 0;
-    container.innerHTML = '';
-    cart.forEach((item, idx) => {
-      const preco = parseFloat(item.price.replace('R$','').replace(',','.'));
-      subtotal += preco * item.quantidade;
-      const div = document.createElement('div'); div.className = 'cart-item-drawer';
-      div.innerHTML = `
-        <img src="${item.imgMain}" onerror="this.src='https://placehold.co/70x70?text=erro'">
-        <div class="cart-item-details">
-          <div class="cart-item-title">${item.title}</div>
-          <div class="cart-item-price">${item.price}</div>
-          <div class="cart-item-actions">
-            <button class="cart-qty-down" data-idx="${idx}" data-delta="-1">−</button>
-            <span>${item.quantidade}</span>
-            <button class="cart-qty-up" data-idx="${idx}" data-delta="1">+</button>
-            <button class="cart-item-remove-drawer" data-idx="${idx}">🗑</button>
-          </div>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-    updateCartTotals();
-    document.querySelectorAll('.cart-qty-down, .cart-qty-up').forEach(btn => {
-      btn.onclick = (e) => { const idx = btn.dataset.idx, delta = parseInt(btn.dataset.delta); cart[idx].quantidade += delta; if(cart[idx].quantidade <= 0) cart.splice(idx,1); saveCart(); renderCartDrawer(); };
-    });
-    document.querySelectorAll('.cart-item-remove-drawer').forEach(btn => {
-      btn.onclick = (e) => { const idx = btn.dataset.idx; cart.splice(idx,1); saveCart(); renderCartDrawer(); };
+  // Compressão para WebP
+  async function compressImageForUpload(file, maxWidth, quality) {
+    const { maxWidth: autoWidth, quality: autoQuality } = getConnectionQuality();
+    const finalMaxWidth = maxWidth || autoWidth;
+    const finalQuality = quality || autoQuality;
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width, height = img.height;
+          if (width > finalMaxWidth) { height = (finalMaxWidth / width) * height; width = finalMaxWidth; }
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(blob => resolve(blob), 'image/webp', finalQuality);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
   }
-  function saveCart() { localStorage.setItem('vetin_cart', JSON.stringify(cart)); updateCartCount(); renderCartDrawer(); }
+
+  async function uploadImageToStorage(file, productId, suffix = 'main') {
+    try {
+      const compressedBlob = await compressImageForUpload(file);
+      const fileName = `${productId}_${suffix}_${Date.now()}.webp`;
+      const { error } = await supabaseClient.storage.from(BUCKET_NAME).upload(fileName, compressedBlob, { contentType: 'image/webp', upsert: true });
+      if (error) throw error;
+      const { data: { publicUrl } } = supabaseClient.storage.from(BUCKET_NAME).getPublicUrl(fileName);
+      return publicUrl;
+    } catch (err) { console.error(err); showToast('Erro ao enviar imagem.'); return null; }
+  }
+
+  // Funções CRUD
+  async function loadProducts() {
+    showToast("Carregando...");
+    try {
+      const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: true });
+      if (error) throw error;
+      productsData = data || [];
+      productsData.forEach(p => { if (!p.images) p.images = []; });
+      showToast(`${productsData.length} produtos carregados.`);
+    } catch (error) { showToast("Erro ao carregar."); productsData = []; }
+    applyFilters();
+    document.getElementById('emergencyBtnContainer').style.display = (productsData.length === 0 && !editorMode) ? 'block' : 'none';
+  }
+
+  async function saveProduct(product) {
+    showToast("Salvando...");
+    try {
+      const { data, error } = await supabaseClient.from('products').upsert(product, { onConflict: 'id' }).select();
+      if (error) throw error;
+      showToast("Sincronizado!");
+      return data[0];
+    } catch (error) { showToast("Erro ao salvar."); return null; }
+  }
+
+  async function deleteProductById(id) {
+    try {
+      const { error } = await supabaseClient.from('products').delete().eq('id', id);
+      if (error) throw error;
+      showToast("Produto excluído.");
+      return true;
+    } catch (error) { showToast("Erro ao deletar."); return false; }
+  }
+
+  // Carrinho com miniatura e drawer
   function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((s, i) => s + i.quantidade, 0); }
+  function saveCart() { localStorage.setItem('vetin_cart', JSON.stringify(cart)); updateCartCount(); renderCartDrawer(); }
   function addToCart(product, qtd = 1, btnElement = null) {
     const existing = cart.find(i => i.title === product.title);
     if (existing) existing.quantidade += qtd;
@@ -670,20 +757,26 @@
     showToast(`📷 ${product.title} adicionado`);
     if (btnElement) { const orig = btnElement.innerText; btnElement.innerText = "✔️ ADICIONADO!"; setTimeout(() => btnElement.innerText = orig, 1000); }
   }
+  
+  function getCartSubtotal() {
+    return cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0);
+  }
+  
+  function updateTotalDisplay() {
+    const subtotal = getCartSubtotal();
+    const total = subtotal + currentFrete;
+    document.getElementById('cartDrawerSubtotal').innerHTML = `SUBTOTAL: R$ ${subtotal.toFixed(2).replace('.',',')}`;
+    document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
+  }
+  
   function finalizarCompra() {
     if (!cart.length) { showToast("Carrinho vazio"); return; }
-    const total = cart.reduce((s, i) => s + parseFloat(i.price.replace('R$','').replace(',','.')) * i.quantidade, 0) + freteValor;
-    const msg = `🛒 PEDIDO VETIN CYBER\n\n${cart.map(i => `${i.title} x${i.quantidade} (${i.price})`).join('\n')}\n\nFRETE: R$ ${freteValor.toFixed(2).replace('.',',')}\nTOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
+    const itens = cart.map(i => `${i.title} x${i.quantidade} (${i.price})`).join('\n');
+    const total = getCartSubtotal() + currentFrete;
+    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nSUBTOTAL: R$ ${getCartSubtotal().toFixed(2)}\nFRETE: R$ ${currentFrete.toFixed(2)}\nTOTAL: R$ ${total.toFixed(2)}\n\nObrigado!`;
     window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
   }
-  // Calcular frete (simulação)
-  document.getElementById('calcFreteBtn').onclick = () => {
-    const cep = document.getElementById('cepInput').value;
-    if (cep.length !== 8) { showToast("CEP inválido"); return; }
-    freteValor = 15.00; // simulação
-    document.getElementById('freteResult').innerHTML = `Frete para CEP ${cep}: R$ 15,00 (PAC)`;
-    updateCartTotals();
-  };
+
   // Drawer controls
   let activeDrawer = null;
   function openDrawer(drawerId) {
@@ -701,15 +794,65 @@
     drawer.classList.remove('open');
     overlay.classList.remove('active');
     if (activeDrawer === drawerId) activeDrawer = null;
-    if (document.querySelectorAll('.drawer.open, .filter-drawer.open').length === 0) document.body.style.overflow = '';
+    if (document.querySelectorAll('.drawer.open, .filter-drawer.open').length === 0) {
+      document.body.style.overflow = '';
+    }
   }
+  function closeAllDrawers() {
+    if (activeDrawer) closeDrawer(activeDrawer);
+    document.body.style.overflow = '';
+  }
+
+  // Renderizar drawer do carrinho
+  function renderCartDrawer() {
+    const container = document.getElementById('cartDrawerItems');
+    if (!cart.length) { container.innerHTML = '<div style="text-align:center;padding:2rem;">CARRINHO VAZIO</div>'; updateTotalDisplay(); return; }
+    container.innerHTML = '';
+    cart.forEach((item, idx) => {
+      const div = document.createElement('div'); div.className = 'cart-item-drawer';
+      div.innerHTML = `
+        <img src="${item.imgMain}" onerror="this.src='https://placehold.co/70x70?text=erro'">
+        <div class="cart-item-details">
+          <div class="cart-item-title">${item.title}</div>
+          <div class="cart-item-price">${item.price}</div>
+          <div class="cart-item-actions">
+            <button class="cart-qty-down" data-idx="${idx}" data-delta="-1">-</button>
+            <span>${item.quantidade}</span>
+            <button class="cart-qty-up" data-idx="${idx}" data-delta="1">+</button>
+            <button class="cart-item-remove-drawer" data-idx="${idx}">🗑</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+    updateTotalDisplay();
+    document.querySelectorAll('.cart-qty-down, .cart-qty-up').forEach(btn => {
+      btn.onclick = (e) => { const idx = btn.dataset.idx, delta = parseInt(btn.dataset.delta); cart[idx].quantidade += delta; if(cart[idx].quantidade <= 0) cart.splice(idx,1); saveCart(); renderCartDrawer(); };
+    });
+    document.querySelectorAll('.cart-item-remove-drawer').forEach(btn => {
+      btn.onclick = (e) => { const idx = btn.dataset.idx; cart.splice(idx,1); saveCart(); renderCartDrawer(); };
+    });
+  }
+
+  // Calcular frete (simulação)
+  document.getElementById('calcFreteBtn').onclick = () => {
+    const cep = document.getElementById('cepInput').value;
+    if (!cep || cep.length !== 8) { showToast("Digite um CEP válido (8 números)"); return; }
+    // Simulação de frete fixo por enquanto (integração real com API depois)
+    currentFrete = 15.00;
+    document.getElementById('freteResult').innerHTML = `🚚 Frete para CEP ${cep}: R$ 15,00 (PAC)`;
+    updateTotalDisplay();
+    showToast(`Frete calculado: R$ 15,00`);
+  };
+
+  // Drawer do carrinho
   document.getElementById('cartBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('checkoutBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('closeCartDrawer').onclick = () => closeDrawer('cartDrawer');
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
-  document.getElementById('drawerOverlay').onclick = () => { if (activeDrawer) closeDrawer(activeDrawer); };
+  document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
-  // ========== MODAL DE PRODUTO FULLSCREEN ==========
+  // Modal de produto em tela cheia
   const productFullModal = document.getElementById('productFullModal');
   const productFullImage = document.getElementById('productFullImage');
   const productFullTitle = document.getElementById('productFullTitle');
@@ -721,6 +864,7 @@
   const productFullBuyBtn = document.getElementById('productFullBuyBtn');
   const productFullShareBtn = document.getElementById('productFullShareBtn');
   const closeProductFullModal = document.getElementById('closeProductFullModal');
+
   function openProductFullModal(prod) {
     currentViewProduct = prod;
     currentViewImages = (prod.images && prod.images.length) ? prod.images : [prod.imgMain];
@@ -743,33 +887,130 @@
   closeProductFullModal.onclick = () => { productFullModal.style.display = 'none'; document.body.style.overflow = ''; };
   window.onclick = (e) => { if (e.target === productFullModal) { productFullModal.style.display = 'none'; document.body.style.overflow = ''; } };
 
-  // ========== FILTROS, PRODUTOS, ADMIN, ETC (PRESERVADOS) ==========
-  // (Todas as funções originais foram mantidas, mas por questões de tamanho estão resumidas. O funcionamento é idêntico ao seu código aprovado anteriormente.)
-  async function loadProducts() { /* ... */ }
-  async function saveProduct(product) { /* ... */ }
-  async function deleteProductById(id) { /* ... */ }
-  function getConnectionQuality() { return { maxWidth: 1200, quality: 0.7 }; }
-  async function compressImageForUpload(file) { return file; }
-  async function uploadImageToStorage(file, productId, suffix) { return null; }
-  function applyFilters() { /* ... */ }
-  function renderProducts(productsArray) { /* ... */ }
-  function attachEventsToCards() { /* ... */ }
-  function abrirModalEdicao(idx) { /* ... */ }
-  function renderImageGrid() { /* ... */ }
-  async function handleImageUpload(isMain) { /* ... */ }
-  function confirmDeleteProduct(id) { /* ... */ }
+  // Filtros e renderização
+  function applyFilters() {
+    const filtered = productsData.filter(p => {
+      if (currentFilter !== 'todos' && p.categoria !== currentFilter) return false;
+      if (currentSearch && !p.title.toLowerCase().includes(currentSearch.toLowerCase()) && !(p.specs || '').toLowerCase().includes(currentSearch.toLowerCase())) return false;
+      return true;
+    });
+    renderProducts(filtered);
+  }
+  function renderProducts(productsArray) {
+    const grid = document.getElementById('productGrid');
+    grid.innerHTML = '';
+    productsArray.forEach((prod) => {
+      const realIdx = productsData.findIndex(p => p.id === prod.id);
+      const cell = document.createElement('div'); cell.className = 'product-cell' + (editorMode ? ' editor-mode' : ''); cell.setAttribute('data-idx', realIdx);
+      cell.innerHTML = `<div class="delete-card-btn" data-idx="${realIdx}">🗑</div><img src="${prod.imgMain}" class="product-img" data-field="imgMain" data-idx="${realIdx}" alt="${prod.title}" onerror="this.src='https://placehold.co/400x300?text=Imagem+Indisponivel'"><div class="product-title" data-field="title" data-idx="${realIdx}">${prod.title}</div><div class="product-price" data-field="price" data-idx="${realIdx}">${prod.price}</div><button class="acquire-btn">[ADQUIRIR ITEM]</button>`;
+      grid.appendChild(cell);
+    });
+    attachEventsToCards();
+  }
+  function attachEventsToCards() {
+    document.querySelectorAll('.product-cell').forEach(cell => {
+      const idx = parseInt(cell.dataset.idx);
+      const prod = productsData[idx];
+      cell.onclick = e => { if (e.target.classList.contains('acquire-btn') || e.target.classList.contains('delete-card-btn')) return; if (editorMode) abrirModalEdicao(idx); else openProductFullModal(prod); };
+      cell.querySelector('.acquire-btn').onclick = e => { e.stopPropagation(); addToCart(prod, 1, e.target); };
+      const delBtn = cell.querySelector('.delete-card-btn');
+      if (delBtn) delBtn.onclick = e => { e.stopPropagation(); confirmDeleteProduct(prod.id); };
+    });
+    if (editorMode) {
+      document.querySelectorAll('[data-field="title"]').forEach(el => el.onclick = async e => { e.stopPropagation(); const n = prompt("Novo título:", productsData[e.target.dataset.idx].title); if(n) { productsData[e.target.dataset.idx].title = n; await saveProduct(productsData[e.target.dataset.idx]); await loadProducts(); } });
+      document.querySelectorAll('[data-field="price"]').forEach(el => el.onclick = async e => { e.stopPropagation(); const n = prompt("Novo preço:", productsData[e.target.dataset.idx].price); if(n) { productsData[e.target.dataset.idx].price = n; await saveProduct(productsData[e.target.dataset.idx]); await loadProducts(); } });
+    }
+  }
+
+  // Modal Edição (preservado)
+  let currentEditProductId = null, tempImagesList = [];
+  function abrirModalEdicao(idx) {
+    currentEditIndex = idx; const prod = productsData[idx]; currentEditProductId = prod.id;
+    document.getElementById('editTitle').innerText = `Editar: ${prod.title}`;
+    document.getElementById('editCategoria').value = prod.categoria || 'acessorio';
+    document.getElementById('editSpecsText').value = prod.specs || '';
+    document.getElementById('editMainImage').src = prod.imgMain || 'https://placehold.co/400x300?text=Sem+imagem';
+    tempImagesList = [...(prod.images || [])];
+    renderImageGrid();
+    document.getElementById('editModal').style.display = 'flex';
+  }
+  function renderImageGrid() {
+    const container = document.getElementById('imageGridContainer');
+    container.innerHTML = '';
+    tempImagesList.forEach((img, i) => {
+      const thumb = document.createElement('div'); thumb.className = 'image-thumb';
+      thumb.innerHTML = `<img src="${img}" onerror="this.src='https://placehold.co/80x80?text=erro'"><button class="remove-grid-img" data-idx="${i}">🗑</button>`;
+      container.appendChild(thumb);
+    });
+    document.querySelectorAll('.remove-grid-img').forEach(btn => btn.addEventListener('click', e => { tempImagesList.splice(btn.dataset.idx, 1); renderImageGrid(); }));
+  }
+  async function handleImageUpload(isMain) {
+    const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      showToast('Enviando...');
+      const productId = currentEditProductId || Date.now().toString();
+      const url = await uploadImageToStorage(file, productId, isMain ? 'main' : `gallery_${Date.now()}`);
+      if (url) {
+        if (isMain) document.getElementById('editMainImage').src = url;
+        else { tempImagesList.push(url); renderImageGrid(); }
+        showToast('Imagem salva!');
+      }
+    };
+    input.click();
+  }
+  document.getElementById('uploadMainImageBtn').onclick = () => handleImageUpload(true);
+  document.getElementById('addImageBtn').onclick = () => handleImageUpload(false);
+  document.getElementById('editSaveBtn').onclick = async () => {
+    const prod = productsData[currentEditIndex];
+    prod.categoria = document.getElementById('editCategoria').value;
+    prod.specs = document.getElementById('editSpecsText').value;
+    prod.imgMain = document.getElementById('editMainImage').src;
+    prod.images = [...tempImagesList];
+    await saveProduct(prod); await loadProducts();
+    document.getElementById('editModal').style.display = 'none';
+  };
+  document.getElementById('editCloseBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
+
+  // Confirmação exclusão
+  function confirmDeleteProduct(id) { pendingDeleteId = id; document.getElementById('deleteConfirmModal').style.display = 'flex'; }
+  document.getElementById('confirmDeleteBtn').onclick = async () => { if (pendingDeleteId) { await deleteProductById(pendingDeleteId); await loadProducts(); } document.getElementById('deleteConfirmModal').style.display = 'none'; pendingDeleteId = null; };
+  document.getElementById('cancelDeleteBtn').onclick = () => { document.getElementById('deleteConfirmModal').style.display = 'none'; pendingDeleteId = null; };
+
+  // Modo editor (email + senha)
   const ADMIN_EMAIL = "vetincyber@hotmail.com";
   const ADMIN_HASH = "a535739fa270e0f6985f613ebe255b3677d49b4f2361a2e35c55f34d7abafeba";
   let logoClicks = 0;
-  document.getElementById('mainLogo').onclick = async () => { /* ... */ };
-  document.getElementById('exitEditorBtn').onclick = () => { editorMode = false; applyFilters(); };
-  document.getElementById('addCardBtn').onclick = async () => { /* ... */ };
-  document.getElementById('emergencyCreateBtn').onclick = async () => { /* ... */ };
-  document.getElementById('exportProductsBtn').onclick = () => { /* ... */ };
-  document.getElementById('importProductsBtn').onclick = () => { /* ... */ };
-  document.getElementById('backupBtn').onclick = () => { /* ... */ };
-  document.getElementById('toggleFiltersBtn').onclick = () => { /* ... */ };
-  // Drawer de filtros mobile
+  document.getElementById('mainLogo').onclick = async () => {
+    logoClicks++;
+    if (logoClicks >= 6) {
+      const email = prompt("E-mail de administrador:");
+      if (email && email === ADMIN_EMAIL) {
+        const senha = prompt("Senha:");
+        if (senha) {
+          const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
+          const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
+          if (hashHex === ADMIN_HASH) {
+            editorMode = true;
+            document.getElementById('editorPanel').style.display = 'flex';
+            document.getElementById('addCardBtn').style.display = 'block';
+            applyFilters();
+            showToast("Modo editor ativado");
+          } else alert("Acesso negado!");
+        } else alert("Senha não fornecida.");
+      } else alert("Acesso negado!");
+      logoClicks = 0;
+    }
+  };
+  document.getElementById('exitEditorBtn').onclick = () => { editorMode = false; document.getElementById('editorPanel').style.display = 'none'; document.getElementById('addCardBtn').style.display = 'none'; applyFilters(); showToast("Modo editor desativado"); };
+  document.getElementById('addCardBtn').onclick = async () => { const last = productsData[productsData.length-1]; if (!last) return; const { id, ...rest } = last; const novo = { ...rest, title: rest.title + " (CÓPIA)" }; const saved = await saveProduct(novo); if (saved) await loadProducts(); };
+  document.getElementById('emergencyCreateBtn').onclick = async () => {
+    const defaultProducts = [{ title: "CÂMERA VETIN MK-I", price: "R$299,00", imgMain: "https://placehold.co/400x300?text=CAMERA", specs: "<strong>Sensor:</strong> 20MP<br><strong>Resolução:</strong> 4K", images: [], categoria: "camera" }, { title: "LENTE 50MM F/1.8", price: "R$189,00", imgMain: "https://placehold.co/400x300?text=LENTE", specs: "<strong>Abertura:</strong> f/1.8", images: [], categoria: "acessorio" }, { title: "MOCHILA ASSAULT", price: "R$249,00", imgMain: "https://placehold.co/400x300?text=MOCHILA", specs: "<strong>Material:</strong> Nylon", images: [], categoria: "acessorio" }];
+    for (let p of defaultProducts) await saveProduct(p);
+    await loadProducts(); showToast("3 produtos criados!");
+  };
+
+  // Drawer mobile (filtros)
   const menuToggle = document.getElementById('menuToggle'), filterDrawer = document.getElementById('filterDrawer'), filterOverlay = document.getElementById('filterOverlay');
   function openFilterDrawer() { filterDrawer.classList.add('open'); filterOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
   function closeFilterDrawer() { filterDrawer.classList.remove('open'); filterOverlay.classList.remove('active'); document.body.style.overflow = ''; }
@@ -777,7 +1018,10 @@
   document.getElementById('drawerCloseFilters').onclick = closeFilterDrawer;
   filterOverlay.onclick = closeFilterDrawer;
   document.querySelectorAll('#filterDrawer .filter-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); closeFilterDrawer(); }; });
+
+  // Filtros principais
   document.querySelectorAll('.filters-bar .filter-btn').forEach(btn => btn.onclick = () => { document.querySelectorAll('.filters-bar .filter-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.cat; applyFilters(); });
+  
   // Busca inline
   const searchCorteizBtn = document.getElementById('searchBtnCorteiz');
   const searchInlineContainer = document.getElementById('searchInlineContainer');
@@ -785,20 +1029,65 @@
   let searchInlineActive = false;
   searchCorteizBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (searchInlineActive) { currentSearch = searchInlineInput.value; applyFilters(); searchInlineContainer.classList.remove('active'); searchInlineActive = false; }
-    else { searchInlineContainer.classList.add('active'); searchInlineInput.focus(); searchInlineActive = true; }
+    if (searchInlineActive) {
+      currentSearch = searchInlineInput.value;
+      applyFilters();
+      searchInlineContainer.classList.remove('active');
+      searchInlineActive = false;
+    } else {
+      searchInlineContainer.classList.add('active');
+      searchInlineInput.focus();
+      searchInlineActive = true;
+    }
   });
-  searchInlineInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { currentSearch = searchInlineInput.value; applyFilters(); searchInlineContainer.classList.remove('active'); searchInlineActive = false; searchInlineInput.value = ''; } });
-  document.addEventListener('click', (e) => { if (searchInlineActive && !searchInlineContainer.contains(e.target) && e.target !== searchCorteizBtn) { searchInlineContainer.classList.remove('active'); searchInlineActive = false; searchInlineInput.value = ''; } });
-  searchInlineInput.addEventListener('input', () => { if (searchDebounceTimer) clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => { currentSearch = searchInlineInput.value; applyFilters(); }, 300); });
-  // Inicialização
+  searchInlineInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      currentSearch = searchInlineInput.value;
+      applyFilters();
+      searchInlineContainer.classList.remove('active');
+      searchInlineActive = false;
+      searchInlineInput.value = '';
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (searchInlineActive && !searchInlineContainer.contains(e.target) && e.target !== searchCorteizBtn) {
+      searchInlineContainer.classList.remove('active');
+      searchInlineActive = false;
+      searchInlineInput.value = '';
+    }
+  });
+  searchInlineInput.addEventListener('input', () => {
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      currentSearch = searchInlineInput.value;
+      applyFilters();
+    }, 300);
+  });
+
+  // Exportar / Importar / Backup
+  document.getElementById('exportProductsBtn').onclick = () => { const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'produtos.json'; a.click(); };
+  document.getElementById('importProductsBtn').onclick = () => document.getElementById('importFile').click();
+  document.getElementById('importFile').onchange = async e => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = async ev => { try { const imported = JSON.parse(ev.target.result); for (let p of imported) { const { id, ...rest } = p; await saveProduct(rest); } await loadProducts(); showToast("Importado!"); } catch { showToast("Erro no arquivo"); } }; reader.readAsText(file); };
+  document.getElementById('backupBtn').onclick = () => { const blob = new Blob([JSON.stringify(productsData, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${new Date().toISOString()}.json`; a.click(); showToast("Backup gerado!"); };
+  document.getElementById('toggleFiltersBtn').onclick = () => { const bar = document.getElementById('filtersBar'); const isHidden = bar.classList.toggle('hidden'); localStorage.setItem('vetin_filters_hidden', isHidden); document.getElementById('toggleFiltersBtn').innerText = isHidden ? '🔘 MOSTRAR FILTROS' : '🔘 OCULTAR FILTROS'; };
+
+  // Trava logo 3D
+  const logo3d = document.getElementById('logo3d');
+  logo3d.addEventListener('camera-change', () => { logo3d.cameraOrbit = '0deg 90deg auto'; logo3d.zoom = '1'; });
+  logo3d.addEventListener('dblclick', e => e.preventDefault());
+
+  // Bloquear menu de contexto em imagens
+  document.querySelectorAll('img').forEach(img => { img.addEventListener('contextmenu', e => e.preventDefault()); img.setAttribute('draggable', 'false'); });
+  const observer = new MutationObserver(() => { document.querySelectorAll('img').forEach(img => { if (!img.hasAttribute('data-contextmenu-blocked')) { img.addEventListener('contextmenu', e => e.preventDefault()); img.setAttribute('draggable', 'false'); img.setAttribute('data-contextmenu-blocked', 'true'); } }); });
+  observer.observe(document.body, { childList: true, subtree: true });
+
   (async () => {
     await loadProducts();
     updateCartCount();
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ CORTEIZ STYLE!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ COMPLETO!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
