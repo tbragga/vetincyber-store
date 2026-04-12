@@ -57,7 +57,7 @@
       padding: 0.5rem 0;
       outline: none;
     }
-    /* ========== CARROSSEL DE MARCAS COM LOGOS SVG E AJUSTES INDIVIDUAIS ========== */
+    /* ========== CARROSSEL DE MARCAS COM AJUSTES ========== */
     .brands-carousel {
       margin: 1rem 0 2rem 0;
       overflow: hidden;
@@ -69,8 +69,9 @@
     .brands-track {
       display: flex;
       gap: 3rem;
-      animation: scrollBrands 20s linear infinite;
+      animation: scrollBrands 35s linear infinite; /* mais lento e fluido */
       width: fit-content;
+      will-change: transform;
     }
     .brands-track:hover {
       animation-play-state: paused;
@@ -79,26 +80,28 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 35px; /* altura fixa do container */
+      height: 35px;
     }
-    /* Todas as logos herdam uma altura padrão de 30px */
+    /* Todas as logos herdam uma altura padrão de 30px, opacidade reduzida */
     .brand-item img {
       height: 30px;
       width: auto;
       max-width: 100px;
       object-fit: contain;
       filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7487%) hue-rotate(358deg) brightness(96%) contrast(117%);
-      transition: transform 0.2s;
+      opacity: 0.65; /* opacidade reduzida para não chamar tanta atenção */
+      transition: transform 0.2s, opacity 0.2s;
     }
-    /* Ajustes individuais por marca - ALTERE AQUI A ALTURA DE CADA LOGO */
-    .brand-item img.brand-sony { height: 15px; }      /* Sony - ajuste conforme necessário */
-    .brand-item img.brand-nikon { height: 70px; }     /* Nikon */
-    .brand-item img.brand-samsung { height: 30px; }   /* Samsung */
-    .brand-item img.brand-olympus { height: 120px; }   /* Olympus */
-    .brand-item img.brand-canon { height: 17px; }     /* Canon */
+    /* Ajustes individuais por marca - ALTERE AQUI TAMANHO E POSIÇÃO */
+    .brand-item img.brand-sony { height: 15px; margin-top: 5px; }      /* Sony - ajuste vertical */
+    .brand-item img.brand-nikon { height: 70px; margin-top: -15px; }    /* Nikon */
+    .brand-item img.brand-samsung { height: 30px; margin-top: 0; }      /* Samsung */
+    .brand-item img.brand-olympus { height: 120px; margin-top: -40px; } /* Olympus */
+    .brand-item img.brand-canon { height: 17px; margin-top: 5px; }      /* Canon */
     
     .brand-item:hover img {
       transform: scale(1.1);
+      opacity: 0.9;
       filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7487%) hue-rotate(358deg) brightness(96%) contrast(117%) drop-shadow(0 0 4px #ff3b3b);
     }
     @keyframes scrollBrands {
@@ -106,13 +109,13 @@
       100% { transform: translateX(-50%); }
     }
     @media (max-width: 768px) {
-      .brands-track { gap: 1.5rem; }
-      .brand-item img { height: 20px; }
-      .brand-item img.brand-sony { height: 20px; }
-      .brand-item img.brand-nikon { height: 20px; }
-      .brand-item img.brand-samsung { height: 20px; }
-      .brand-item img.brand-olympus { height: 20px; }
-      .brand-item img.brand-canon { height: 20px; }
+      .brands-track { gap: 1.5rem; animation-duration: 25s; }
+      .brand-item img { height: 20px; opacity: 0.65; }
+      .brand-item img.brand-sony { height: 20px; margin-top: 0; }
+      .brand-item img.brand-nikon { height: 20px; margin-top: 0; }
+      .brand-item img.brand-samsung { height: 20px; margin-top: 0; }
+      .brand-item img.brand-olympus { height: 20px; margin-top: 0; }
+      .brand-item img.brand-canon { height: 20px; margin-top: 0; }
       .brand-item { height: 25px; }
     }
     /* ========== DRAWER DO CARRINHO COM FRETE ========== */
@@ -440,7 +443,7 @@
     </div>
   </div>
 
-  <!-- CARROSSEL DE MARCAS COM LOGOS SVG E AJUSTES INDIVIDUAIS -->
+  <!-- CARROSSEL DE MARCAS COM LOGOS SVG E AJUSTES -->
   <div class="brands-carousel">
     <div class="brands-track" id="brandsTrack"></div>
   </div>
@@ -752,7 +755,7 @@
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
-  // ========== CARROSSEL DE MARCAS COM CLASSES INDIVIDUAIS ==========
+  // ========== CARROSSEL DE MARCAS COM CLASSES INDIVIDUAIS (SEM ESPAÇO VAZIO) ==========
   const brands = [
     { name: 'Sony', file: 'sony.svg', className: 'brand-sony' },
     { name: 'Nikon', file: 'nikon.svg', className: 'brand-nikon' },
@@ -763,7 +766,8 @@
   const trackBrands = document.getElementById('brandsTrack');
   function buildBrandsCarousel() {
     let items = '';
-    for (let i = 0; i < 3; i++) {
+    // Duplica várias vezes para garantir que nunca haja espaço vazio (loop infinito perfeito)
+    for (let i = 0; i < 6; i++) {  // 6 repetições garantem cobertura total
       brands.forEach(b => {
         items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}" class="${b.className}"></div>`;
       });
@@ -997,7 +1001,7 @@
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ COM AJUSTE INDIVIDUAL DE LOGOS!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ COM CARROSSEL PERFEITO!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
