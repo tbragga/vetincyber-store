@@ -12,7 +12,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; image-rendering: crisp-edges; }
     body { background-color: #000000; font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace; overflow-x: hidden; color: #e0e0e0; line-height: 1.4; }
     
-    /* LINHA VERMELHA NO TOPO (estilo Corteiz) - COR SCARLET (igual ao tom forte do preço) */
+    /* LINHA VERMELHA NO TOPO (estilo Corteiz) - COR SCARLET */
     .top-red-line {
       position: fixed;
       top: 0;
@@ -57,7 +57,7 @@
       padding: 0.5rem 0;
       outline: none;
     }
-    /* ========== CARROSSEL DE MARCAS ========== */
+    /* ========== CARROSSEL DE MARCAS COM LOGOS SVG ========== */
     .brands-carousel {
       margin: 1rem 0 2rem 0;
       overflow: hidden;
@@ -79,19 +79,20 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-family: monospace;
-      font-size: 1.2rem;
-      font-weight: bold;
-      letter-spacing: 2px;
-      color: #ccc;
-      transition: all 0.3s;
-      cursor: default;
-      white-space: nowrap;
+      height: 35px; /* altura fixa para alinhar */
     }
-    .brand-item:hover {
-      color: #ff3b3b;
-      text-shadow: 0 0 8px rgba(255,59,59,0.5);
-      transform: scale(1.05);
+    .brand-item img {
+      height: 30px;      /* todas as logos com a mesma altura */
+      width: auto;
+      max-width: 100px;
+      object-fit: contain;
+      /* Filtro para transformar qualquer cor em vermelho (#ff3b3b) */
+      filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7487%) hue-rotate(358deg) brightness(96%) contrast(117%);
+      transition: transform 0.2s;
+    }
+    .brand-item:hover img {
+      transform: scale(1.1);
+      filter: brightness(0) saturate(100%) invert(27%) sepia(98%) saturate(7487%) hue-rotate(358deg) brightness(96%) contrast(117%) drop-shadow(0 0 4px #ff3b3b);
     }
     @keyframes scrollBrands {
       0% { transform: translateX(0); }
@@ -99,7 +100,8 @@
     }
     @media (max-width: 768px) {
       .brands-track { gap: 1.5rem; }
-      .brand-item { font-size: 0.9rem; }
+      .brand-item img { height: 20px; }
+      .brand-item { height: 25px; }
     }
     /* ========== DRAWER DO CARRINHO COM FRETE ========== */
     .cart-drawer {
@@ -508,20 +510,9 @@
     </div>
   </div>
 
-  <!-- CARROSSEL DE MARCAS -->
+  <!-- CARROSSEL DE MARCAS COM LOGOS SVG -->
   <div class="brands-carousel">
-    <div class="brands-track" id="brandsTrack">
-      <span class="brand-item">SONY</span>
-      <span class="brand-item">CANON</span>
-      <span class="brand-item">NIKON</span>
-      <span class="brand-item">SAMSUNG</span>
-      <span class="brand-item">CASIO</span>
-      <span class="brand-item">SONY</span>
-      <span class="brand-item">CANON</span>
-      <span class="brand-item">NIKON</span>
-      <span class="brand-item">SAMSUNG</span>
-      <span class="brand-item">CASIO</span>
-    </div>
+    <div class="brands-track" id="brandsTrack"></div>
   </div>
 
   <!-- Campo de busca inline (aparece ao clicar em SEARCH) -->
@@ -838,7 +829,6 @@
   document.getElementById('calcFreteBtn').onclick = () => {
     const cep = document.getElementById('cepInput').value;
     if (!cep || cep.length !== 8) { showToast("Digite um CEP válido (8 números)"); return; }
-    // Simulação de frete fixo por enquanto (integração real com API depois)
     currentFrete = 15.00;
     document.getElementById('freteResult').innerHTML = `🚚 Frete para CEP ${cep}: R$ 15,00 (PAC)`;
     updateTotalDisplay();
@@ -851,6 +841,27 @@
   document.getElementById('closeCartDrawer').onclick = () => closeDrawer('cartDrawer');
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
+
+  // ========== CARROSSEL DE MARCAS COM LOGOS SVG ==========
+  const brands = [
+    { name: 'Sony', file: 'sony.svg' },
+    { name: 'Nikon', file: 'nikon.svg' },
+    { name: 'Samsung', file: 'samsung.svg' },
+    { name: 'Olympus', file: 'olympus.svg' },
+    { name: 'Canon', file: 'canon.svg' }
+  ];
+  const trackBrands = document.getElementById('brandsTrack');
+  function buildBrandsCarousel() {
+    let items = '';
+    // Duplica 3 vezes para efeito infinito suave
+    for (let i = 0; i < 3; i++) {
+      brands.forEach(b => {
+        items += `<div class="brand-item"><img src="images/${b.file}" alt="${b.name}" title="${b.name}"></div>`;
+      });
+    }
+    trackBrands.innerHTML = items;
+  }
+  buildBrandsCarousel();
 
   // Modal de produto em tela cheia
   const productFullModal = document.getElementById('productFullModal');
@@ -1087,7 +1098,7 @@
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ COMPLETO!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ COM LOGOS SVG!', 'background:#000; color:#ff3b3b; font-size:20px;');
   })();
 </script>
 </body>
