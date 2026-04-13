@@ -1,4 +1,0 @@
-npm init -y
-npm install @mercadopago/sdk-js  # não é necessário no backend
-npm install mercadopago           # SDK oficial para Node
-npm install express               # para rodar localmente, mas na Vercel usamos funções
