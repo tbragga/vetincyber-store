@@ -850,13 +850,62 @@
     document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
   }
   
-  function finalizarCompra() {
-    if (!cart.length) { showToast("Carrinho vazio"); return; }
-    const itens = cart.map(i => `${i.title} x${i.quantidade} (${i.price})`).join('\n');
-    const total = getCartSubtotal() + currentFrete;
-    const msg = `🛒 PEDIDO VETIN CYBER\n\n${itens}\n\nSUBTOTAL: R$ ${getCartSubtotal().toFixed(2)}\nFRETE: R$ ${currentFrete.toFixed(2)}\nTOTAL: R$ ${total.toFixed(2)}\n\nObrigado!`;
-    window.open(`https://wa.me/5511999999999?text=${encodeURIComponent(msg)}`, '_blank');
+  // ==================== NOVA FUNÇÃO DE FINALIZAR COMPRA COM MERCADO PAGO ====================
+  async function finalizarCompra() {
+    if (!cart.length) {
+      showToast("Carrinho vazio");
+      return;
+    }
+
+    // Pede o e-mail do cliente (obrigatório para o Mercado Pago)
+    let email = prompt("Digite seu e-mail para receber a confirmação do pagamento:", "cliente@exemplo.com");
+    if (!email || email.trim() === "") {
+      showToast("E-mail é obrigatório");
+      return;
+    }
+
+    // Prepara os itens para enviar à API
+    const items = cart.map(item => ({
+      title: item.title,
+      quantidade: item.quantidade,
+      price: item.price
+    }));
+
+    // Se o cliente já calculou o frete, adiciona como um item extra
+    if (currentFrete > 0) {
+      items.push({
+        title: "Frete (PAC)",
+        quantidade: 1,
+        price: `R$ ${currentFrete.toFixed(2).replace('.', ',')}`
+      });
+    }
+
+    const payload = {
+      items: items,
+      payer_email: email.trim(),
+      external_reference: `pedido_${Date.now()}_${Math.floor(Math.random() * 10000)}`
+    };
+
+    try {
+      showToast("Gerando pagamento...");
+      const response = await fetch('/api/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (data.init_point) {
+        // Redireciona para o checkout seguro do Mercado Pago
+        window.location.href = data.init_point;
+      } else {
+        showToast("Erro ao criar preferência: " + (data.error || "tente novamente"));
+      }
+    } catch (error) {
+      console.error(error);
+      showToast("Erro de conexão com o servidor");
+    }
   }
+  // ========================================================================
 
   let activeDrawer = null;
   function openDrawer(drawerId) {
@@ -923,6 +972,7 @@
   const cartIconMobile = document.getElementById('cartIconMobile');
   if (cartIconMobile) cartIconMobile.onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('closeCartDrawer').onclick = () => closeDrawer('cartDrawer');
+  // Botão de finalizar compra dentro do drawer agora chama a nova função
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
