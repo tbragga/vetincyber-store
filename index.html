@@ -731,6 +731,19 @@
 </div>
 <div id="toast" class="toast"></div>
 
+<!-- MODAL PARA COLETAR E-MAIL (estilizado e bonito) -->
+<div id="emailModal" class="specs-modal" style="display:none;">
+  <div class="specs-modal-content" style="max-width: 450px; text-align: center;">
+    <h3 style="color: #ff3b3b; margin-bottom: 1rem;">📧 INFORME SEU E-MAIL</h3>
+    <p style="margin-bottom: 1rem; font-size: 0.8rem;">Você receberá a confirmação do pedido e o link de rastreio.</p>
+    <input type="email" id="modalEmailInput" placeholder="seuemail@exemplo.com" style="width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; padding: 0.7rem; font-family: monospace; margin-bottom: 1.5rem;">
+    <div style="display: flex; gap: 1rem;">
+      <button id="modalConfirmEmail" class="checkout-drawer-btn" style="margin-top: 0;">CONFIRMAR</button>
+      <button id="modalCancelEmail" class="checkout-drawer-btn" style="background: #222; border-color: #666; color: #ccc;">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // ======================== CONFIGURAÇÃO SUPABASE ========================
   const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
@@ -850,60 +863,86 @@
     document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
   }
   
-  // ==================== NOVA FUNÇÃO DE FINALIZAR COMPRA COM MERCADO PAGO ====================
+  // ========== NOVA FUNÇÃO DE FINALIZAR COMPRA COM MODAL DE E-MAIL ==========
+  function showEmailModal(callback) {
+    const modal = document.getElementById('emailModal');
+    const input = document.getElementById('modalEmailInput');
+    const confirmBtn = document.getElementById('modalConfirmEmail');
+    const cancelBtn = document.getElementById('modalCancelEmail');
+
+    if (!modal) return callback(null);
+    input.value = '';
+    
+    // Remove listeners antigos clonando os botões
+    const newConfirm = confirmBtn.cloneNode(true);
+    const newCancel = cancelBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+
+    modal.style.display = 'flex';
+
+    newConfirm.onclick = () => {
+      const email = input.value.trim();
+      if (!email || !email.includes('@')) {
+        showToast("E-mail inválido");
+        return;
+      }
+      modal.style.display = 'none';
+      callback(email);
+    };
+    newCancel.onclick = () => {
+      modal.style.display = 'none';
+      callback(null);
+    };
+  }
+
   async function finalizarCompra() {
     if (!cart.length) {
       showToast("Carrinho vazio");
       return;
     }
 
-    // Pede o e-mail do cliente (obrigatório para o Mercado Pago)
-    let email = prompt("Digite seu e-mail para receber a confirmação do pagamento:", "cliente@exemplo.com");
-    if (!email || email.trim() === "") {
-      showToast("E-mail é obrigatório");
-      return;
-    }
+    showEmailModal(async (email) => {
+      if (!email) return; // usuário cancelou
 
-    // Prepara os itens para enviar à API
-    const items = cart.map(item => ({
-      title: item.title,
-      quantidade: item.quantidade,
-      price: item.price
-    }));
+      const items = cart.map(item => ({
+        title: item.title,
+        quantidade: item.quantidade,
+        price: item.price
+      }));
 
-    // Se o cliente já calculou o frete, adiciona como um item extra
-    if (currentFrete > 0) {
-      items.push({
-        title: "Frete (PAC)",
-        quantidade: 1,
-        price: `R$ ${currentFrete.toFixed(2).replace('.', ',')}`
-      });
-    }
-
-    const payload = {
-      items: items,
-      payer_email: email.trim(),
-      external_reference: `pedido_${Date.now()}_${Math.floor(Math.random() * 10000)}`
-    };
-
-    try {
-      showToast("Gerando pagamento...");
-      const response = await fetch('/api/create-preference', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      if (data.init_point) {
-        // Redireciona para o checkout seguro do Mercado Pago
-        window.location.href = data.init_point;
-      } else {
-        showToast("Erro ao criar preferência: " + (data.error || "tente novamente"));
+      if (currentFrete > 0) {
+        items.push({
+          title: "Frete (PAC)",
+          quantidade: 1,
+          price: `R$ ${currentFrete.toFixed(2).replace('.', ',')}`
+        });
       }
-    } catch (error) {
-      console.error(error);
-      showToast("Erro de conexão com o servidor");
-    }
+
+      const payload = {
+        items: items,
+        payer_email: email,
+        external_reference: `pedido_${Date.now()}_${Math.floor(Math.random() * 10000)}`
+      };
+
+      try {
+        showToast("Gerando pagamento...");
+        const response = await fetch('/api/create-preference', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.init_point) {
+          window.location.href = data.init_point;
+        } else {
+          showToast("Erro: " + (data.error || "tente novamente"));
+        }
+      } catch (error) {
+        console.error(error);
+        showToast("Erro de conexão com o servidor. Verifique se a API está funcionando.");
+      }
+    });
   }
   // ========================================================================
 
@@ -972,7 +1011,6 @@
   const cartIconMobile = document.getElementById('cartIconMobile');
   if (cartIconMobile) cartIconMobile.onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('closeCartDrawer').onclick = () => closeDrawer('cartDrawer');
-  // Botão de finalizar compra dentro do drawer agora chama a nova função
   document.getElementById('checkoutDrawerBtn').onclick = finalizarCompra;
   document.getElementById('drawerOverlay').onclick = closeAllDrawers;
 
