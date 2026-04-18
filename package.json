@@ -1,0 +1,20 @@
+{
+  "name": "vetincyber-store",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Loja VETIN CYBER™ - Câmeras Cyber-shot",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "mercadopago": "^2.0.0",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.0",
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "keywords": ["ecommerce", "cybershot", "camera"],
+  "author": "Vetin Cyber",
+  "license": "UNLICENSED"
+}
