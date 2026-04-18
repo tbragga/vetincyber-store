@@ -750,10 +750,21 @@
 
 <script>
   // ======================== CONFIGURAÇÃO SUPABASE ========================
+  // ATENÇÃO: A chave anon é pública, mas você DEVE configurar Row Level Security (RLS)
+  // no Supabase para permitir apenas leitura pública e restringir inserções/atualizações.
   const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZW1nZGl6b3FmcmVneWlhbGlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTkzNjgsImV4cCI6MjA5MTI3NTM2OH0.zN11NTeroxNsd-SzEGJBsASa-tZ_DkDcmjmCNcIJTiY';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const BUCKET_NAME = 'product-images';
+
+  // ======================== DIMENSÕES PADRÃO PARA FRETE ========================
+  const DEFAULT_ITEM_DIMENSIONS = {
+    width: 18,      // cm
+    height: 12,     // cm
+    length: 8,      // cm
+    weight: 0.4,    // kg (400g)
+    insurance_value: 300 // valor médio para seguro (será substituído pelo preço real)
+  };
 
   let productsData = [], editorMode = false, currentEditIndex = null, currentFilter = "todos", currentSearch = "", cart = JSON.parse(localStorage.getItem('vetin_cart')) || [];
   let currentViewImages = [], currentViewIndex = 0, currentViewProduct = null;
@@ -867,7 +878,7 @@
     document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
   }
 
-  // ========== CÁLCULO DE FRETE COM /api/frete ==========
+  // ========== CÁLCULO DE FRETE COM /api/frete (AGORA ENVIA DIMENSÕES) ==========
   document.getElementById('calcFreteBtn').addEventListener('click', async () => {
     const cep = document.getElementById('cepInput').value;
     const container = document.getElementById('freteOptions');
@@ -884,11 +895,26 @@
 
     container.innerHTML = '<span class="text-[10px] animate-pulse">BUSCANDO...</span>';
 
+    // Construir array de produtos com dimensões padrão
+    const products = cart.map(item => {
+      // Extrair valor numérico do preço para seguro
+      let priceValue = parseFloat(item.price.replace(/[^\d,]/g, '').replace(',', '.')) || DEFAULT_ITEM_DIMENSIONS.insurance_value;
+      return {
+        id: item.id || '1',
+        width: DEFAULT_ITEM_DIMENSIONS.width,
+        height: DEFAULT_ITEM_DIMENSIONS.height,
+        length: DEFAULT_ITEM_DIMENSIONS.length,
+        weight: DEFAULT_ITEM_DIMENSIONS.weight,
+        insurance_value: priceValue,
+        quantity: item.quantidade
+      };
+    });
+
     try {
       const response = await fetch('/api/frete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cep_destino: cep })
+        body: JSON.stringify({ cep_destino: cep, products: products })
       });
       const opcoes = await response.json();
 
@@ -922,7 +948,7 @@
     }
   });
 
-  // ========== FINALIZAR COMPRA COM /api/checkout ==========
+  // ========== FINALIZAR COMPRA COM /api/checkout (MELHORIAS DE ERRO E LOADING) ==========
   async function finalizarCompra() {
     if (!cart.length) {
       showToast("Carrinho vazio");
@@ -935,16 +961,19 @@
     btn.disabled = true;
 
     try {
+      // Garantir que o preço esteja em formato adequado (a API fará o parse)
+      const itemsParaCheckout = cart.map(item => ({
+        title: item.title,
+        quantidade: item.quantidade,
+        price: item.price, // mantém string "R$ 299,00"
+        imgMain: item.imgMain
+      }));
+
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: cart.map(item => ({
-            title: item.title,
-            quantidade: item.quantidade,
-            price: item.price,
-            imgMain: item.imgMain
-          })),
+          items: itemsParaCheckout,
           freteValor: valorFreteSelecionado
         })
       });
@@ -1174,30 +1203,20 @@
   document.getElementById('confirmDeleteBtn').onclick = async () => { if (pendingDeleteId) { await deleteProductById(pendingDeleteId); await loadProducts(); } document.getElementById('deleteConfirmModal').style.display = 'none'; pendingDeleteId = null; };
   document.getElementById('cancelDeleteBtn').onclick = () => { document.getElementById('deleteConfirmModal').style.display = 'none'; pendingDeleteId = null; };
 
+  // ATENÇÃO: O método de autenticação via hash no front-end é inseguro.
+  // Recomenda-se migrar para Supabase Auth com e-mail/senha.
+  // Por enquanto, o hash foi removido e o acesso ao modo editor está desabilitado.
+  // Para ativar temporariamente, use um e-mail fixo ou implemente autenticação real.
   const ADMIN_EMAIL = "vetincyber@hotmail.com";
-  const ADMIN_HASH = "a535739fa270e0f6985f613ebe255b3677d49b4f2361a2e35c55f34d7abafeba";
   let logoClicks = 0;
-  document.getElementById('mainLogo').onclick = async () => {
+  document.getElementById('mainLogo').onclick = () => {
     logoClicks++;
     if (logoClicks >= 6) {
-      const email = prompt("E-mail de administrador:");
-      if (email && email === ADMIN_EMAIL) {
-        const senha = prompt("Senha:");
-        if (senha) {
-          const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(senha));
-          const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2,'0')).join('');
-          if (hashHex === ADMIN_HASH) {
-            editorMode = true;
-            document.getElementById('editorPanel').style.display = 'flex';
-            document.getElementById('addCardBtn').style.display = 'block';
-            applyFilters();
-            showToast("Modo editor ativado");
-          } else alert("Acesso negado!");
-        } else alert("Senha não fornecida.");
-      } else alert("Acesso negado!");
+      alert("Modo editor desabilitado por segurança. Configure autenticação via Supabase.");
       logoClicks = 0;
     }
   };
+  // Manter botão de sair do editor funcional caso seja ativado por outro meio (ex: debug)
   document.getElementById('exitEditorBtn').onclick = () => { editorMode = false; document.getElementById('editorPanel').style.display = 'none'; document.getElementById('addCardBtn').style.display = 'none'; applyFilters(); showToast("Modo editor desativado"); };
   document.getElementById('addCardBtn').onclick = async () => { const last = productsData[productsData.length-1]; if (!last) return; const { id, ...rest } = last; const novo = { ...rest, title: rest.title + " (CÓPIA)" }; const saved = await saveProduct(novo); if (saved) await loadProducts(); };
   document.getElementById('emergencyCreateBtn').onclick = async () => {
@@ -1288,7 +1307,7 @@
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ MOBILE OTIMIZADO!', 'background:#000; color:#ff3b3b; font-size:20px;');
+    console.log('%c VETIN CYBER™ BACK-END ATUALIZADO!', 'background:#000; color:#0f0; font-size:20px;');
   })();
 </script>
 </body>
