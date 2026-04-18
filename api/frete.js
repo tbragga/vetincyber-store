@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   }
 
   // CEP de origem (sua loja) - SUBSTITUA PELO SEU CEP REAL
-  const cep_origem = '01001000'; // exemplo: São Paulo - centro
+  const cep_origem = '60863480'; // exemplo: São Paulo - centro
 
   const payload = {
     from: { postal_code: cep_origem },
