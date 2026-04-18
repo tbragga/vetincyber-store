@@ -1,28 +1,32 @@
-import { MercadoPagoConfig, Preference } from 'mercadopago';
-
-const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN });
-
 export async function POST(req) {
-  const { items, freteEscolhido } = await req.json();
+  try {
+    const { items, freteValor } = await req.json();
 
-  const preference = new Preference(client);
-  const result = await preference.create({
-    body: {
-      items: items.map(i => ({
-        title: i.nome,
-        unit_price: Number(i.preco),
-        quantity: 1,
-        currency_id: 'BRL'
-      })),
-      // Adicionamos o frete como um item ou custo de envio
-      shipments: { cost: freteEscolhido.price, mode: 'not_specified' },
-      back_urls: {
-        success: 'https://seusite.com/sucesso',
-        failure: 'https://seusite.com/erro'
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
       },
-      auto_return: 'approved',
-    }
-  });
+      body: JSON.stringify({
+        items: items.map(i => ({
+          title: i.nome,
+          unit_price: Number(i.preco),
+          quantity: 1,
+          currency_id: 'BRL'
+        })),
+        shipments: { cost: Number(freteValor), mode: "not_specified" },
+        back_urls: {
+          success: "https://vetincyber.vercel.app/", // Coloque sua URL aqui
+          failure: "https://vetincyber.vercel.app/"
+        },
+        auto_return: "approved"
+      })
+    });
 
-  return new Response(JSON.stringify({ init_point: result.init_point }));
+    const data = await response.json();
+    return new Response(JSON.stringify({ init_point: data.init_point }), { status: 200 });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Erro no checkout' }), { status: 500 });
+  }
 }
