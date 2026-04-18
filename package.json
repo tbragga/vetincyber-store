@@ -1,5 +1,6 @@
 {
   "name": "vetincyber-store",
+  "type": "module",
   "version": "1.0.0",
   "description": "Loja Vetin Cyber",
   "main": "index.html",
