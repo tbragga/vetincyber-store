@@ -759,12 +759,12 @@
 
   // ======================== DIMENSÕES PADRÃO PARA FRETE ========================
   const DEFAULT_ITEM_DIMENSIONS = {
-  width: 16,   // cm
-  height: 2,   // cm
-  length: 11,  // cm
-  weight: 0.3, // kg
-  insurance_value: 300 // valor médio para seguro
-};
+    width: 16,      // cm
+    height: 2,      // cm
+    length: 11,     // cm
+    weight: 0.3,    // kg (300g)
+    insurance_value: 300 // valor médio para seguro (será substituído pelo preço real)
+  };
 
   let productsData = [], editorMode = false, currentEditIndex = null, currentFilter = "todos", currentSearch = "", cart = JSON.parse(localStorage.getItem('vetin_cart')) || [];
   let currentViewImages = [], currentViewIndex = 0, currentViewProduct = null;
@@ -878,7 +878,7 @@
     document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
   }
 
-  // ========== CÁLCULO DE FRETE COM /api/frete (AGORA ENVIA DIMENSÕES) ==========
+  // ========== CÁLCULO DE FRETE COM /api/frete (AGORA ENVIA DIMENSÕES CORRETAS) ==========
   document.getElementById('calcFreteBtn').addEventListener('click', async () => {
     const cep = document.getElementById('cepInput').value;
     const container = document.getElementById('freteOptions');
@@ -918,9 +918,11 @@
       });
       const opcoes = await response.json();
 
+      console.log('Opções recebidas do back-end:', opcoes); // Debug
+
       container.innerHTML = ''; // Limpa o loading
 
-      if (!opcoes.length) {
+      if (!opcoes || opcoes.length === 0) {
         container.innerHTML = '<span class="text-red-500">Nenhuma opção de frete disponível</span>';
         return;
       }
@@ -928,27 +930,32 @@
       opcoes.forEach(opt => {
         const div = document.createElement('div');
         div.className = "flex justify-between items-center bg-zinc-900 p-2 cursor-pointer border border-transparent hover:border-red-600 transition-all mb-1";
+        
+        // Garantir que price seja número
+        const priceValue = typeof opt.price === 'string' ? parseFloat(opt.price) : opt.price;
+        const formattedPrice = priceValue.toFixed(2).replace('.', ',');
+
         div.innerHTML = `
           <span class="text-[10px] uppercase font-bold">${opt.name}</span>
-          <span class="text-[10px]">R$ ${opt.price.toFixed(2).replace('.',',')}</span>
+          <span class="text-[10px]">R$ ${formattedPrice}</span>
         `;
         div.onclick = () => {
-          valorFreteSelecionado = parseFloat(opt.price);
+          valorFreteSelecionado = priceValue;
           // Remove destaque de todos
           document.querySelectorAll('#freteOptions div').forEach(el => el.classList.remove('border-red-600'));
           div.classList.add('border-red-600');
           updateTotalDisplay();
-          showToast(`Frete selecionado: ${opt.name} - R$ ${opt.price.toFixed(2)}`);
+          showToast(`Frete selecionado: ${opt.name} - R$ ${formattedPrice}`);
         };
         container.appendChild(div);
       });
     } catch (error) {
-      console.error(error);
+      console.error('Erro no cálculo de frete:', error);
       container.innerHTML = '<span class="text-red-500">Erro ao calcular frete</span>';
     }
   });
 
-  // ========== FINALIZAR COMPRA COM /api/checkout (MELHORIAS DE ERRO E LOADING) ==========
+  // ========== FINALIZAR COMPRA COM /api/checkout ==========
   async function finalizarCompra() {
     if (!cart.length) {
       showToast("Carrinho vazio");
@@ -961,11 +968,10 @@
     btn.disabled = true;
 
     try {
-      // Garantir que o preço esteja em formato adequado (a API fará o parse)
       const itemsParaCheckout = cart.map(item => ({
         title: item.title,
         quantidade: item.quantidade,
-        price: item.price, // mantém string "R$ 299,00"
+        price: item.price,
         imgMain: item.imgMain
       }));
 
@@ -1205,8 +1211,7 @@
 
   // ATENÇÃO: O método de autenticação via hash no front-end é inseguro.
   // Recomenda-se migrar para Supabase Auth com e-mail/senha.
-  // Por enquanto, o hash foi removido e o acesso ao modo editor está desabilitado.
-  // Para ativar temporariamente, use um e-mail fixo ou implemente autenticação real.
+  // Por enquanto, o acesso ao modo editor está desabilitado.
   const ADMIN_EMAIL = "vetincyber@hotmail.com";
   let logoClicks = 0;
   document.getElementById('mainLogo').onclick = () => {
@@ -1216,7 +1221,6 @@
       logoClicks = 0;
     }
   };
-  // Manter botão de sair do editor funcional caso seja ativado por outro meio (ex: debug)
   document.getElementById('exitEditorBtn').onclick = () => { editorMode = false; document.getElementById('editorPanel').style.display = 'none'; document.getElementById('addCardBtn').style.display = 'none'; applyFilters(); showToast("Modo editor desativado"); };
   document.getElementById('addCardBtn').onclick = async () => { const last = productsData[productsData.length-1]; if (!last) return; const { id, ...rest } = last; const novo = { ...rest, title: rest.title + " (CÓPIA)" }; const saved = await saveProduct(novo); if (saved) await loadProducts(); };
   document.getElementById('emergencyCreateBtn').onclick = async () => {
@@ -1307,7 +1311,7 @@
     renderCartDrawer();
     const filterState = localStorage.getItem('vetin_filters_hidden');
     if (filterState === 'true') { document.getElementById('filtersBar').classList.add('hidden'); document.getElementById('toggleFiltersBtn').innerText = '🔘 MOSTRAR FILTROS'; }
-    console.log('%c VETIN CYBER™ BACK-END ATUALIZADO!', 'background:#000; color:#0f0; font-size:20px;');
+    console.log('%c VETIN CYBER™ PRODUÇÃO ATIVADA!', 'background:#000; color:#0f0; font-size:20px;');
   })();
 </script>
 </body>
