@@ -1,22 +1,35 @@
 export async function POST(req) {
-  const { cep } = await req.json();
-  
-  // Aqui o segredo: enviamos as dimensões médias de uma câmera vintage
-  const res = await fetch(`${process.env.MELHORENVIO_URL}/api/v2/me/shipment/calculate`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.MELHORENVIO_TOKEN}`,
-      'Content-Type': 'application/json',
-      'User-Agent': 'VetinCyber (guilhermebragga@hotmail.com)'
-    },
-    body: JSON.stringify({
-      "from": { "postal_code": "60863480" }, // Seu CEP de Fortaleza
-      "to": { "postal_code": cep },
-      "products": [{ id: "camera", width: 15, height: 12, length: 15, weight: 0.5, quantity: 1 }]
-    })
-  });
+  try {
+    const { cep_destino } = await req.json();
 
-  const data = await res.json();
-  // Filtramos apenas as melhores opções (Sedex e Jadlog)
-  return new Response(JSON.stringify(data.filter(o => !o.error)));
+    const response = await fetch(`${process.env.MELHORENVIO_URL}/api/v2/me/shipment/calculate`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.MELHORENVIO_TOKEN}`,
+        'User-Agent': 'VetinCyber/1.0 (contato@vetincyber.com)'
+      },
+      body: JSON.stringify({
+        "from": { "postal_code": "60840285" }, // Seu CEP de Fortaleza
+        "to": { "postal_code": cep_destino },
+        "products": [
+          {
+            "id": "camera_padrao",
+            "width": 15,
+            "height": 12,
+            "length": 15,
+            "weight": 0.5, // 500g
+            "insurance_value": 200.0,
+            "quantity": 1
+          }
+        ]
+      })
+    });
+
+    const data = await response.json();
+    return new Response(JSON.stringify(data), { status: 200 });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Falha ao calcular frete' }), { status: 500 });
+  }
 }
