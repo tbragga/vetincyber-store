@@ -39,12 +39,12 @@ export default async function handler(req, res) {
       body: {
         items: preferenceItems,
         back_urls: {
-          success: 'https://seu-dominio.vercel.app/sucesso', // ajuste
-          failure: 'https://seu-dominio.vercel.app/falha',
-          pending: 'https://seu-dominio.vercel.app/pendente',
+          success: 'https://vetincyber.vercel.app/sucesso', // ajuste
+          failure: 'https://vetincyber.vercel.app/falha',
+          pending: 'https://vetincyber.vercel.app/pendente',
         },
         auto_return: 'approved',
-        notification_url: 'https://seu-dominio.vercel.app/api/webhook', // se tiver webhook
+        notification_url: 'https://vetincyber.vercel.app/api/webhook', // se tiver webhook
       },
     });
 
