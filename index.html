@@ -633,7 +633,7 @@
         <input type="text" id="cepInput" placeholder="SEU CEP" maxlength="8">
         <button id="calcFreteBtn" class="frete-btn">CALCULAR</button>
       </div>
-      <div id="freteResult" class="frete-result"></div>
+      <div id="freteOptions" class="frete-result"></div>
     </div>
     <div id="cartDrawerSubtotal" class="cart-subtotal">SUBTOTAL: R$0,00</div>
     <div id="cartDrawerTotal" class="cart-total-with-frete">TOTAL: R$0,00</div>
@@ -748,25 +748,6 @@
 </div>
 <div id="toast" class="toast"></div>
 
-<!-- MODAL PARA COLETAR E-MAIL (com ícone SVG) -->
-<div id="emailModal" class="specs-modal" style="display:none;">
-  <div class="specs-modal-content" style="max-width: 450px; text-align: center;">
-    <h3 style="color: #ff3b3b; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff3b3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="2"/>
-        <path d="m22 7-10 7L2 7"/>
-      </svg>
-      INFORME SEU E-MAIL
-    </h3>
-    <p style="margin-bottom: 1rem; font-size: 0.8rem;">Você receberá a confirmação do pedido e o link de rastreio.</p>
-    <input type="email" id="modalEmailInput" placeholder="seuemail@exemplo.com" style="width: 100%; background: #111; border: 1px solid #ff3b3b; color: #eee; padding: 0.7rem; font-family: monospace; margin-bottom: 1.5rem;">
-    <div style="display: flex; gap: 1rem;">
-      <button id="modalConfirmEmail" class="checkout-drawer-btn modal-effect-btn" style="margin-top: 0;">CONFIRMAR</button>
-      <button id="modalCancelEmail" class="checkout-drawer-btn modal-effect-btn" style="background: #222; border-color: #666; color: #ccc; margin-top: 0;">CANCELAR</button>
-    </div>
-  </div>
-</div>
-
 <script>
   // ======================== CONFIGURAÇÃO SUPABASE ========================
   const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
@@ -778,7 +759,7 @@
   let currentViewImages = [], currentViewIndex = 0, currentViewProduct = null;
   let pendingDeleteId = null;
   let searchDebounceTimer = null;
-  let currentFrete = 0;
+  let valorFreteSelecionado = 0;
 
   function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000); }
 
@@ -881,90 +862,107 @@
   
   function updateTotalDisplay() {
     const subtotal = getCartSubtotal();
-    const total = subtotal + currentFrete;
+    const total = subtotal + valorFreteSelecionado;
     document.getElementById('cartDrawerSubtotal').innerHTML = `SUBTOTAL: R$ ${subtotal.toFixed(2).replace('.',',')}`;
     document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
   }
-  
-  // ========== FUNÇÃO DE FINALIZAR COMPRA COM MODAL ==========
-  function showEmailModal(callback) {
-    const modal = document.getElementById('emailModal');
-    const input = document.getElementById('modalEmailInput');
-    const confirmBtn = document.getElementById('modalConfirmEmail');
-    const cancelBtn = document.getElementById('modalCancelEmail');
 
-    if (!modal) return callback(null);
-    input.value = '';
+  // ========== CÁLCULO DE FRETE COM /api/frete ==========
+  document.getElementById('calcFreteBtn').addEventListener('click', async () => {
+    const cep = document.getElementById('cepInput').value;
+    const container = document.getElementById('freteOptions');
     
-    const newConfirm = confirmBtn.cloneNode(true);
-    const newCancel = cancelBtn.cloneNode(true);
-    confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-    cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+    if (!cep || cep.length !== 8) {
+      showToast("Digite um CEP válido (8 números)");
+      return;
+    }
 
-    modal.style.display = 'flex';
+    if (!cart.length) {
+      showToast("Adicione produtos ao carrinho primeiro");
+      return;
+    }
 
-    newConfirm.onclick = () => {
-      const email = input.value.trim();
-      if (!email || !email.includes('@')) {
-        showToast("E-mail inválido");
+    container.innerHTML = '<span class="text-[10px] animate-pulse">BUSCANDO...</span>';
+
+    try {
+      const response = await fetch('/api/frete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cep_destino: cep })
+      });
+      const opcoes = await response.json();
+
+      container.innerHTML = ''; // Limpa o loading
+
+      if (!opcoes.length) {
+        container.innerHTML = '<span class="text-red-500">Nenhuma opção de frete disponível</span>';
         return;
       }
-      modal.style.display = 'none';
-      callback(email);
-    };
-    newCancel.onclick = () => {
-      modal.style.display = 'none';
-      callback(null);
-    };
-  }
 
+      opcoes.forEach(opt => {
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center bg-zinc-900 p-2 cursor-pointer border border-transparent hover:border-red-600 transition-all mb-1";
+        div.innerHTML = `
+          <span class="text-[10px] uppercase font-bold">${opt.name}</span>
+          <span class="text-[10px]">R$ ${opt.price.toFixed(2).replace('.',',')}</span>
+        `;
+        div.onclick = () => {
+          valorFreteSelecionado = parseFloat(opt.price);
+          // Remove destaque de todos
+          document.querySelectorAll('#freteOptions div').forEach(el => el.classList.remove('border-red-600'));
+          div.classList.add('border-red-600');
+          updateTotalDisplay();
+          showToast(`Frete selecionado: ${opt.name} - R$ ${opt.price.toFixed(2)}`);
+        };
+        container.appendChild(div);
+      });
+    } catch (error) {
+      console.error(error);
+      container.innerHTML = '<span class="text-red-500">Erro ao calcular frete</span>';
+    }
+  });
+
+  // ========== FINALIZAR COMPRA COM /api/checkout ==========
   async function finalizarCompra() {
     if (!cart.length) {
       showToast("Carrinho vazio");
       return;
     }
+    
+    const btn = document.getElementById('checkoutDrawerBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "PROCESSANDO...";
+    btn.disabled = true;
 
-    showEmailModal(async (email) => {
-      if (!email) return;
-
-      const items = cart.map(item => ({
-        title: item.title,
-        quantidade: item.quantidade,
-        price: item.price
-      }));
-
-      if (currentFrete > 0) {
-        items.push({
-          title: "Frete (PAC)",
-          quantidade: 1,
-          price: `R$ ${currentFrete.toFixed(2).replace('.', ',')}`
-        });
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cart.map(item => ({
+            title: item.title,
+            quantidade: item.quantidade,
+            price: item.price,
+            imgMain: item.imgMain
+          })),
+          freteValor: valorFreteSelecionado
+        })
+      });
+      
+      const data = await response.json();
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        showToast("Erro ao gerar pagamento: " + (data.error || "tente novamente"));
+        btn.innerText = originalText;
+        btn.disabled = false;
       }
-
-      const payload = {
-        items: items,
-        payer_email: email,
-        external_reference: `pedido_${Date.now()}_${Math.floor(Math.random() * 10000)}`
-      };
-
-      try {
-        showToast("Gerando pagamento...");
-        const response = await fetch('/api/create-preference', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        if (data.init_point) {
-          window.location.href = data.init_point;
-        } else {
-          showToast("Erro: " + (data.error || "tente novamente"));
-        }
-      } catch (error) {
-        console.error(error);
-        showToast("Erro de conexão com o servidor. Verifique se a API está funcionando.");
-      }
-    });
+    } catch (error) {
+      console.error(error);
+      showToast("Erro de conexão com o servidor.");
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
   }
 
   let activeDrawer = null;
@@ -1018,83 +1016,6 @@
       btn.onclick = (e) => { const idx = btn.dataset.idx; cart.splice(idx,1); saveCart(); renderCartDrawer(); };
     });
   }
-
-  // ========== FREte COM MELHOR ENVIO (com fallback de emergência) ==========
-  document.getElementById('calcFreteBtn').onclick = async () => {
-    const cep = document.getElementById('cepInput').value;
-    if (!cep || cep.length !== 8) {
-      showToast("Digite um CEP válido (8 números)");
-      return;
-    }
-
-    if (!cart.length) {
-      showToast("Adicione produtos ao carrinho primeiro");
-      return;
-    }
-
-    const produtosParaFrete = cart.map(item => ({
-      id: item.id,
-      price: item.price,
-      quantidade: item.quantidade,
-      weight: 0.5,
-      width: 11, height: 17, length: 11
-    }));
-
-    try {
-      showToast("Calculando frete...");
-      const response = await fetch('/api/calculate-shipping', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cep_destino: cep,
-          produtos: produtosParaFrete
-        })
-      });
-      const opcoes = await response.json();
-
-      if (opcoes.error) {
-        // Se a API falhar, usamos frete fixo como fallback (não atrapalha o cliente)
-        console.warn('API de frete falhou, usando fallback:', opcoes.error);
-        currentFrete = 15.00;
-        document.getElementById('freteResult').innerHTML = `🚚 Frete para CEP ${cep}: R$ 15,00 (PAC) - (valor estimado)`;
-        updateTotalDisplay();
-        showToast(`Frete calculado (estimado): R$ 15,00`);
-        return;
-      }
-
-      if (!opcoes.length) {
-        document.getElementById('freteResult').innerHTML = 'Nenhuma opção de frete disponível para este CEP. Tente outro CEP.';
-        return;
-      }
-
-      let html = '';
-      opcoes.forEach((op, idx) => {
-        html += `
-          <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-            <input type="radio" name="frete_opcao" value='${JSON.stringify(op)}' id="frete_${idx}">
-            <label for="frete_${idx}"><strong>${op.name}</strong> - R$ ${op.price.toFixed(2).replace('.', ',')} - ${op.delivery_time} dias úteis</label>
-          </div>
-        `;
-      });
-      document.getElementById('freteResult').innerHTML = html;
-
-      document.querySelectorAll('input[name="frete_opcao"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-          const selected = JSON.parse(e.target.value);
-          currentFrete = selected.price;
-          updateTotalDisplay();
-          showToast(`Frete selecionado: ${selected.name} - R$ ${selected.price.toFixed(2)}`);
-        });
-      });
-    } catch (error) {
-      console.error(error);
-      // Fallback: frete fixo em caso de erro de rede
-      currentFrete = 15.00;
-      document.getElementById('freteResult').innerHTML = `🚚 Frete para CEP ${cep}: R$ 15,00 (PAC) - (valor estimado devido a erro na consulta)`;
-      updateTotalDisplay();
-      showToast(`Frete calculado (estimado): R$ 15,00`);
-    }
-  };
 
   document.getElementById('cartBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
   document.getElementById('checkoutBtnCorteiz').onclick = () => { renderCartDrawer(); openDrawer('cartDrawer'); };
