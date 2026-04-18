@@ -759,12 +759,12 @@
 
   // ======================== DIMENSÕES PADRÃO PARA FRETE ========================
   const DEFAULT_ITEM_DIMENSIONS = {
-    width: 18,      // cm
-    height: 12,     // cm
-    length: 8,      // cm
-    weight: 0.4,    // kg (400g)
-    insurance_value: 300 // valor médio para seguro (será substituído pelo preço real)
-  };
+  width: 16,   // cm
+  height: 2,   // cm
+  length: 11,  // cm
+  weight: 0.3, // kg
+  insurance_value: 300 // valor médio para seguro
+};
 
   let productsData = [], editorMode = false, currentEditIndex = null, currentFilter = "todos", currentSearch = "", cart = JSON.parse(localStorage.getItem('vetin_cart')) || [];
   let currentViewImages = [], currentViewIndex = 0, currentViewProduct = null;
