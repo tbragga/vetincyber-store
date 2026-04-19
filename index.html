@@ -878,7 +878,7 @@
     document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
   }
 
-  // ========== CÁLCULO DE FRETE COM /api/frete (AGORA ENVIA DIMENSÕES CORRETAS) ==========
+  // ========== CÁLCULO DE FRETE COM /api/frete (VERSÃO CORRIGIDA E ROBUSTA) ==========
   document.getElementById('calcFreteBtn').addEventListener('click', async () => {
     const cep = document.getElementById('cepInput').value;
     const container = document.getElementById('freteOptions');
@@ -895,9 +895,8 @@
 
     container.innerHTML = '<span class="text-[10px] animate-pulse">BUSCANDO...</span>';
 
-    // Construir array de produtos com dimensões padrão
+    // Construir array de produtos com dimensões padrão (já ajustadas)
     const products = cart.map(item => {
-      // Extrair valor numérico do preço para seguro
       let priceValue = parseFloat(item.price.replace(/[^\d,]/g, '').replace(',', '.')) || DEFAULT_ITEM_DIMENSIONS.insurance_value;
       return {
         id: item.id || '1',
@@ -916,32 +915,50 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cep_destino: cep, products: products })
       });
-      const opcoes = await response.json();
 
-      console.log('Opções recebidas do back-end:', opcoes); // Debug
+      const data = await response.json();
+      console.log('Resposta bruta do back-end:', data);
 
-      container.innerHTML = ''; // Limpa o loading
+      container.innerHTML = '';
 
-      if (!opcoes || opcoes.length === 0) {
+      // Verifica se houve erro HTTP ou campo de erro na resposta
+      if (!response.ok || data.error) {
+        const errorMsg = data.error || `Erro ${response.status}: ${response.statusText}`;
+        container.innerHTML = `<span class="text-red-500">${errorMsg}</span>`;
+        return;
+      }
+
+      // Garante que a resposta é um array
+      if (!Array.isArray(data)) {
+        container.innerHTML = '<span class="text-red-500">Resposta inválida do servidor</span>';
+        console.error('Resposta não é array:', data);
+        return;
+      }
+
+      if (data.length === 0) {
         container.innerHTML = '<span class="text-red-500">Nenhuma opção de frete disponível</span>';
         return;
       }
 
-      opcoes.forEach(opt => {
-        const div = document.createElement('div');
-        div.className = "flex justify-between items-center bg-zinc-900 p-2 cursor-pointer border border-transparent hover:border-red-600 transition-all mb-1";
-        
-        // Garantir que price seja número
-        const priceValue = typeof opt.price === 'string' ? parseFloat(opt.price) : opt.price;
+      // Renderiza cada opção
+      data.forEach(opt => {
+        // Preço já vem como número do back-end, mas garantimos aqui também
+        let priceValue = typeof opt.price === 'string' ? parseFloat(opt.price.replace(',', '.')) : opt.price;
+        if (isNaN(priceValue) || priceValue === undefined) {
+          console.error('Preço inválido para opção:', opt);
+          return;
+        }
+
         const formattedPrice = priceValue.toFixed(2).replace('.', ',');
 
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center bg-zinc-900 p-2 cursor-pointer border border-transparent hover:border-red-600 transition-all mb-1";
         div.innerHTML = `
-          <span class="text-[10px] uppercase font-bold">${opt.name}</span>
+          <span class="text-[10px] uppercase font-bold">${opt.name || 'Frete'}</span>
           <span class="text-[10px]">R$ ${formattedPrice}</span>
         `;
         div.onclick = () => {
           valorFreteSelecionado = priceValue;
-          // Remove destaque de todos
           document.querySelectorAll('#freteOptions div').forEach(el => el.classList.remove('border-red-600'));
           div.classList.add('border-red-600');
           updateTotalDisplay();
@@ -949,9 +966,10 @@
         };
         container.appendChild(div);
       });
+
     } catch (error) {
       console.error('Erro no cálculo de frete:', error);
-      container.innerHTML = '<span class="text-red-500">Erro ao calcular frete</span>';
+      container.innerHTML = '<span class="text-red-500">Erro de conexão. Tente novamente.</span>';
     }
   });
 
