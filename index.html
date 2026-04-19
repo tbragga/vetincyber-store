@@ -750,8 +750,6 @@
 
 <script>
   // ======================== CONFIGURAÇÃO SUPABASE ========================
-  // ATENÇÃO: A chave anon é pública, mas você DEVE configurar Row Level Security (RLS)
-  // no Supabase para permitir apenas leitura pública e restringir inserções/atualizações.
   const SUPABASE_URL = 'https://cwemgdizoqfregyialid.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZW1nZGl6b3FmcmVneWlhbGlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTkzNjgsImV4cCI6MjA5MTI3NTM2OH0.zN11NTeroxNsd-SzEGJBsASa-tZ_DkDcmjmCNcIJTiY';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -763,7 +761,7 @@
     height: 2,      // cm
     length: 11,     // cm
     weight: 0.3,    // kg (300g)
-    insurance_value: 300 // valor médio para seguro (será substituído pelo preço real)
+    insurance_value: 300
   };
 
   let productsData = [], editorMode = false, currentEditIndex = null, currentFilter = "todos", currentSearch = "", cart = JSON.parse(localStorage.getItem('vetin_cart')) || [];
@@ -878,7 +876,7 @@
     document.getElementById('cartDrawerTotal').innerHTML = `TOTAL: R$ ${total.toFixed(2).replace('.',',')}`;
   }
 
-  // ========== CÁLCULO DE FRETE COM /api/frete (VERSÃO CORRIGIDA E ROBUSTA) ==========
+  // ========== CÁLCULO DE FRETE COM /api/frete ==========
   document.getElementById('calcFreteBtn').addEventListener('click', async () => {
     const cep = document.getElementById('cepInput').value;
     const container = document.getElementById('freteOptions');
@@ -895,7 +893,6 @@
 
     container.innerHTML = '<span class="text-[10px] animate-pulse">BUSCANDO...</span>';
 
-    // Construir array de produtos com dimensões padrão (já ajustadas)
     const products = cart.map(item => {
       let priceValue = parseFloat(item.price.replace(/[^\d,]/g, '').replace(',', '.')) || DEFAULT_ITEM_DIMENSIONS.insurance_value;
       return {
@@ -921,17 +918,14 @@
 
       container.innerHTML = '';
 
-      // Verifica se houve erro HTTP ou campo de erro na resposta
       if (!response.ok || data.error) {
         const errorMsg = data.error || `Erro ${response.status}: ${response.statusText}`;
         container.innerHTML = `<span class="text-red-500">${errorMsg}</span>`;
         return;
       }
 
-      // Garante que a resposta é um array
       if (!Array.isArray(data)) {
         container.innerHTML = '<span class="text-red-500">Resposta inválida do servidor</span>';
-        console.error('Resposta não é array:', data);
         return;
       }
 
@@ -940,14 +934,9 @@
         return;
       }
 
-      // Renderiza cada opção
       data.forEach(opt => {
-        // Preço já vem como número do back-end, mas garantimos aqui também
         let priceValue = typeof opt.price === 'string' ? parseFloat(opt.price.replace(',', '.')) : opt.price;
-        if (isNaN(priceValue) || priceValue === undefined) {
-          console.error('Preço inválido para opção:', opt);
-          return;
-        }
+        if (isNaN(priceValue) || priceValue === undefined) return;
 
         const formattedPrice = priceValue.toFixed(2).replace('.', ',');
 
@@ -973,7 +962,7 @@
     }
   });
 
-  // ========== FINALIZAR COMPRA COM /api/checkout ==========
+  // ========== FINALIZAR COMPRA ==========
   async function finalizarCompra() {
     if (!cart.length) {
       showToast("Carrinho vazio");
@@ -1227,19 +1216,52 @@
   document.getElementById('confirmDeleteBtn').onclick = async () => { if (pendingDeleteId) { await deleteProductById(pendingDeleteId); await loadProducts(); } document.getElementById('deleteConfirmModal').style.display = 'none'; pendingDeleteId = null; };
   document.getElementById('cancelDeleteBtn').onclick = () => { document.getElementById('deleteConfirmModal').style.display = 'none'; pendingDeleteId = null; };
 
-  // ATENÇÃO: O método de autenticação via hash no front-end é inseguro.
-  // Recomenda-se migrar para Supabase Auth com e-mail/senha.
-  // Por enquanto, o acesso ao modo editor está desabilitado.
+  // ========== MODO EDITOR (6 CLIQUES + VALIDAÇÃO SEGURA VIA API) ==========
   const ADMIN_EMAIL = "vetincyber@hotmail.com";
   let logoClicks = 0;
-  document.getElementById('mainLogo').onclick = () => {
+  document.getElementById('mainLogo').onclick = async () => {
     logoClicks++;
     if (logoClicks >= 6) {
-      alert("Modo editor desabilitado por segurança. Configure autenticação via Supabase.");
       logoClicks = 0;
+      const email = prompt("E-mail de administrador:");
+      if (email !== ADMIN_EMAIL) {
+        alert("E-mail incorreto.");
+        return;
+      }
+      const password = prompt("Senha:");
+      if (!password) return;
+
+      try {
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+          editorMode = true;
+          document.getElementById('editorPanel').style.display = 'flex';
+          document.getElementById('addCardBtn').style.display = 'block';
+          applyFilters();
+          showToast("Modo editor ativado");
+        } else {
+          alert("Senha incorreta ou erro na autenticação.");
+        }
+      } catch (error) {
+        alert("Erro ao verificar credenciais.");
+        console.error(error);
+      }
     }
   };
-  document.getElementById('exitEditorBtn').onclick = () => { editorMode = false; document.getElementById('editorPanel').style.display = 'none'; document.getElementById('addCardBtn').style.display = 'none'; applyFilters(); showToast("Modo editor desativado"); };
+
+  document.getElementById('exitEditorBtn').onclick = () => {
+    editorMode = false;
+    document.getElementById('editorPanel').style.display = 'none';
+    document.getElementById('addCardBtn').style.display = 'none';
+    applyFilters();
+    showToast("Modo editor desativado");
+  };
+
   document.getElementById('addCardBtn').onclick = async () => { const last = productsData[productsData.length-1]; if (!last) return; const { id, ...rest } = last; const novo = { ...rest, title: rest.title + " (CÓPIA)" }; const saved = await saveProduct(novo); if (saved) await loadProducts(); };
   document.getElementById('emergencyCreateBtn').onclick = async () => {
     const defaultProducts = [{ title: "CÂMERA VETIN MK-I", price: "R$299,00", imgMain: "https://placehold.co/400x300?text=CAMERA", specs: "<strong>Sensor:</strong> 20MP<br><strong>Resolução:</strong> 4K", images: [], categoria: "camera" }, { title: "LENTE 50MM F/1.8", price: "R$189,00", imgMain: "https://placehold.co/400x300?text=LENTE", specs: "<strong>Abertura:</strong> f/1.8", images: [], categoria: "acessorio" }, { title: "MOCHILA ASSAULT", price: "R$249,00", imgMain: "https://placehold.co/400x300?text=MOCHILA", specs: "<strong>Material:</strong> Nylon", images: [], categoria: "acessorio" }];
