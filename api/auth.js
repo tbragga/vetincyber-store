@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   const { email, password } = req.body;
 
   // Credenciais do administrador (configure aqui ou use variáveis de ambiente)
-  const ADMIN_EMAIL = 'guilhermebragga@hotmail.com';
+  const ADMIN_EMAIL = 'vetincyber@hotmail.com';
   // Hash SHA-256 da senha real (gere uma vez e cole aqui)
   const ADMIN_PASSWORD_HASH = 'a535739fa270e0f6985f613ebe255b3677d49b4f2361a2e35c55f34d7abafeba';
 
